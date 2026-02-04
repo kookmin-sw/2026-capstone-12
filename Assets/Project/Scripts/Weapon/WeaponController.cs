@@ -73,6 +73,7 @@ public class WeaponController : MonoBehaviour
     /// </summary>
     void Fire()
     {
+
         // 탄약 소모
         currentAmmo--;
 
@@ -90,6 +91,14 @@ public class WeaponController : MonoBehaviour
 
             // TODO: 나중에 데미지 처리 추가
             // 예: hit.collider.GetComponent<Enemy>()?.TakeDamage(damage);
+            if (hit.collider.CompareTag("Enemy"))
+            {
+                EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
+                if (enemyHealth != null)
+                {
+                    enemyHealth.TakeDamage(damage);
+                }
+            }
         }
         else
         {
@@ -144,5 +153,12 @@ public class WeaponController : MonoBehaviour
         isReloading = false;
 
         Debug.Log($"Reload Complete! Ammo: {currentAmmo}/{maxAmmo} | Reserve: {reserveAmmo}");
+    }
+    /// <summary>
+    /// 컨트롤러 활성화/비활성화 (사망용)
+    /// </summary>
+    public void SetEnabled(bool enabled)
+    {
+        this.enabled = enabled;
     }
 }

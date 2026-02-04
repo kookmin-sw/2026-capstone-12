@@ -97,4 +97,11 @@ public class PlayerController : MonoBehaviour
         verticalRotation = Mathf.Clamp(verticalRotation, -maxLookAngle, maxLookAngle);
         cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
     }
+    /// <summary>
+    /// 컨트롤러 활성화/비활성화 (사망용)
+    /// </summary>
+    public void SetEnabled(bool enabled)
+    {
+        this.enabled = enabled;
+    }
 }
