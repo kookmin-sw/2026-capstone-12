@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 17982047}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalPosition: {x: 0, y: 1, z: 20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1636,7 +1636,7 @@ Transform:
   m_GameObject: {fileID: 917933822}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -20}
+  m_LocalPosition: {x: 0, y: 1, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1813,7 +1813,7 @@ Transform:
   m_GameObject: {fileID: 1066388209}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: 0, z: 0}
+  m_LocalPosition: {x: 20, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1848,7 +1848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0790dc1de4a10a44281b687219f07d93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  basicEnemyPrefab: {fileID: 2756288669010319842, guid: b1d5c8786727a05428b86e97801f6289,
+  basicEnemyPrefab: {fileID: 8868151383663485156, guid: b1d5c8786727a05428b86e97801f6289,
     type: 3}
   tankEnemyPrefab: {fileID: 4614662330020229211, guid: 7bc13eab63817a846873b9a66f2fab49,
     type: 3}
@@ -2333,7 +2333,7 @@ Transform:
   m_GameObject: {fileID: 1785042391}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20, y: 0, z: 0}
+  m_LocalPosition: {x: -20, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
