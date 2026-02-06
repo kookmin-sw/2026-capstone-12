@@ -285,6 +285,7 @@ GameObject:
   - component: {fileID: 726317047}
   - component: {fileID: 726317046}
   - component: {fileID: 726317049}
+  - component: {fileID: 726317050}
   m_Layer: 0
   m_Name: Supporter Camera
   m_TagString: MainCamera
@@ -410,6 +411,31 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &726317050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726317045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b522fc854088d7e459ee163ae264b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 726317047}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  panSpeed: 1
+  zoomSpeed: 1
+  minDistance: 5
+  maxDistance: 60
+  rotateSpeed: 0.2
+  minPitch: 20
+  maxPitch: 75
+  fallbackToGroundPlane: 1
+  groundPlaneY: 0
 --- !u!1 &1116010954
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,7 +448,7 @@ GameObject:
   - component: {fileID: 1116010957}
   - component: {fileID: 1116010956}
   - component: {fileID: 1116010955}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
