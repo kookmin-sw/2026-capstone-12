@@ -171,12 +171,13 @@ public class BuildSystem : MonoBehaviour
 
     private void SetGhostMode(GameObject go)
     {
-        // 고스트는 충돌/공격 같은 런타임 기능이 돌면 안 되므로 콜라이더 비활성
-        Collider[] cols = go.GetComponentsInChildren<Collider>();
-        for (int i = 0; i < cols.Length; i++)
-            cols[i].enabled = false;
+        if (go.GetComponent<GhostMarker>() == null)
+            go.AddComponent<GhostMarker>();
 
-        // 고스트 재질 적용(있으면)
+        foreach (var c in go.GetComponentsInChildren<Collider>(true))
+            c.enabled = false;
+
+        // 고스트 재질 적용
         if (ghostMaterial != null)
         {
             Renderer[] rends = go.GetComponentsInChildren<Renderer>();

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class TurretRotator : MonoBehaviour
+public class TurretRotator : GhostDisabledBehaviour
 {
     private TurretTargeting targeting;
 

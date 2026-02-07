@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class TurretShooter : MonoBehaviour
+public class TurretShooter : GhostDisabledBehaviour
 {
     private TurretTargeting targeting;
 

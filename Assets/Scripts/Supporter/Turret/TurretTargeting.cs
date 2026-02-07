@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class TurretTargeting : MonoBehaviour
+public class TurretTargeting : GhostDisabledBehaviour
 {
     public float detectRadius = 10f;
     public LayerMask enemyMask;
