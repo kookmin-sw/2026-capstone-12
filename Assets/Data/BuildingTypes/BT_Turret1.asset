@@ -15,4 +15,4 @@ MonoBehaviour:
   prefab: {fileID: 3389874939188217537, guid: 04dfe95609ad732459ca100f13893855, type: 3}
   footprint: {x: 2, y: 2}
   allowRotate: 1
-  cost: 0
+  cost: 50

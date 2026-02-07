@@ -27,7 +27,7 @@ public class BuildSystem : MonoBehaviour
 
     private void Update()
     {
-        HandleSelectType();
+        HandleSelectType(); // UI의 구현으로 지우거나 연동할 필요가 있음
 
         if (selectedType == null)
         {
@@ -48,7 +48,8 @@ public class BuildSystem : MonoBehaviour
             ghostObj.transform.position = snapped;
             ghostObj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
 
-            bool canPlace = gridManager.IsAreaFree(anchor.x, anchor.y, selectedType.footprint, rotationY);
+            bool hasMoney = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(selectedType.cost);
+            bool canPlace = hasMoney && gridManager.IsAreaFree(anchor.x, anchor.y, selectedType.footprint, rotationY);
             ApplyGhostColor(canPlace);
 
             if (Input.GetMouseButtonDown(0))
@@ -75,6 +76,7 @@ public class BuildSystem : MonoBehaviour
 
     private void HandleSelectType()
     {
+        // UI의 구현으로 지우거나 연동할 필요가 있음
         // 예시: 1,2,3 키로 건물 선택
         if (buildingTypes == null || buildingTypes.Length == 0)
             return;
@@ -129,6 +131,13 @@ public class BuildSystem : MonoBehaviour
 
     private void PlaceBuilding(Vector2Int anchor)
     {
+        // 비용 차감 (성공 시에만 배치)
+        if (ResourceManager.Instance != null)
+        {
+            if (!ResourceManager.Instance.TrySpend(selectedType.cost))
+                return;
+        }
+
         // 점유 처리
         gridManager.OccupyArea(anchor.x, anchor.y, selectedType.footprint, rotationY, true);
 
@@ -217,5 +226,19 @@ public class BuildSystem : MonoBehaviour
             return false;
 
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public void SelectBuilding(BuildingTypeSO type)
+    {
+        if (type == null)
+            return;
+
+        // 비용 부족이면 선택 자체를 차단
+        if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(type.cost))
+            return;
+
+        selectedType = type;
+        rotationY = 0;
+        EnsureGhost();
     }
 }
