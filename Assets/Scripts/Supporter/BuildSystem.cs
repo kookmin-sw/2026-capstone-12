@@ -138,13 +138,22 @@ public class BuildSystem : MonoBehaviour
                 return;
         }
 
-        // 점유 처리
-        gridManager.OccupyArea(anchor.x, anchor.y, selectedType.footprint, rotationY, true);
-
         // 실제 건물 생성
         GameObject obj = Instantiate(selectedType.prefab);
         obj.transform.position = gridManager.AnchorToWorldCenter(anchor, selectedType.footprint, rotationY);
         obj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
+
+        // 점유 처리
+        gridManager.SetAreaOccupied(anchor.x, anchor.y, selectedType.footprint, rotationY, true);
+
+        // 판매/수리 등을 위해 인스턴스에 점유 정보 저장
+        StructureSelectable selectable = obj.GetComponent<StructureSelectable>();
+        if (selectable == null)
+            selectable = obj.AddComponent<StructureSelectable>();
+
+        selectable.type = selectedType;
+        selectable.hp = selectedType.maxHp;
+        selectable.BindGrid(gridManager, anchor, selectedType.footprint, rotationY);
 
         BuildingInstance inst = obj.GetComponent<BuildingInstance>();
         if (inst == null)
@@ -152,7 +161,7 @@ public class BuildSystem : MonoBehaviour
 
         inst.type = selectedType;
         inst.gridPos = anchor;
-        inst.rotationY = rotationY;
+        inst.rotationY = rotationY;        
     }
 
     private void CancelBuildMode()

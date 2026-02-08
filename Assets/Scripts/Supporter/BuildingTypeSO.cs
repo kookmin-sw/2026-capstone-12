@@ -10,4 +10,5 @@ public class BuildingTypeSO : ScriptableObject
 
     public bool allowRotate = true;
     public int cost = 0;
+    public int maxHp = 0;
 }

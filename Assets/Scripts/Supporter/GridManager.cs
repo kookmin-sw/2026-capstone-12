@@ -89,7 +89,7 @@ public class GridManager : MonoBehaviour
     }
 
     // 점유 처리
-    public void OccupyArea(int baseGx, int baseGz, Vector2Int footprint, int rotationY, bool value)
+    public void SetAreaOccupied(int baseGx, int baseGz, Vector2Int footprint, int rotationY, bool value)
     {
         Vector2Int size = GetRotatedFootprint(footprint, rotationY);
 

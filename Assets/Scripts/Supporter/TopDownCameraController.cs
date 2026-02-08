@@ -45,6 +45,8 @@ public class TopDownCameraController : MonoBehaviour
 
     private void Update()
     {
+        if (InputLock.IsLocked) return;
+        
         if (cam == null)
             return;
 

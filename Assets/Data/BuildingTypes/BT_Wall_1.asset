@@ -16,3 +16,4 @@ MonoBehaviour:
   footprint: {x: 1, y: 1}
   allowRotate: 1
   cost: 10
+  maxHp: 100
