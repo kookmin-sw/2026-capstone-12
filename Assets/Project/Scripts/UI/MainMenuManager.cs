@@ -24,10 +24,8 @@ public class MainMenuManager : MonoBehaviour
     public void OnStartButton()
     {
         Debug.Log("게임 시작!");
-
-        // 나중에 Photon 로비로 이동
-        // 지금은 임시로 TestScene으로 이동
-        SceneManager.LoadScene("TestScene");
+        
+        SceneManager.LoadScene("Lobby");
     }
 
     /// <summary>
