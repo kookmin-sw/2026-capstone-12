@@ -1,20 +1,20 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// Àû ½ºÆù °ü¸®
-/// - ¿şÀÌºêº°·Î Àû »ı¼º
-/// - ½ºÆù À§Ä¡ °ü¸®
+/// ì  ìŠ¤í° ê´€ë¦¬
+/// - ì›¨ì´ë¸Œë³„ë¡œ ì  ìƒì„±
+/// - ìŠ¤í° ìœ„ì¹˜ ê´€ë¦¬
 /// </summary>
 public class EnemyManager : MonoBehaviour
 {
     // ============================================================
-    // ½Ì±ÛÅÏ
+    // ì‹±ê¸€í„´
     // ============================================================
     public static EnemyManager Instance { get; private set; }
 
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("Enemy Prefabs")]
     [SerializeField] private GameObject basicEnemyPrefab;
@@ -32,7 +32,7 @@ public class EnemyManager : MonoBehaviour
     private List<GameObject> activeEnemies = new List<GameObject>();
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Awake()
     {
@@ -46,7 +46,7 @@ public class EnemyManager : MonoBehaviour
 
     void Start()
     {
-        // Å×½ºÆ® ¸ğµå¸é Àû ½ºÆù
+        // í…ŒìŠ¤íŠ¸ ëª¨ë“œë©´ ì  ìŠ¤í°
         if (testMode)
         {
             SpawnTestEnemies();
@@ -54,7 +54,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     // ============================================================
-    // ½ºÆù
+    // ìŠ¤í°
     // ============================================================
     void SpawnTestEnemies()
     {
@@ -78,7 +78,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Àû ½ºÆù
+    /// ì  ìŠ¤í°
     /// </summary>
     public GameObject SpawnEnemy(GameObject prefab, Vector3 position)
     {
@@ -88,7 +88,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ·£´ı Àû ÇÁ¸®ÆÕ ¹İÈ¯
+    /// ëœë¤ ì  í”„ë¦¬íŒ¹ ë°˜í™˜
     /// </summary>
     GameObject GetRandomEnemyPrefab()
     {
@@ -103,7 +103,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Àû Å¸ÀÔÀ¸·Î ÇÁ¸®ÆÕ °¡Á®¿À±â (WaveManager¿ë) ¡ç Ãß°¡!
+    /// ì  íƒ€ì…ìœ¼ë¡œ í”„ë¦¬íŒ¹ ê°€ì ¸ì˜¤ê¸° (WaveManagerìš©) â† ì¶”ê°€!
     /// </summary>
     public GameObject GetEnemyPrefab(EnemyType type)
     {
@@ -117,7 +117,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ·£´ı ½ºÆù À§Ä¡ °¡Á®¿À±â (WaveManager¿ë) ¡ç Ãß°¡!
+    /// ëœë¤ ìŠ¤í° ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸° (WaveManagerìš©) â† ì¶”ê°€!
     /// </summary>
     public Vector3 GetRandomSpawnPosition()
     {
@@ -133,13 +133,13 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Àû Á¦°Å ½Ã ¸®½ºÆ®¿¡¼­ »èÁ¦
+    /// ì  ì œê±° ì‹œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
     /// </summary>
     public void RemoveEnemy(GameObject enemy)
     {
         activeEnemies.Remove(enemy);
 
-        // WaveManager¿¡ ¾Ë¸² ¡ç Ãß°¡!
+        // WaveManagerì— ì•Œë¦¼ â† ì¶”ê°€!
         if (WaveManager.Instance != null)
         {
             WaveManager.Instance.OnEnemyKilled();
@@ -147,7 +147,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
     public int ActiveEnemyCount => activeEnemies.Count;
 }

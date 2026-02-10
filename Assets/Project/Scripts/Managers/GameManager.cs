@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;  // ¡ç Ãß°¡!
+using UnityEngine.SceneManagement;  // â† ì¶”ê°€!
 
 /// <summary>
-/// °ÔÀÓ ÀüÃ¼ »óÅÂ °ü¸® (Áß¾Ó ¸Å´ÏÀú)
+/// ê²Œì„ ì „ì²´ ìƒíƒœ ê´€ë¦¬ (ì¤‘ì•™ ë§¤ë‹ˆì €)
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // ¾À ·Îµå ÀÌº¥Æ®¿¡ ±¸µ¶ ¡ç Ãß°¡!
+        // ì”¬ ë¡œë“œ ì´ë²¤íŠ¸ì— êµ¬ë… â† ì¶”ê°€!
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -49,21 +49,21 @@ public class GameManager : MonoBehaviour
         InitializeGame();
     }
 
-    // ¡ç Ãß°¡!
+    // â† ì¶”ê°€!
     void OnDestroy()
     {
-        // ÀÌº¥Æ® ±¸µ¶ ÇØÁ¦
+        // ì´ë²¤íŠ¸ êµ¬ë… í•´ì œ
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // ¡ç Ãß°¡!
+    // â† ì¶”ê°€!
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // ¾ÀÀÌ ·ÎµåµÉ ¶§¸¶´Ù °ÔÀÓ ÃÊ±âÈ­
+        // ì”¬ì´ ë¡œë“œë  ë•Œë§ˆë‹¤ ê²Œì„ ì´ˆê¸°í™”
         InitializeGame();
     }
 
-    // publicÀ¸·Î º¯°æ ¡ç ¼öÁ¤!
+    // publicìœ¼ë¡œ ë³€ê²½ â† ìˆ˜ì •!
     public void InitializeGame()
     {
         totalScore = 0;

@@ -1,32 +1,32 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
-/// Àû Ã¼·Â °ü¸®
-/// - µ¥¹ÌÁö ¹Ş±â
-/// - »ç¸Á Ã³¸®
-/// - Á¡¼ö ¹× µ· Áö±Ş
+/// ì  ì²´ë ¥ ê´€ë¦¬
+/// - ë°ë¯¸ì§€ ë°›ê¸°
+/// - ì‚¬ë§ ì²˜ë¦¬
+/// - ì ìˆ˜ ë° ëˆ ì§€ê¸‰
 /// </summary>
 public class EnemyHealth : MonoBehaviour
 {
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 30f;
     [SerializeField] private float currentHealth;
 
     [Header("Rewards")]
-    [SerializeField] private int scoreReward = 100;         // Ã³Ä¡ ½Ã Á¡¼ö
-    [SerializeField] private int moneyReward = 10;          // Ã³Ä¡ ½Ã µ·
+    [SerializeField] private int scoreReward = 100;         // ì²˜ì¹˜ ì‹œ ì ìˆ˜
+    [SerializeField] private int moneyReward = 10;          // ì²˜ì¹˜ ì‹œ ëˆ
 
     [Header("Defense")]
-    [SerializeField] private float damageReduction = 0f;    // µ¥¹ÌÁö °¨¼ÒÀ² (0~1)
+    [SerializeField] private float damageReduction = 0f;    // ë°ë¯¸ì§€ ê°ì†Œìœ¨ (0~1)
 
     // State
     private bool isDead = false;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
@@ -34,23 +34,23 @@ public class EnemyHealth : MonoBehaviour
     }
 
     // ============================================================
-    // µ¥¹ÌÁö
+    // ë°ë¯¸ì§€
     // ============================================================
     /// <summary>
-    /// µ¥¹ÌÁö ¹Ş±â
+    /// ë°ë¯¸ì§€ ë°›ê¸°
     /// </summary>
     public void TakeDamage(float damage)
     {
         if (isDead)
             return;
 
-        // µ¥¹ÌÁö °¨¼Ò Àû¿ë (¹æ¾îÇü Àû¿ë)
+        // ë°ë¯¸ì§€ ê°ì†Œ ì ìš© (ë°©ì–´í˜• ì ìš©)
         float actualDamage = damage * (1f - damageReduction);
         currentHealth -= actualDamage;
 
         Debug.Log($"{gameObject.name} took {actualDamage} damage! HP: {currentHealth}/{maxHealth}");
 
-        // Ã¼·Â 0ÀÌ¸é »ç¸Á
+        // ì²´ë ¥ 0ì´ë©´ ì‚¬ë§
         if (currentHealth <= 0f)
         {
             Die();
@@ -58,26 +58,26 @@ public class EnemyHealth : MonoBehaviour
     }
 
     // ============================================================
-    // »ç¸Á
+    // ì‚¬ë§
     // ============================================================
     void Die()
     {
         isDead = true;
 
-        // GameManager¿¡ Á¡¼ö ¹× Ã³Ä¡ ¼ö Ãß°¡
+        // GameManagerì— ì ìˆ˜ ë° ì²˜ì¹˜ ìˆ˜ ì¶”ê°€
         GameManager.Instance.AddScore(scoreReward);
         GameManager.Instance.AddKill();
 
         EnemyManager.Instance.RemoveEnemy(gameObject);
-        // TODO: ³ªÁß¿¡ EconomyManager¿¡ µ· Ãß°¡
+        // TODO: ë‚˜ì¤‘ì— EconomyManagerì— ëˆ ì¶”ê°€
         Debug.Log($"{gameObject.name} died! Score +{scoreReward}, Money +{moneyReward}");
 
-        // Àû Á¦°Å
+        // ì  ì œê±°
         Destroy(gameObject);
     }
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;

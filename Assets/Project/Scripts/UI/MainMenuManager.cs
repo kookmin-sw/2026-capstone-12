@@ -1,56 +1,56 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// ¸ŞÀÎ ¸Ş´º °ü¸®
-/// - °ÔÀÓ ½ÃÀÛ
-/// - ¼³Á¤
-/// - °ÔÀÓ Á¾·á
+/// ë©”ì¸ ë©”ë‰´ ê´€ë¦¬
+/// - ê²Œì„ ì‹œì‘
+/// - ì„¤ì •
+/// - ê²Œì„ ì¢…ë£Œ
 /// </summary>
 public class MainMenuManager : MonoBehaviour
 {
     // ============================================================
-    // ¾À ÀÌ¸§
+    // ì”¬ ì´ë¦„
     // ============================================================
     [Header("Scene Names")]
-    [SerializeField] private string lobbySceneName = "Lobby";  // ³ªÁß¿¡ ¸¸µé ·Îºñ ¾À
+    [SerializeField] private string lobbySceneName = "Lobby";  // ë‚˜ì¤‘ì— ë§Œë“¤ ë¡œë¹„ ì”¬
 
     // ============================================================
-    // ¹öÆ° ÀÌº¥Æ®
+    // ë²„íŠ¼ ì´ë²¤íŠ¸
     // ============================================================
     /// <summary>
-    /// °ÔÀÓ ½ÃÀÛ ¹öÆ°
+    /// ê²Œì„ ì‹œì‘ ë²„íŠ¼
     /// </summary>
     public void OnStartButton()
     {
-        Debug.Log("°ÔÀÓ ½ÃÀÛ!");
+        Debug.Log("ê²Œì„ ì‹œì‘!");
         
         SceneManager.LoadScene("Lobby");
     }
 
     /// <summary>
-    /// ¼³Á¤ ¹öÆ°
+    /// ì„¤ì • ë²„íŠ¼
     /// </summary>
     public void OnSettingsButton()
     {
-        Debug.Log("¼³Á¤ ¿­±â!");
+        Debug.Log("ì„¤ì • ì—´ê¸°!");
 
-        // TODO: ¼³Á¤ ÆĞ³Î ¿­±â
-        // Áö±İÀº ·Î±×¸¸ Ãâ·Â
+        // TODO: ì„¤ì • íŒ¨ë„ ì—´ê¸°
+        // ì§€ê¸ˆì€ ë¡œê·¸ë§Œ ì¶œë ¥
     }
 
     /// <summary>
-    /// °ÔÀÓ Á¾·á ¹öÆ°
+    /// ê²Œì„ ì¢…ë£Œ ë²„íŠ¼
     /// </summary>
     public void OnQuitButton()
     {
-        Debug.Log("°ÔÀÓ Á¾·á!");
+        Debug.Log("ê²Œì„ ì¢…ë£Œ!");
 
-        // ¿¡µğÅÍ¿¡¼­´Â ÇÃ·¹ÀÌ ¸ğµå Á¾·á
+        // ì—ë””í„°ì—ì„œëŠ” í”Œë ˆì´ ëª¨ë“œ ì¢…ë£Œ
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        // ºôµå¿¡¼­´Â ¾ÖÇÃ¸®ÄÉÀÌ¼Ç Á¾·á
+        // ë¹Œë“œì—ì„œëŠ” ì• í”Œë¦¬ì¼€ì´ì…˜ ì¢…ë£Œ
         Application.Quit();
 #endif
     }

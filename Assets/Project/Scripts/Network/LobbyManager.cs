@@ -1,23 +1,23 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
 
 /// <summary>
-/// ·Îºñ °ü¸®
-/// - Photon ¼­¹ö ¿¬°á
-/// - ¹æ ¸¸µé±â / Âü°¡ÇÏ±â
+/// ë¡œë¹„ ê´€ë¦¬
+/// - Photon ì„œë²„ ì—°ê²°
+/// - ë°© ë§Œë“¤ê¸° / ì°¸ê°€í•˜ê¸°
 /// </summary>
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
     // ============================================================
-    // ½Ì±ÛÅÏ
+    // ì‹±ê¸€í„´
     // ============================================================
     public static LobbyManager Instance { get; private set; }
 
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("UI Panels")]
     [SerializeField] private GameObject lobbyPanel;
@@ -27,7 +27,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] private InputField roomCodeInput;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Awake()
     {
@@ -36,19 +36,19 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        // Photon ¼­¹ö ¿¬°á
+        // Photon ì„œë²„ ì—°ê²°
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
             Debug.Log("Connecting to Photon...");
         }
 
-        // ÃÊ±â ÆĞ³Î ¼³Á¤
+        // ì´ˆê¸° íŒ¨ë„ ì„¤ì •
         ShowLobbyPanel();
     }
 
     // ============================================================
-    // Photon Äİ¹é
+    // Photon ì½œë°±
     // ============================================================
     public override void OnConnectedToMaster()
     {
@@ -58,7 +58,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"Joined room: {PhotonNetwork.CurrentRoom.Name}");
-        // RoomLobby ¾ÀÀ¸·Î ÀÌµ¿
+        // RoomLobby ì”¬ìœ¼ë¡œ ì´ë™
         SceneManager.LoadScene("RoomLobby");
     }
 
@@ -74,7 +74,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
 
     // ============================================================
-    // ÆĞ³Î °ü¸®
+    // íŒ¨ë„ ê´€ë¦¬
     // ============================================================
     void ShowLobbyPanel()
     {
@@ -89,31 +89,31 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
 
     // ============================================================
-    // ¹öÆ° ÀÌº¥Æ® (LobbyPanel)
+    // ë²„íŠ¼ ì´ë²¤íŠ¸ (LobbyPanel)
     // ============================================================
     /// <summary>
-    /// ¹æ ¸¸µé±â ¹öÆ°
+    /// ë°© ë§Œë“¤ê¸° ë²„íŠ¼
     /// </summary>
     public void OnCreateRoomButton()
     {
-        // 4ÀÚ¸® ·£´ı ÄÚµå »ı¼º
+        // 4ìë¦¬ ëœë¤ ì½”ë“œ ìƒì„±
         string roomCode = Random.Range(1000, 9999).ToString();
 
-        // ¹æ ¼³Á¤
+        // ë°© ì„¤ì •
         RoomOptions roomOptions = new RoomOptions
         {
-            MaxPlayers = 2,  // ÃÖ´ë 2¸í (½´ÅÍ + ¼­Æ÷ÅÍ)
+            MaxPlayers = 2,  // ìµœëŒ€ 2ëª… (ìŠˆí„° + ì„œí¬í„°)
             IsVisible = true,
             IsOpen = true
         };
 
-        // ¹æ »ı¼º
+        // ë°© ìƒì„±
         PhotonNetwork.CreateRoom(roomCode, roomOptions);
         Debug.Log($"Creating room with code: {roomCode}");
     }
 
     /// <summary>
-    /// ¹æ Âü°¡ÇÏ±â ¹öÆ°
+    /// ë°© ì°¸ê°€í•˜ê¸° ë²„íŠ¼
     /// </summary>
     public void OnJoinRoomButton()
     {
@@ -121,7 +121,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// ¸ŞÀÎ ¸Ş´º ¹öÆ°
+    /// ë©”ì¸ ë©”ë‰´ ë²„íŠ¼
     /// </summary>
     public void OnBackButton()
     {
@@ -130,29 +130,29 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
 
     // ============================================================
-    // ¹öÆ° ÀÌº¥Æ® (JoinRoomPanel)
+    // ë²„íŠ¼ ì´ë²¤íŠ¸ (JoinRoomPanel)
     // ============================================================
     /// <summary>
-    /// Âü°¡ ¹öÆ°
+    /// ì°¸ê°€ ë²„íŠ¼
     /// </summary>
     public void OnConfirmJoinButton()
     {
         string roomCode = roomCodeInput.text;
 
-        // 4ÀÚ¸® È®ÀÎ
+        // 4ìë¦¬ í™•ì¸
         if (roomCode.Length != 4)
         {
             Debug.LogWarning("Room code must be 4 digits!");
             return;
         }
 
-        // ¹æ Âü°¡
+        // ë°© ì°¸ê°€
         PhotonNetwork.JoinRoom(roomCode);
         Debug.Log($"Joining room with code: {roomCode}");
     }
 
     /// <summary>
-    /// Ãë¼Ò ¹öÆ°
+    /// ì·¨ì†Œ ë²„íŠ¼
     /// </summary>
     public void OnCancelButton()
     {

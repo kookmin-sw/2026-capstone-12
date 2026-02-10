@@ -1,37 +1,37 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 /// <summary>
-/// Àû AI
-/// - ½´ÅÍ¸¦ ÇâÇØ ÀÌµ¿
-/// - ½´ÅÍ¿¡°Ô µµ´ŞÇÏ¸é °ø°İ
+/// ì  AI
+/// - ìŠˆí„°ë¥¼ í–¥í•´ ì´ë™
+/// - ìŠˆí„°ì—ê²Œ ë„ë‹¬í•˜ë©´ ê³µê²©
 /// </summary>
 public class EnemyAI : MonoBehaviour
 {
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 3f;          // ÀÌµ¿ ¼Óµµ
-    [SerializeField] private float attackRange = 1.5f;      // °ø°İ ¹üÀ§
-    [SerializeField] private float attackCooldown = 1f;     // °ø°İ ÄğÅ¸ÀÓ
+    [SerializeField] private float moveSpeed = 3f;          // ì´ë™ ì†ë„
+    [SerializeField] private float attackRange = 1.5f;      // ê³µê²© ë²”ìœ„
+    [SerializeField] private float attackCooldown = 1f;     // ê³µê²© ì¿¨íƒ€ì„
 
     [Header("Combat")]
-    [SerializeField] private float attackDamage = 5f;       // °ø°İ µ¥¹ÌÁö
+    [SerializeField] private float attackDamage = 5f;       // ê³µê²© ë°ë¯¸ì§€
 
     // Components
-    private Transform player;                                // ÇÃ·¹ÀÌ¾î Transform
-    private HealthManager playerHealth;                      // ÇÃ·¹ÀÌ¾î Ã¼·Â
+    private Transform player;                                // í”Œë ˆì´ì–´ Transform
+    private HealthManager playerHealth;                      // í”Œë ˆì´ì–´ ì²´ë ¥
     private Rigidbody rb;
 
     // State
     private float nextAttackTime = 0f;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
-        // ÇÃ·¹ÀÌ¾î Ã£±â
+        // í”Œë ˆì´ì–´ ì°¾ê¸°
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
@@ -47,15 +47,15 @@ public class EnemyAI : MonoBehaviour
         if (player == null)
             return;
 
-        // ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸® °è»ê
+        // í”Œë ˆì´ì–´ì™€ì˜ ê±°ë¦¬ ê³„ì‚°
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // °ø°İ ¹üÀ§ ¹ÛÀÌ¸é ÀÌµ¿
+        // ê³µê²© ë²”ìœ„ ë°–ì´ë©´ ì´ë™
         if (distance > attackRange)
         {
             MoveTowardsPlayer();
         }
-        // °ø°İ ¹üÀ§ ¾ÈÀÌ¸é °ø°İ
+        // ê³µê²© ë²”ìœ„ ì•ˆì´ë©´ ê³µê²©
         else
         {
             AttackPlayer();
@@ -63,19 +63,19 @@ public class EnemyAI : MonoBehaviour
     }
 
     // ============================================================
-    // ÀÌµ¿
+    // ì´ë™
     // ============================================================
     void MoveTowardsPlayer()
     {
-        // ÇÃ·¹ÀÌ¾î ¹æÇâ °è»ê (YÃà ¹«½Ã)
+        // í”Œë ˆì´ì–´ ë°©í–¥ ê³„ì‚° (Yì¶• ë¬´ì‹œ)
         Vector3 direction = (player.position - transform.position);
         direction.y = 0f;
         direction.Normalize();
 
-        // ÀÌµ¿
+        // ì´ë™
         rb.MovePosition(transform.position + direction * moveSpeed * Time.fixedDeltaTime);
 
-        // ÇÃ·¹ÀÌ¾î ¹æÇâÀ¸·Î È¸Àü
+        // í”Œë ˆì´ì–´ ë°©í–¥ìœ¼ë¡œ íšŒì „
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
@@ -84,27 +84,27 @@ public class EnemyAI : MonoBehaviour
     }
 
     // ============================================================
-    // °ø°İ
+    // ê³µê²©
     // ============================================================
     void AttackPlayer()
     {
-        // ÄğÅ¸ÀÓ È®ÀÎ
+        // ì¿¨íƒ€ì„ í™•ì¸
         if (Time.time < nextAttackTime)
             return;
 
-        // °ø°İ ½ÇÇà
+        // ê³µê²© ì‹¤í–‰
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(attackDamage);
             Debug.Log($"{gameObject.name} attacked Player for {attackDamage} damage!");
         }
 
-        // ´ÙÀ½ °ø°İ ½Ã°£ ¼³Á¤
+        // ë‹¤ìŒ ê³µê²© ì‹œê°„ ì„¤ì •
         nextAttackTime = Time.time + attackCooldown;
     }
 
     // ============================================================
-    // µğ¹ö±×¿ë (Scene View¿¡¼­ °ø°İ ¹üÀ§ Ç¥½Ã)
+    // ë””ë²„ê·¸ìš© (Scene Viewì—ì„œ ê³µê²© ë²”ìœ„ í‘œì‹œ)
     // ============================================================
     void OnDrawGizmosSelected()
     {

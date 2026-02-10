@@ -1,16 +1,16 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Ã¼·Â¹Ù UI °ü¸®
-/// - Ã¼·Â¹Ù ±æÀÌ º¯È­
-/// - Ã¼·Â¹Ù »ö»ó º¯È­ (ÃÊ·Ï ¡æ ³ë¶û ¡æ »¡°­)
-/// - Ã¼·Â ÅØ½ºÆ® Ç¥½Ã
+/// ì²´ë ¥ë°” UI ê´€ë¦¬
+/// - ì²´ë ¥ë°” ê¸¸ì´ ë³€í™”
+/// - ì²´ë ¥ë°” ìƒ‰ìƒ ë³€í™” (ì´ˆë¡ â†’ ë…¸ë‘ â†’ ë¹¨ê°•)
+/// - ì²´ë ¥ í…ìŠ¤íŠ¸ í‘œì‹œ
 /// </summary>
 public class HealthUI : MonoBehaviour
 {
     // ============================================================
-    // ÂüÁ¶
+    // ì°¸ì¡°
     // ============================================================
     [Header("References")]
     [SerializeField] private Image healthBarFill;
@@ -18,38 +18,38 @@ public class HealthUI : MonoBehaviour
     [SerializeField] private HealthManager healthManager;
 
     // ============================================================
-    // »ö»ó
+    // ìƒ‰ìƒ
     // ============================================================
-    private readonly Color fullColor = new Color(0f, 0.78f, 0f);     // ÃÊ·Ï»ö (50% ÀÌ»ó)
-    private readonly Color midColor = new Color(1f, 1f, 0f);          // ³ë¶õ»ö (25%~50%)
-    private readonly Color lowColor = new Color(1f, 0f, 0f);          // »¡°£»ö (25% ÀÌÇÏ)
+    private readonly Color fullColor = new Color(0f, 0.78f, 0f);     // ì´ˆë¡ìƒ‰ (50% ì´ìƒ)
+    private readonly Color midColor = new Color(1f, 1f, 0f);          // ë…¸ë€ìƒ‰ (25%~50%)
+    private readonly Color lowColor = new Color(1f, 0f, 0f);          // ë¹¨ê°„ìƒ‰ (25% ì´í•˜)
 
-    private const float BAR_WIDTH = 200f;                              // Ã¼·Â¹Ù ±âº» °¡·Î ±æÀÌ
+    private const float BAR_WIDTH = 200f;                              // ì²´ë ¥ë°” ê¸°ë³¸ ê°€ë¡œ ê¸¸ì´
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
-        // HealthManager ÀÌº¥Æ®¿¡ ±¸µ¶
+        // HealthManager ì´ë²¤íŠ¸ì— êµ¬ë…
         healthManager.OnHealthChanged.AddListener(UpdateHealthBar);
 
-        // ÃÊ±â »óÅÂ
+        // ì´ˆê¸° ìƒíƒœ
         UpdateHealthBar(1f);
     }
 
     // ============================================================
-    // UI ¾÷µ¥ÀÌÆ®
+    // UI ì—…ë°ì´íŠ¸
     // ============================================================
     /// <summary>
-    /// Ã¼·Â¹Ù ¾÷µ¥ÀÌÆ® (0~1 ºñÀ² ¹ŞÀ½)
+    /// ì²´ë ¥ë°” ì—…ë°ì´íŠ¸ (0~1 ë¹„ìœ¨ ë°›ìŒ)
     /// </summary>
     void UpdateHealthBar(float healthRatio)
     {
-        // Ã¼·Â¹Ù ±æÀÌ º¯°æ
+        // ì²´ë ¥ë°” ê¸¸ì´ ë³€ê²½
         healthBarFill.rectTransform.sizeDelta = new Vector2(BAR_WIDTH * healthRatio, 30f);
 
-        // »ö»ó º¯°æ
+        // ìƒ‰ìƒ ë³€ê²½
         if (healthRatio > 0.5f)
             healthBarFill.color = fullColor;
         else if (healthRatio > 0.25f)
@@ -57,7 +57,7 @@ public class HealthUI : MonoBehaviour
         else
             healthBarFill.color = lowColor;
 
-        // ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+        // í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
         int current = (int)(healthRatio * healthManager.MaxHealth);
         int max = (int)healthManager.MaxHealth;
         healthText.text = $"{current} / {max}";

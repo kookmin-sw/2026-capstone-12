@@ -1,17 +1,17 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// ÇÃ·¹ÀÌ¾î Ã¼·Â °ü¸®
-/// - HP °ü¸®
-/// - µ¥¹ÌÁö ¹Ş±â / È¸º¹
-/// - »ç¸Á ½Ã GameManager¿¡ °ÔÀÓ ¿À¹ö ¾Ë¸²
-/// - ¸®½ºÆù ¾øÀ½ (½´ÅÍ »ç¸Á = °ÔÀÓ ¿À¹ö)
+/// í”Œë ˆì´ì–´ ì²´ë ¥ ê´€ë¦¬
+/// - HP ê´€ë¦¬
+/// - ë°ë¯¸ì§€ ë°›ê¸° / íšŒë³µ
+/// - ì‚¬ë§ ì‹œ GameManagerì— ê²Œì„ ì˜¤ë²„ ì•Œë¦¼
+/// - ë¦¬ìŠ¤í° ì—†ìŒ (ìŠˆí„° ì‚¬ë§ = ê²Œì„ ì˜¤ë²„)
 /// </summary>
 public class HealthManager : MonoBehaviour
 {
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("Health Settings")]
     [SerializeField] private float maxHealth = 100f;
@@ -30,29 +30,29 @@ public class HealthManager : MonoBehaviour
     public UnityEventFloat OnHealthChanged = new UnityEventFloat();
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
     public bool IsDead => isDead;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
         playerController = GetComponent<PlayerController>();
         weaponController = GetComponent<WeaponController>();
 
-        // Ã¼·Â ÃÊ±âÈ­
+        // ì²´ë ¥ ì´ˆê¸°í™”
         currentHealth = maxHealth;
     }
 
     // ============================================================
-    // Ã¼·Â °ü·Ã
+    // ì²´ë ¥ ê´€ë ¨
     // ============================================================
     /// <summary>
-    /// µ¥¹ÌÁö ¹Ş±â
+    /// ë°ë¯¸ì§€ ë°›ê¸°
     /// </summary>
     public void TakeDamage(float amount)
     {
@@ -62,12 +62,12 @@ public class HealthManager : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        // UI ¾÷µ¥ÀÌÆ® (0~1 ºñÀ²·Î Àü´Ş)
+        // UI ì—…ë°ì´íŠ¸ (0~1 ë¹„ìœ¨ë¡œ ì „ë‹¬)
         OnHealthChanged.Invoke(currentHealth / maxHealth);
 
         Debug.Log($"Damage: -{amount} | HP: {currentHealth}/{maxHealth}");
 
-        // Ã¼·Â 0ÀÌ¸é »ç¸Á
+        // ì²´ë ¥ 0ì´ë©´ ì‚¬ë§
         if (currentHealth <= 0f)
         {
             Die();
@@ -75,7 +75,7 @@ public class HealthManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ã¼·Â È¸º¹ (³ªÁß¿¡ ¼­Æ÷ÅÍ Áö¿ø¿ë)
+    /// ì²´ë ¥ íšŒë³µ (ë‚˜ì¤‘ì— ì„œí¬í„° ì§€ì›ìš©)
     /// </summary>
     public void Heal(float amount)
     {
@@ -91,27 +91,27 @@ public class HealthManager : MonoBehaviour
     }
 
     // ============================================================
-    // »ç¸Á
+    // ì‚¬ë§
     // ============================================================
     /// <summary>
-    /// »ç¸Á Ã³¸®
+    /// ì‚¬ë§ ì²˜ë¦¬
     /// </summary>
     void Die()
     {
         isDead = true;
 
-        // ÀÌµ¿/¹ß»ç ºÒ°¡
+        // ì´ë™/ë°œì‚¬ ë¶ˆê°€
         playerController.SetEnabled(false);
         weaponController.SetEnabled(false);
 
         Debug.Log("Player Died! Triggering Game Over...");
 
-        // GameManager¿¡ °ÔÀÓ ¿À¹ö ¾Ë¸²
+        // GameManagerì— ê²Œì„ ì˜¤ë²„ ì•Œë¦¼
         GameManager.Instance.TriggerGameOver();
     }
 }
 
 /// <summary>
-/// float ÆÄ¶ó¹ÌÅÍ¸¦ ¹Ş´Â UnityEvent
+/// float íŒŒë¼ë¯¸í„°ë¥¼ ë°›ëŠ” UnityEvent
 /// </summary>
 public class UnityEventFloat : UnityEvent<float> { }

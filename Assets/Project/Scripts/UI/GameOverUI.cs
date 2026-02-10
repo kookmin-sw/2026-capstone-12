@@ -1,17 +1,17 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// °ÔÀÓ ¿À¹ö È­¸é UI °ü¸®
-/// - °ÔÀÓ ¿À¹ö ½Ã ÆĞ³Î Ç¥½Ã
-/// - Á¡¼ö, Ã³Ä¡ ¼ö Ç¥½Ã
-/// - Àç½ÃÀÛ / ¸ŞÀÎ ¸Ş´º ¹öÆ°
+/// ê²Œì„ ì˜¤ë²„ í™”ë©´ UI ê´€ë¦¬
+/// - ê²Œì„ ì˜¤ë²„ ì‹œ íŒ¨ë„ í‘œì‹œ
+/// - ì ìˆ˜, ì²˜ì¹˜ ìˆ˜ í‘œì‹œ
+/// - ì¬ì‹œì‘ / ë©”ì¸ ë©”ë‰´ ë²„íŠ¼
 /// </summary>
 public class GameOverUI : MonoBehaviour
 {
     // ============================================================
-    // ÂüÁ¶
+    // ì°¸ì¡°
     // ============================================================
     [Header("Panels")]
     [SerializeField] private GameObject gameOverPanel;
@@ -29,45 +29,45 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
-        // ½ÃÀÛ ½Ã ÆĞ³Î ¼û±è
+        // ì‹œì‘ ì‹œ íŒ¨ë„ ìˆ¨ê¹€
         gameOverPanel.SetActive(false);
 
-        // ¹öÆ° ÀÌº¥Æ® ¿¬°á
+        // ë²„íŠ¼ ì´ë²¤íŠ¸ ì—°ê²°
         restartButton.onClick.AddListener(OnRestartButton);
         mainMenuButton.onClick.AddListener(OnMainMenuButton);
 
-        // GameManager ÀÌº¥Æ®¿¡ ±¸µ¶
+        // GameManager ì´ë²¤íŠ¸ì— êµ¬ë…
         GameManager.Instance.OnGameOver.AddListener(ShowGameOver);
     }
 
     // ============================================================
-    // °ÔÀÓ ¿À¹ö Ç¥½Ã
+    // ê²Œì„ ì˜¤ë²„ í‘œì‹œ
     // ============================================================
     void ShowGameOver()
     {
-        // ÆĞ³Î È°¼ºÈ­
+        // íŒ¨ë„ í™œì„±í™”
         gameOverPanel.SetActive(true);
 
-        // °á°ú Ç¥½Ã
-        scoreText.text = $"Á¡¼ö: {GameManager.Instance.TotalScore}";
-        killText.text = $"Ã³Ä¡: {GameManager.Instance.TotalKills}¸í";
+        // ê²°ê³¼ í‘œì‹œ
+        scoreText.text = $"ì ìˆ˜: {GameManager.Instance.TotalScore}";
+        killText.text = $"ì²˜ì¹˜: {GameManager.Instance.TotalKills}ëª…";
 
-        // ¸¶¿ì½º Ä¿¼­ Ç¥½Ã
+        // ë§ˆìš°ìŠ¤ ì»¤ì„œ í‘œì‹œ
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // ½Ã°£ ¸ØÃß±â
+        // ì‹œê°„ ë©ˆì¶”ê¸°
         Time.timeScale = 0f;
 
         Debug.Log("Game Over UI Shown");
     }
 
     // ============================================================
-    // ¹öÆ° ÀÌº¥Æ®
+    // ë²„íŠ¼ ì´ë²¤íŠ¸
     // ============================================================
     void OnRestartButton()
     {
