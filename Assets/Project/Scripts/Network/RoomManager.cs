@@ -62,6 +62,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
         // 방 코드 표시
         roomCodeText.text = PhotonNetwork.CurrentRoom.Name;
 
+        // 입장 시 속성 초기화 ← 문제 3 해결!
+        ClearPlayerProperties();
+
         // 버튼 이벤트 연결
         shooterButton.onClick.AddListener(OnShooterButton);
         supporterButton.onClick.AddListener(OnSupporterButton);
@@ -70,6 +73,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         // 플레이어 정보 업데이트
         UpdatePlayerList();
+    }
+
+    // ============================================================
+    // 속성 초기화 (문제 3 해결)
+    // ============================================================
+    void ClearPlayerProperties()
+    {
+        Hashtable props = new Hashtable
+        {
+            { ROLE_KEY, null },
+            { READY_KEY, false }
+        };
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }
 
     // ============================================================
@@ -136,7 +152,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     string GetRoleText(Player player)
     {
-        if (player.CustomProperties.ContainsKey(ROLE_KEY))
+        if (player.CustomProperties.ContainsKey(ROLE_KEY) && player.CustomProperties[ROLE_KEY] != null)
         {
             string role = (string)player.CustomProperties[ROLE_KEY];
             return $"역할: {(role == ROLE_SHOOTER ? "슈터" : "서포터")}";
@@ -155,7 +171,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     }
 
     // ============================================================
-    // 역할 선택 버튼
+    // 역할 선택 버튼 (문제 2 해결)
     // ============================================================
     void UpdateRoleButtons()
     {
@@ -165,20 +181,31 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if (player.CustomProperties.ContainsKey(ROLE_KEY))
+            if (player.CustomProperties.ContainsKey(ROLE_KEY) && player.CustomProperties[ROLE_KEY] != null)
             {
                 string role = (string)player.CustomProperties[ROLE_KEY];
-                if (role == ROLE_SHOOTER) shooterTaken = true;
-                if (role == ROLE_SUPPORTER) supporterTaken = true;
+
+                // 다른 사람이 선택한 역할만 체크
+                if (player != PhotonNetwork.LocalPlayer)
+                {
+                    if (role == ROLE_SHOOTER) shooterTaken = true;
+                    if (role == ROLE_SUPPORTER) supporterTaken = true;
+                }
             }
         }
 
-        // 내가 이미 선택했는지 확인
-        bool iHaveRole = PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY);
+        // 내가 선택한 역할 확인
+        string myRole = null;
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY))
+        {
+            myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY];
+        }
 
         // 버튼 활성화/비활성화
-        shooterButton.interactable = !shooterTaken && !iHaveRole;
-        supporterButton.interactable = !supporterTaken && !iHaveRole;
+        // 내가 선택한 역할은 활성화 (다시 클릭하면 취소)
+        // 다른 사람이 선택한 역할은 비활성화
+        shooterButton.interactable = !shooterTaken || myRole == ROLE_SHOOTER;
+        supporterButton.interactable = !supporterTaken || myRole == ROLE_SUPPORTER;
     }
 
     // ============================================================
@@ -186,28 +213,61 @@ public class RoomManager : MonoBehaviourPunCallbacks
     // ============================================================
     void OnShooterButton()
     {
-        SetRole(ROLE_SHOOTER);
+        // 이미 선택했으면 취소 ← 문제 2 해결!
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY) &&
+            PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] != null &&
+            (string)PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] == ROLE_SHOOTER)
+        {
+            ClearRole();
+        }
+        else
+        {
+            SetRole(ROLE_SHOOTER);
+        }
     }
 
     void OnSupporterButton()
     {
-        SetRole(ROLE_SUPPORTER);
+        // 이미 선택했으면 취소 ← 문제 2 해결!
+        if (PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY) &&
+            PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] != null &&
+            (string)PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] == ROLE_SUPPORTER)
+        {
+            ClearRole();
+        }
+        else
+        {
+            SetRole(ROLE_SUPPORTER);
+        }
     }
 
     void SetRole(string role)
     {
         Hashtable props = new Hashtable
         {
-            { ROLE_KEY, role }
+            { ROLE_KEY, role },
+            { READY_KEY, false }  // 역할 변경 시 준비 취소
         };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         Debug.Log($"Role selected: {role}");
     }
 
+    void ClearRole()
+    {
+        Hashtable props = new Hashtable
+        {
+            { ROLE_KEY, null },
+            { READY_KEY, false }
+        };
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        Debug.Log("Role cleared");
+    }
+
     void OnReadyButton()
     {
         // 역할을 선택했는지 확인
-        if (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY))
+        if (!PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY) ||
+            PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] == null)
         {
             Debug.LogWarning("Select a role first!");
             return;
@@ -235,7 +295,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     }
 
     // ============================================================
-    // 게임 시작
+    // 게임 시작 (문제 1 해결)
     // ============================================================
     void CheckStartGame()
     {
@@ -248,7 +308,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         foreach (Player player in PhotonNetwork.PlayerList)
         {
-            if (!player.CustomProperties.ContainsKey(ROLE_KEY))
+            if (!player.CustomProperties.ContainsKey(ROLE_KEY) ||
+                player.CustomProperties[ROLE_KEY] == null)
                 allHaveRole = false;
 
             if (!player.CustomProperties.ContainsKey(READY_KEY) ||
@@ -257,10 +318,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
 
         // 모두 준비 완료 → 게임 시작
-        if (allReady && allHaveRole && PhotonNetwork.IsMasterClient)
+        if (allReady && allHaveRole)
         {
             Debug.Log("All players ready! Starting game...");
-            StartGame();
+            StartGame();  // ← RPC 제거!
         }
     }
 
@@ -272,11 +333,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
         // 역할에 따라 씬 로드
         if (myRole == ROLE_SHOOTER)
         {
-            PhotonNetwork.LoadLevel("TestScene");
+            SceneManager.LoadScene("TestScene");
         }
         else if (myRole == ROLE_SUPPORTER)
         {
-            PhotonNetwork.LoadLevel("SupporterScene");
+            SceneManager.LoadScene("SupporterScene");
         }
     }
 }
