@@ -36,6 +36,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        // 닉네임 설정 (랜덤) ← 추가!
+        if (string.IsNullOrEmpty(PhotonNetwork.NickName))
+        {
+            PhotonNetwork.NickName = "Player" + Random.Range(1000, 9999);
+        }
+
         // Photon 서버 연결
         if (!PhotonNetwork.IsConnected)
         {
@@ -59,7 +65,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         Debug.Log($"Joined room: {PhotonNetwork.CurrentRoom.Name}");
         // RoomLobby 씬으로 이동
-        SceneManager.LoadScene("RoomLobby");
+        SceneManager.LoadScene("RoomScene");
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
