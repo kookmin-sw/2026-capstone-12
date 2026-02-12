@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: BT_Wall_1
   m_EditorClassIdentifier: 
   prefab: {fileID: 7307361376702685315, guid: 6acc46168a6fc74409a1ccbf79ff27d2, type: 3}
+  typeId: 3
+  photonPrefabPath: Prefabs/Buildings/Wall_1_Root
   footprint: {x: 1, y: 1}
   allowRotate: 1
   cost: 10

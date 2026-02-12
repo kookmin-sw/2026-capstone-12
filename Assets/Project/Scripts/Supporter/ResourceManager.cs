@@ -25,24 +25,28 @@ public class ResourceManager : MonoBehaviour
         OnGoldChanged?.Invoke(gold);
     }
 
-    public bool CanAfford(int amount)
+    // 로컬 UI 판단용
+    public bool CanAfford(int cost) => gold >= cost;
+
+    // 마스터가 확정한 값이 내려오면 클라들은 이걸로만 갱신
+    public void SetGoldFromMaster(int newGold)
     {
-        return gold >= amount;
+        if (gold == newGold) return;
+        gold = newGold;
+        OnGoldChanged?.Invoke(gold);
     }
 
-    public bool TrySpend(int amount)
+    // 마스터에서만 쓰는 헬퍼
+    public bool TrySpendMaster(int cost)
     {
-        if (amount <= 0) return true;
-        if (gold < amount) return false;
-
-        gold -= amount;
+        if (gold < cost) return false;
+        gold -= cost;
         OnGoldChanged?.Invoke(gold);
         return true;
     }
 
-    public void AddGold(int amount)
+    public void AddGoldMaster(int amount)
     {
-        if (amount <= 0) return;
         gold += amount;
         OnGoldChanged?.Invoke(gold);
     }
@@ -51,6 +55,6 @@ public class ResourceManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
-            AddGold(50);
+            AddGoldMaster(50);
     }
 }

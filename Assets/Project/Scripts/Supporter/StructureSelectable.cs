@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 
 public class StructureSelectable : MonoBehaviour
 {
@@ -28,21 +29,32 @@ public class StructureSelectable : MonoBehaviour
         this.rotationY = rotationY;
     }
 
-	public void Sell()
+	public void RequestSell()
     {
-        if (grid != null)
-            grid.SetAreaOccupied(anchor.x, anchor.y, footprint, rotationY, false);
-
-        Destroy(gameObject);
+        PhotonView pv = GetComponent<PhotonView>();
+        if (PhotonNetwork.InRoom && pv != null)
+        {
+            BuildNetManager.Instance.RequestSell(pv.ViewID);
+            return;
+        }
     }
 
-    public bool CanRepair(int cost)
+    public void RequestRepair()
     {
+        PhotonView pv = GetComponent<PhotonView>();
+        if (PhotonNetwork.InRoom && pv != null)
+        {
+            BuildNetManager.Instance.RequestRepair(pv.ViewID);
+            return;
+        }
+    }
+
+    public bool CanRepairLocal()
+    {
+        if (type == null) return false;
+        if (hp >= type.maxHp) return false;
+
+        int cost = type.repairCost;
         return ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(cost);
-    }
-
-    public void Repair()
-    {
-        hp = MaxHp;
     }
 }

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+
 public class SellButton : MonoBehaviour
 {
-    public float refundRate = 0.3f;
     private Button btn;
     private StructurePopupUI popup;
 
@@ -21,12 +21,9 @@ public class SellButton : MonoBehaviour
 
     private void OnClick()
     {
-        if (popup == null || popup.Target == null) return;        
-
-        int refund = Mathf.RoundToInt(popup.Target.Cost * refundRate);
-        if (ResourceManager.Instance != null) ResourceManager.Instance.AddGold(refund);
-
-        popup.Target.Sell();
+        if (popup == null || popup.Target == null) return;
+        popup.Target.RequestSell();
+        
         Destroy(popup.gameObject);
     }
 }

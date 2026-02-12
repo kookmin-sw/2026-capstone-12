@@ -10,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2105002345020637855}
   - component: {fileID: 5086176353655114358}
+  - component: {fileID: 8585272048512058566}
+  - component: {fileID: -3730540951160048987}
+  - component: {fileID: 5017426259436499630}
   m_Layer: 8
   m_Name: Tower_1x1_Root
   m_TagString: Untagged
@@ -55,6 +58,53 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &8585272048512058566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879385777915753179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9123cd57f6bc947b8a1a7c6da98e52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 0}
+  grid: {fileID: 0}
+--- !u!114 &-3730540951160048987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879385777915753179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: {fileID: 0}
+  hp: 0
+  grid: {fileID: 0}
+  anchor: {x: 0, y: 0}
+  footprint: {x: 0, y: 0}
+  rotationY: 0
+--- !u!114 &5017426259436499630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879385777915753179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 950a5cfb371a4474cabf924c914f3ad1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: {fileID: 0}
+  gridPos: {x: 0, y: 0}
+  rotationY: 0
 --- !u!1 &6855386924770396931
 GameObject:
   m_ObjectHideFlags: 0
