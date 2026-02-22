@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 /// <summary>
-/// Å×½ºÆ®¿ë µ¥¹ÌÁö ¹öÆ° (³ªÁß¿¡ »èÁ¦ ¿¹Á¤)
+/// í…ŒìŠ¤íŠ¸ìš© ë°ë¯¸ì§€ ë²„íŠ¼ (ë‚˜ì¤‘ì— ì‚­ì œ ì˜ˆì •)
 /// </summary>
 public class TestDamageButton : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class TestDamageButton : MonoBehaviour
 
     void OnButtonClick()
     {
-        healthManager.TakeDamage(testDamage);
+        //healthManager.TakeDamage(testDamage);
+        if (!PhotonNetwork.IsMasterClient) return;
+            ShooterHealthNet.Instance.MasterApplyDamageToShooter(testDamage);
     }
 }

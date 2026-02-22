@@ -15,7 +15,9 @@ GameObject:
   - component: {fileID: 2727810447635443995}
   - component: {fileID: 7366361049789137269}
   - component: {fileID: 7483383050742797557}
-  m_Layer: 0
+  - component: {fileID: -167439925760390618}
+  - component: {fileID: 4274237537831031147}
+  m_Layer: 7
   m_Name: FastEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -165,8 +167,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b61e931a084d94b9ae521acffce99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 20
-  currentHealth: 0
+  maxHp: 30
+  currentHp: 0
   scoreReward: 150
   moneyReward: 15
   damageReduction: 0
+--- !u!114 &-167439925760390618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9133630192219561619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &4274237537831031147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9133630192219561619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1

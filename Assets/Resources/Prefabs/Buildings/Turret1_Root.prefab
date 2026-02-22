@@ -89,6 +89,7 @@ MonoBehaviour:
   fireRate: 4
   damage: 10
   range: 30
+  fireConeDegrees: 7
 --- !u!114 &6473456124118591295
 MonoBehaviour:
   m_ObjectHideFlags: 0

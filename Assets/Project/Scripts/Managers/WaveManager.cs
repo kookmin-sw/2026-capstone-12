@@ -1,66 +1,67 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using Photon.Pun;
 
 /// <summary>
-/// ¿şÀÌºê ½Ã½ºÅÛ °ü¸®
-/// - ¿şÀÌºê ÁøÇà ¹× Å¸ÀÌ¸Ó
-/// - Àû ½ºÆù
-/// - ½Â¸® Á¶°Ç È®ÀÎ
+/// ì›¨ì´ë¸Œ ì‹œìŠ¤í…œ ê´€ë¦¬
+/// - ì›¨ì´ë¸Œ ì§„í–‰ ë° íƒ€ì´ë¨¸
+/// - ì  ìŠ¤í°
+/// - ìŠ¹ë¦¬ ì¡°ê±´ í™•ì¸
 /// </summary>
 public class WaveManager : MonoBehaviour
 {
     // ============================================================
-    // ½Ì±ÛÅÏ
+    // ì‹±ê¸€í„´
     // ============================================================
     public static WaveManager Instance { get; private set; }
 
     // ============================================================
-    // ¿şÀÌºê ±¸¼º
+    // ì›¨ì´ë¸Œ êµ¬ì„±
     // ============================================================
     [System.Serializable]
     public class WaveConfig
     {
-        public int waveNumber;              // ¿şÀÌºê ¹øÈ£
-        public int basicEnemyCount;         // ±âº» Àû ¼ö
-        public int tankEnemyCount;          // ¹æ¾îÇü Àû ¼ö
-        public int fastEnemyCount;          // °í¼Ó Àû ¼ö
+        public int waveNumber;              // ì›¨ì´ë¸Œ ë²ˆí˜¸
+        public int basicEnemyCount;         // ê¸°ë³¸ ì  ìˆ˜
+        public int tankEnemyCount;          // ë°©ì–´í˜• ì  ìˆ˜
+        public int fastEnemyCount;          // ê³ ì† ì  ìˆ˜
     }
 
     [Header("Wave Settings")]
-    [SerializeField] private WaveConfig[] waves;        // ¿şÀÌºê ±¸¼ºµé
-    [SerializeField] private float waveDuration = 100f; // ¿şÀÌºê ½Ã°£ (1ºĞ 40ÃÊ)
-    [SerializeField] private float prepareTime = 20f;   // ÁØºñ ½Ã°£ (20ÃÊ)
+    [SerializeField] private WaveConfig[] waves;        // ì›¨ì´ë¸Œ êµ¬ì„±ë“¤
+    [SerializeField] private float waveDuration = 100f; // ì›¨ì´ë¸Œ ì‹œê°„ (1ë¶„ 40ì´ˆ)
+    [SerializeField] private float prepareTime = 20f;   // ì¤€ë¹„ ì‹œê°„ (20ì´ˆ)
 
     // State
-    private int currentWaveIndex = 0;                   // ÇöÀç ¿şÀÌºê ÀÎµ¦½º (0~4)
-    private float waveTimer = 0f;                       // ¿şÀÌºê Å¸ÀÌ¸Ó
-    private float prepareTimer = 0f;                    // ÁØºñ Å¸ÀÌ¸Ó
-    private bool isWaveActive = false;                  // ¿şÀÌºê ÁøÇà Áß
-    private bool isPreparing = false;                   // ÁØºñ Áß
-    private int totalEnemiesInWave = 0;                 // ÇöÀç ¿şÀÌºê ÃÑ Àû ¼ö
-    private int spawnedEnemies = 0;                     // ½ºÆùµÈ Àû ¼ö
+    private int currentWaveIndex = 0;                   // í˜„ì¬ ì›¨ì´ë¸Œ ì¸ë±ìŠ¤ (0~4)
+    private float waveTimer = 0f;                       // ì›¨ì´ë¸Œ íƒ€ì´ë¨¸
+    private float prepareTimer = 0f;                    // ì¤€ë¹„ íƒ€ì´ë¨¸
+    private bool isWaveActive = false;                  // ì›¨ì´ë¸Œ ì§„í–‰ ì¤‘
+    private bool isPreparing = false;                   // ì¤€ë¹„ ì¤‘
+    private int totalEnemiesInWave = 0;                 // í˜„ì¬ ì›¨ì´ë¸Œ ì´ ì  ìˆ˜
+    private int spawnedEnemies = 0;                     // ìŠ¤í°ëœ ì  ìˆ˜
 
     // ============================================================
     // Events
     // ============================================================
-    public UnityEventInt OnWaveStart = new UnityEventInt();         // ¿şÀÌºê ½ÃÀÛ
-    public UnityEventInt OnWaveComplete = new UnityEventInt();      // ¿şÀÌºê ¿Ï·á
-    public UnityEventFloat OnWaveTimerUpdate = new UnityEventFloat(); // Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
-    public UnityEventFloat OnPrepareTimerUpdate = new UnityEventFloat(); // ÁØºñ Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
-    public UnityEventInt OnRemainingEnemiesUpdate = new UnityEventInt(); // ³²Àº Àû ¼ö ¾÷µ¥ÀÌÆ®
+    public UnityEventInt OnWaveStart = new UnityEventInt();         // ì›¨ì´ë¸Œ ì‹œì‘
+    public UnityEventInt OnWaveComplete = new UnityEventInt();      // ì›¨ì´ë¸Œ ì™„ë£Œ
+    public UnityEventFloat OnWaveTimerUpdate = new UnityEventFloat(); // íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
+    public UnityEventFloat OnPrepareTimerUpdate = new UnityEventFloat(); // ì¤€ë¹„ íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
+    public UnityEventInt OnRemainingEnemiesUpdate = new UnityEventInt(); // ë‚¨ì€ ì  ìˆ˜ ì—…ë°ì´íŠ¸
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
-    public int CurrentWave => currentWaveIndex + 1;     // ÇöÀç ¿şÀÌºê (1~5)
+    public int CurrentWave => currentWaveIndex + 1;     // í˜„ì¬ ì›¨ì´ë¸Œ (1~5)
     public bool IsWaveActive => isWaveActive;
     public bool IsPreparing => isPreparing;
     public float WaveTimer => waveTimer;
     public float PrepareTimer => prepareTimer;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Awake()
     {
@@ -74,12 +75,18 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-        // Ã¹ ¿şÀÌºê ½ÃÀÛ
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        // ì²« ì›¨ì´ë¸Œ ì‹œì‘
         StartPreparePhase();
     }
 
     void Update()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         if (isPreparing)
         {
             UpdatePreparePhase();
@@ -91,7 +98,19 @@ public class WaveManager : MonoBehaviour
     }
 
     // ============================================================
-    // ÁØºñ ´Ü°è
+    // ë„¤íŠ¸ì›Œí¬ ë™ê¸°í™” í…ŒìŠ¤íŠ¸ìš© ì½”ë“œ
+    // ============================================================
+    public void BeginWaveSystem()
+    {
+        // ì—¬ê¸°ì„œë¶€í„° ì›ë˜ Startì—ì„œ í•˜ë˜ ë¡œì§ ì‹¤í–‰
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        StartPreparePhase();
+    }
+
+    // ============================================================
+    // ì¤€ë¹„ ë‹¨ê³„
     // ============================================================
     void StartPreparePhase()
     {
@@ -115,17 +134,17 @@ public class WaveManager : MonoBehaviour
     }
 
     // ============================================================
-    // ¿şÀÌºê ÁøÇà
+    // ì›¨ì´ë¸Œ ì§„í–‰
     // ============================================================
     void StartWave()
     {
         isWaveActive = true;
         waveTimer = waveDuration;
 
-        // ¿şÀÌºê ±¸¼º °¡Á®¿À±â
+        // ì›¨ì´ë¸Œ êµ¬ì„± ê°€ì ¸ì˜¤ê¸°
         WaveConfig wave = waves[currentWaveIndex];
 
-        // Àû ½ºÆù
+        // ì  ìŠ¤í°
         SpawnWaveEnemies(wave);
 
         Debug.Log($"=== Wave {CurrentWave} Start! ===");
@@ -137,16 +156,16 @@ public class WaveManager : MonoBehaviour
         waveTimer -= Time.deltaTime;
         OnWaveTimerUpdate.Invoke(waveTimer);
 
-        // ¸ğµç ÀûÀ» Ã³Ä¡ÇÏ¸é ¿şÀÌºê ¿Ï·á
+        // ëª¨ë“  ì ì„ ì²˜ì¹˜í•˜ë©´ ì›¨ì´ë¸Œ ì™„ë£Œ
         if (EnemyManager.Instance.ActiveEnemyCount == 0 && spawnedEnemies >= totalEnemiesInWave)
         {
             CompleteWave();
         }
 
-        // ½Ã°£ ÃÊ°ú ½Ã¿¡µµ ¿şÀÌºê ¿Ï·á (±âÈ¹¿¡ µû¶ó Á¶Á¤ °¡´É)
+        // ì‹œê°„ ì´ˆê³¼ ì‹œì—ë„ ì›¨ì´ë¸Œ ì™„ë£Œ (ê¸°íšì— ë”°ë¼ ì¡°ì • ê°€ëŠ¥)
         if (waveTimer <= 0f)
         {
-            // ³²Àº ÀûÀÌ ÀÖ¾îµµ ¿şÀÌºê Á¾·á
+            // ë‚¨ì€ ì ì´ ìˆì–´ë„ ì›¨ì´ë¸Œ ì¢…ë£Œ
             CompleteWave();
         }
     }
@@ -158,23 +177,23 @@ public class WaveManager : MonoBehaviour
         Debug.Log($"=== Wave {CurrentWave} Complete! ===");
         OnWaveComplete.Invoke(CurrentWave);
 
-        // ´ÙÀ½ ¿şÀÌºê·Î
+        // ë‹¤ìŒ ì›¨ì´ë¸Œë¡œ
         currentWaveIndex++;
 
-        // ¸ğµç ¿şÀÌºê Å¬¸®¾î ½Ã ½Â¸®
+        // ëª¨ë“  ì›¨ì´ë¸Œ í´ë¦¬ì–´ ì‹œ ìŠ¹ë¦¬
         if (currentWaveIndex >= waves.Length)
         {
             Victory();
         }
         else
         {
-            // ´ÙÀ½ ¿şÀÌºê ÁØºñ
+            // ë‹¤ìŒ ì›¨ì´ë¸Œ ì¤€ë¹„
             StartPreparePhase();
         }
     }
 
     // ============================================================
-    // Àû ½ºÆù
+    // ì  ìŠ¤í°
     // ============================================================
     void SpawnWaveEnemies(WaveConfig wave)
     {
@@ -186,11 +205,11 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator SpawnEnemiesCoroutine(WaveConfig wave)
     {
-        // ±âº» Àû ½ºÆù
+        // ê¸°ë³¸ ì  ìŠ¤í°
         for (int i = 0; i < wave.basicEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Basic),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Basic),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
@@ -198,11 +217,11 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
 
-        // ¹æ¾îÇü Àû ½ºÆù
+        // ë°©ì–´í˜• ì  ìŠ¤í°
         for (int i = 0; i < wave.tankEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Tank),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Tank),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
@@ -210,11 +229,11 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
 
-        // °í¼Ó Àû ½ºÆù
+        // ê³ ì† ì  ìŠ¤í°
         for (int i = 0; i < wave.fastEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Fast),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Fast),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
@@ -226,10 +245,10 @@ public class WaveManager : MonoBehaviour
     }
 
     // ============================================================
-    // Àû Ã³Ä¡ ÀÌº¥Æ®
+    // ì  ì²˜ì¹˜ ì´ë²¤íŠ¸
     // ============================================================
     /// <summary>
-    /// ÀûÀÌ Á×¾úÀ» ¶§ È£ÃâµÊ
+    /// ì ì´ ì£½ì—ˆì„ ë•Œ í˜¸ì¶œë¨
     /// </summary>
     public void OnEnemyKilled()
     {
@@ -241,7 +260,7 @@ public class WaveManager : MonoBehaviour
     }
 
     // ============================================================
-    // ½Â¸®
+    // ìŠ¹ë¦¬
     // ============================================================
     void Victory()
     {
@@ -251,7 +270,7 @@ public class WaveManager : MonoBehaviour
 }
 
 /// <summary>
-/// Àû Å¸ÀÔ ¿­°ÅÇü
+/// ì  íƒ€ì… ì—´ê±°í˜•
 /// </summary>
 public enum EnemyType
 {

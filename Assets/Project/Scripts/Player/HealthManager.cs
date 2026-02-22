@@ -1,25 +1,24 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 /// <summary>
-/// ÇÃ·¹ÀÌ¾î Ã¼·Â °ü¸®
-/// - HP °ü¸®
-/// - µ¥¹ÌÁö ¹Ş±â / È¸º¹
-/// - »ç¸Á ½Ã GameManager¿¡ °ÔÀÓ ¿À¹ö ¾Ë¸²
-/// - ¸®½ºÆù ¾øÀ½ (½´ÅÍ »ç¸Á = °ÔÀÓ ¿À¹ö)
+/// í”Œë ˆì´ì–´ ì²´ë ¥ ê´€ë¦¬
+/// - HP ê´€ë¦¬
+/// - ë°ë¯¸ì§€ ë°›ê¸° / íšŒë³µ
+/// - ì‚¬ë§ ì‹œ GameManagerì— ê²Œì„ ì˜¤ë²„ ì•Œë¦¼
+/// - ë¦¬ìŠ¤í° ì—†ìŒ (ìŠˆí„° ì‚¬ë§ = ê²Œì„ ì˜¤ë²„)
 /// </summary>
 public class HealthManager : MonoBehaviour
 {
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
-    [Header("Health Settings")]
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    public event Action OnDied;
 
-    // Components
-    private PlayerController playerController;
-    private WeaponController weaponController;
+    [Header("Health Settings")]
+    [SerializeField] private float maxHp = 100f;
+    [SerializeField] private float currentHp = 100;
 
     // State
     private bool isDead = false;
@@ -30,88 +29,49 @@ public class HealthManager : MonoBehaviour
     public UnityEventFloat OnHealthChanged = new UnityEventFloat();
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
-    public float CurrentHealth => currentHealth;
-    public float MaxHealth => maxHealth;
+    public float CurrentHp => currentHp;
+    public float MaxHp => maxHp;
     public bool IsDead => isDead;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // ì²´ë ¥ ê´€ë¦¬
     // ============================================================
-    void Start()
+    /// <summary>
+    /// ì²´ë ¥ ë³€ê²½
+    /// </summary>
+    public void SetHpFromNetwork(float newHp, float newMaxHp)
     {
-        playerController = GetComponent<PlayerController>();
-        weaponController = GetComponent<WeaponController>();
+        maxHp = newMaxHp;
+        currentHp = Mathf.Clamp(newHp, 0, maxHp);
+        OnHealthChanged.Invoke(currentHp / maxHp);
 
-        // Ã¼·Â ÃÊ±âÈ­
-        currentHealth = maxHealth;
+        if (!isDead && currentHp <= 0)
+            DieInternal();
     }
 
     // ============================================================
-    // Ã¼·Â °ü·Ã
+    // ì‚¬ë§
     // ============================================================
     /// <summary>
-    /// µ¥¹ÌÁö ¹Ş±â
+    /// ì‚¬ë§ ì²˜ë¦¬
     /// </summary>
-    public void TakeDamage(float amount)
+    public void ForceDieFromNetwork()
     {
-        if (isDead)
-            return;
-
-        currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-
-        // UI ¾÷µ¥ÀÌÆ® (0~1 ºñÀ²·Î Àü´Ş)
-        OnHealthChanged.Invoke(currentHealth / maxHealth);
-
-        Debug.Log($"Damage: -{amount} | HP: {currentHealth}/{maxHealth}");
-
-        // Ã¼·Â 0ÀÌ¸é »ç¸Á
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
+        if (isDead) return;
+        currentHp = 0;
+        DieInternal();
     }
 
-    /// <summary>
-    /// Ã¼·Â È¸º¹ (³ªÁß¿¡ ¼­Æ÷ÅÍ Áö¿ø¿ë)
-    /// </summary>
-    public void Heal(float amount)
-    {
-        if (isDead)
-            return;
-
-        currentHealth += amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-
-        OnHealthChanged.Invoke(currentHealth / maxHealth);
-
-        Debug.Log($"Heal: +{amount} | HP: {currentHealth}/{maxHealth}");
-    }
-
-    // ============================================================
-    // »ç¸Á
-    // ============================================================
-    /// <summary>
-    /// »ç¸Á Ã³¸®
-    /// </summary>
-    void Die()
+    private void DieInternal()
     {
         isDead = true;
-
-        // ÀÌµ¿/¹ß»ç ºÒ°¡
-        playerController.SetEnabled(false);
-        weaponController.SetEnabled(false);
-
-        Debug.Log("Player Died! Triggering Game Over...");
-
-        // GameManager¿¡ °ÔÀÓ ¿À¹ö ¾Ë¸²
-        GameManager.Instance.TriggerGameOver();
+        OnDied?.Invoke();
     }
 }
 
 /// <summary>
-/// float ÆÄ¶ó¹ÌÅÍ¸¦ ¹Ş´Â UnityEvent
+/// float íŒŒë¼ë¯¸í„°ë¥¼ ë°›ëŠ” UnityEvent
 /// </summary>
 public class UnityEventFloat : UnityEvent<float> { }

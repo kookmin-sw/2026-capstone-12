@@ -1,10 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// FPS ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ·¯
-/// - WASD ÀÌµ¿
-/// - ¸¶¿ì½º ½ÃÁ¡ È¸Àü
-/// - CharacterController ±â¹İ
+/// FPS í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ëŸ¬
+/// - WASD ì´ë™
+/// - ë§ˆìš°ìŠ¤ ì‹œì  íšŒì „
+/// - CharacterController ê¸°ë°˜
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -30,21 +30,30 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        // ÄÄÆ÷³ÍÆ® ÂüÁ¶ °¡Á®¿À±â
+        // ì»´í¬ë„ŒíŠ¸ ì°¸ì¡° ê°€ì ¸ì˜¤ê¸°
         controller = GetComponent<CharacterController>();
         cameraTransform = Camera.main.transform;
-
-        // ¸¶¿ì½º Ä¿¼­ Àá±İ
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
-    void Update()
+	void OnEnable()
+	{
+		// ë§ˆìš°ìŠ¤ ì»¤ì„œ ì ê¸ˆ
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+	}
+
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+	void Update()
     {
         HandleMovement();
         HandleLook();
 
-        // ESC·Î Ä¿¼­ ÇØÁ¦ (Å×½ºÆ®¿ë)
+        // ESCë¡œ ì»¤ì„œ í•´ì œ (í…ŒìŠ¤íŠ¸ìš©)
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
@@ -53,52 +62,52 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// WASD ÀÌµ¿ ¹× Áß·Â Ã³¸®
+    /// WASD ì´ë™ ë° ì¤‘ë ¥ ì²˜ë¦¬
     /// </summary>
     void HandleMovement()
     {
-        // ÀÔ·Â ¹Ş±â
+        // ì…ë ¥ ë°›ê¸°
         float horizontal = Input.GetAxis("Horizontal"); // A/D
         float vertical = Input.GetAxis("Vertical");     // W/S
 
-        // ´Ş¸®±â Ã¼Å© (Left Shift)
+        // ë‹¬ë¦¬ê¸° ì²´í¬ (Left Shift)
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
         float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
 
-        // ÀÌµ¿ ¹æÇâ °è»ê (ÇÃ·¹ÀÌ¾î ±âÁØ ·ÎÄÃ ÁÂÇ¥)
+        // ì´ë™ ë°©í–¥ ê³„ì‚° (í”Œë ˆì´ì–´ ê¸°ì¤€ ë¡œì»¬ ì¢Œí‘œ)
         Vector3 move = transform.right * horizontal + transform.forward * vertical;
 
-        // ÀÌµ¿ Àû¿ë
+        // ì´ë™ ì ìš©
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-        // Áß·Â Àû¿ë
+        // ì¤‘ë ¥ ì ìš©
         if (controller.isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // ¹Ù´Ú¿¡ ºÙ¾îÀÖ±â
+            velocity.y = -2f; // ë°”ë‹¥ì— ë¶™ì–´ìˆê¸°
         }
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
     /// <summary>
-    /// ¸¶¿ì½º ½ÃÁ¡ È¸Àü
+    /// ë§ˆìš°ìŠ¤ ì‹œì  íšŒì „
     /// </summary>
     void HandleLook()
     {
-        // ¸¶¿ì½º ÀÔ·Â
+        // ë§ˆìš°ìŠ¤ ì…ë ¥
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // ÁÂ¿ì È¸Àü (YÃà - ÇÃ·¹ÀÌ¾î ÀüÃ¼)
+        // ì¢Œìš° íšŒì „ (Yì¶• - í”Œë ˆì´ì–´ ì „ì²´)
         transform.Rotate(Vector3.up * mouseX);
 
-        // »óÇÏ È¸Àü (XÃà - Ä«¸Ş¶ó¸¸)
+        // ìƒí•˜ íšŒì „ (Xì¶• - ì¹´ë©”ë¼ë§Œ)
         verticalRotation -= mouseY;
         verticalRotation = Mathf.Clamp(verticalRotation, -maxLookAngle, maxLookAngle);
         cameraTransform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
     }
     /// <summary>
-    /// ÄÁÆ®·Ñ·¯ È°¼ºÈ­/ºñÈ°¼ºÈ­ (»ç¸Á¿ë)
+    /// ì»¨íŠ¸ë¡¤ëŸ¬ í™œì„±í™”/ë¹„í™œì„±í™” (ì‚¬ë§ìš©)
     /// </summary>
     public void SetEnabled(bool enabled)
     {

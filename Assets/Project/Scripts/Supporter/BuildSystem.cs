@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class BuildSystem : MonoBehaviour
 {
     [Header("References")]
-    public Camera topDownCamera;
+    [SerializeField] public Camera topDownCamera;
     public GridManager gridManager;
 
     [Header("Building Types")]
@@ -18,12 +18,6 @@ public class BuildSystem : MonoBehaviour
     private int rotationY; // 0, 90, 180, 270
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-
-    private void Start()
-    {
-        if (topDownCamera == null)
-            topDownCamera = Camera.main;
-    }
 
     private void Update()
     {

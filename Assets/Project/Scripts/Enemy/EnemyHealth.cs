@@ -1,85 +1,93 @@
-using UnityEngine;
+ï»¿using UnityEngine;
+using Photon.Pun;
+using System;
 
 /// <summary>
-/// Àû Ã¼·Â °ü¸®
-/// - µ¥¹ÌÁö ¹Ş±â
-/// - »ç¸Á Ã³¸®
-/// - Á¡¼ö ¹× µ· Áö±Ş
+/// ì  ì²´ë ¥ ê´€ë¦¬
+/// - ë°ë¯¸ì§€ ë°›ê¸°
+/// - ì‚¬ë§ ì²˜ë¦¬
+/// - ì ìˆ˜ ë° ëˆ ì§€ê¸‰
 /// </summary>
 public class EnemyHealth : MonoBehaviour
 {
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
+    public event Action OnDied;
+
     [Header("Health Settings")]
-    [SerializeField] private float maxHealth = 30f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] private float maxHp = 30f;
+    [SerializeField] private float currentHp;
 
     [Header("Rewards")]
-    [SerializeField] private int scoreReward = 100;         // Ã³Ä¡ ½Ã Á¡¼ö
-    [SerializeField] private int moneyReward = 10;          // Ã³Ä¡ ½Ã µ·
+    [SerializeField] private int scoreReward = 100;         // ì²˜ì¹˜ ì‹œ ì ìˆ˜
+    [SerializeField] private int moneyReward = 10;          // ì²˜ì¹˜ ì‹œ ëˆ
 
     [Header("Defense")]
-    [SerializeField] private float damageReduction = 0f;    // µ¥¹ÌÁö °¨¼ÒÀ² (0~1)
+    [SerializeField] private float damageReduction = 0f;    // ë°ë¯¸ì§€ ê°ì†Œìœ¨ (0~1)
 
     // State
     private bool isDead = false;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
-        currentHealth = maxHealth;
+        currentHp = maxHp;
     }
 
     // ============================================================
-    // µ¥¹ÌÁö
+    // ë°ë¯¸ì§€
     // ============================================================
     /// <summary>
-    /// µ¥¹ÌÁö ¹Ş±â
+    /// ë°ë¯¸ì§€ ë°›ê¸°
     /// </summary>
-    public void TakeDamage(float damage)
+    public void SetHealthFromNet(float newHp, float newMaxHp)
     {
-        if (isDead)
-            return;
+        maxHp = newMaxHp;
+        currentHp = Mathf.Clamp(newHp, 0f, maxHp);
 
-        // µ¥¹ÌÁö °¨¼Ò Àû¿ë (¹æ¾îÇü Àû¿ë)
-        float actualDamage = damage * (1f - damageReduction);
-        currentHealth -= actualDamage;
-
-        Debug.Log($"{gameObject.name} took {actualDamage} damage! HP: {currentHealth}/{maxHealth}");
-
-        // Ã¼·Â 0ÀÌ¸é »ç¸Á
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
+        if (!isDead && currentHp <= 0f)
+            DieLocal();
     }
 
     // ============================================================
-    // »ç¸Á
+    // ì‚¬ë§
     // ============================================================
-    void Die()
+    /*void Die()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+        
         isDead = true;
 
-        // GameManager¿¡ Á¡¼ö ¹× Ã³Ä¡ ¼ö Ãß°¡
+        // GameManagerì— ì ìˆ˜ ë° ì²˜ì¹˜ ìˆ˜ ì¶”ê°€
         GameManager.Instance.AddScore(scoreReward);
         GameManager.Instance.AddKill();
 
         EnemyManager.Instance.RemoveEnemy(gameObject);
-        // TODO: ³ªÁß¿¡ EconomyManager¿¡ µ· Ãß°¡
+        // TODO: ë‚˜ì¤‘ì— EconomyManagerì— ëˆ ì¶”ê°€
         Debug.Log($"{gameObject.name} died! Score +{scoreReward}, Money +{moneyReward}");
 
-        // Àû Á¦°Å
-        Destroy(gameObject);
+        // ì  ì œê±°
+        PhotonNetwork.Destroy(gameObject);
+    }*/
+
+    private void DieLocal()
+    {
+        isDead = true;
+        OnDied?.Invoke();
+        // ì—¬ê¸°ì„œëŠ” Destroyí•˜ì§€ ì•ŠìŒ (DestroyëŠ” ë§ˆìŠ¤í„°ê°€ PhotonNetwork.Destroyë¡œ)
     }
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
-    public float CurrentHealth => currentHealth;
-    public float MaxHealth => maxHealth;
+    public float CurrentHp => currentHp;
+    public float MaxHp => maxHp;
     public bool IsDead => isDead;
+    public float DamageReduction => damageReduction;
+    public int ScoreReward => scoreReward;
+    public int MoneyReward => moneyReward;
 }

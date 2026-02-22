@@ -1,24 +1,25 @@
 using UnityEngine;
+using Photon.Pun;
 
 /// <summary>
-/// ¹«±â ÄÁÆ®·Ñ·¯
-/// - ¸¶¿ì½º ÁÂÅ¬¸¯ ¹ß»ç
-/// - Raycast È÷Æ®½ºÄµ ¹æ½Ä
-/// - Åº¾à °ü¸®
-/// - ÀçÀåÀü
+/// ë¬´ê¸° ì»¨íŠ¸ë¡¤ëŸ¬
+/// - ë§ˆìš°ìŠ¤ ì¢Œí´ë¦­ ë°œì‚¬
+/// - Raycast íˆíŠ¸ìŠ¤ìº” ë°©ì‹
+/// - íƒ„ì•½ ê´€ë¦¬
+/// - ì¬ì¥ì „
 /// </summary>
 public class WeaponController : MonoBehaviour
 {
     [Header("Weapon Stats")]
-    [SerializeField] private float damage = 25f;              // µ¥¹ÌÁö
-    [SerializeField] private float range = 100f;              // »ç°Å¸®
-    [SerializeField] private float fireRate = 0.1f;           // ¿¬»ç ¼Óµµ (ÃÊ)
+    [SerializeField] private float damage = 25f;              // ë°ë¯¸ì§€
+    [SerializeField] private float range = 100f;              // ì‚¬ê±°ë¦¬
+    [SerializeField] private float fireRate = 0.1f;           // ì—°ì‚¬ ì†ë„ (ì´ˆ)
 
     [Header("Ammo")]
-    [SerializeField] private int maxAmmo = 30;                // ÅºÃ¢ Å©±â
-    [SerializeField] private int currentAmmo;                 // ÇöÀç ÅºÃ¢
-    [SerializeField] private int reserveAmmo = 120;           // ¿¹ºñ Åº¾à
-    [SerializeField] private float reloadTime = 2f;           // ÀçÀåÀü ½Ã°£
+    [SerializeField] private int maxAmmo = 30;                // íƒ„ì°½ í¬ê¸°
+    [SerializeField] private int currentAmmo;                 // í˜„ì¬ íƒ„ì°½
+    [SerializeField] private int reserveAmmo = 120;           // ì˜ˆë¹„ íƒ„ì•½
+    [SerializeField] private float reloadTime = 2f;           // ì¬ì¥ì „ ì‹œê°„
 
     public int CurrentAmmo => currentAmmo;
     public int ReserveAmmo => reserveAmmo;
@@ -33,34 +34,34 @@ public class WeaponController : MonoBehaviour
 
     void Start()
     {
-        // Ä«¸Ş¶ó ÂüÁ¶
+        // ì¹´ë©”ë¼ ì°¸ì¡°
         playerCamera = Camera.main;
 
-        // ½ÃÀÛ ½Ã ÅºÃ¢ °¡µæ Ã¤¿ì±â
+        // ì‹œì‘ ì‹œ íƒ„ì°½ ê°€ë“ ì±„ìš°ê¸°
         currentAmmo = maxAmmo;
     }
 
     void Update()
     {
-        // ÀçÀåÀü ÁßÀÌ¸é ´Ù¸¥ µ¿ÀÛ ¾È ÇÔ
+        // ì¬ì¥ì „ ì¤‘ì´ë©´ ë‹¤ë¥¸ ë™ì‘ ì•ˆ í•¨
         if (isReloading)
             return;
 
-        // ÀçÀåÀü ÀÔ·Â (RÅ°)
+        // ì¬ì¥ì „ ì…ë ¥ (Rí‚¤)
         if (Input.GetKeyDown(KeyCode.R))
         {
             StartReload();
             return;
         }
 
-        // ÀÚµ¿ ÀçÀåÀü (ÅºÃ¢ÀÌ ºñ¾úÀ» ¶§)
+        // ìë™ ì¬ì¥ì „ (íƒ„ì°½ì´ ë¹„ì—ˆì„ ë•Œ)
         if (currentAmmo <= 0)
         {
             StartReload();
             return;
         }
 
-        // ¹ß»ç ÀÔ·Â (¸¶¿ì½º ÁÂÅ¬¸¯)
+        // ë°œì‚¬ ì…ë ¥ (ë§ˆìš°ìŠ¤ ì¢Œí´ë¦­)
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
         {
             nextTimeToFire = Time.time + fireRate;
@@ -69,60 +70,57 @@ public class WeaponController : MonoBehaviour
     }
 
     /// <summary>
-    /// ÃÑ ¹ß»ç
+    /// ì´ ë°œì‚¬
     /// </summary>
     void Fire()
     {
 
-        // Åº¾à ¼Ò¸ğ
+        // íƒ„ì•½ ì†Œëª¨
         currentAmmo--;
 
-        // È­¸é Áß¾Ó¿¡¼­ Raycast ¹ß»ç
+        // í™”ë©´ ì¤‘ì•™ì—ì„œ Raycast ë°œì‚¬
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, range))
         {
-            // ¸ÂÀº ¿ÀºêÁ§Æ® ÄÜ¼Ö¿¡ Ãâ·Â (Å×½ºÆ®¿ë)
+            // ë§ì€ ì˜¤ë¸Œì íŠ¸ ì½˜ì†”ì— ì¶œë ¥ (í…ŒìŠ¤íŠ¸ìš©)
             Debug.Log("Hit: " + hit.collider.name);
 
-            // ¸ÂÀº À§Ä¡¿¡ ½Ã°¢Àû ÇÇµå¹é (Scene ºä¿¡¼­¸¸ º¸ÀÓ)
+            // ë§ì€ ìœ„ì¹˜ì— ì‹œê°ì  í”¼ë“œë°± (Scene ë·°ì—ì„œë§Œ ë³´ì„)
             Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red, 1f);
 
-            // TODO: ³ªÁß¿¡ µ¥¹ÌÁö Ã³¸® Ãß°¡
-            // ¿¹: hit.collider.GetComponent<Enemy>()?.TakeDamage(damage);
+            // TODO: ë‚˜ì¤‘ì— ë°ë¯¸ì§€ ì²˜ë¦¬ ì¶”ê°€
+            // ì˜ˆ: hit.collider.GetComponent<Enemy>()?.TakeDamage(damage);
             if (hit.collider.CompareTag("Enemy"))
             {
-                EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
-                if (enemyHealth != null)
-                {
-                    enemyHealth.TakeDamage(damage);
-                }
+                PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
+                EnemyHealthNet.Instance.MasterApplyDamage(enemyPv.ViewID, damage);
             }
         }
         else
         {
-            // Çã°ø¿¡ ½ğ °æ¿ì
+            // í—ˆê³µì— ìœ ê²½ìš°
             Debug.DrawRay(ray.origin, ray.direction * range, Color.yellow, 1f);
         }
 
-        // ÄÜ¼Ö¿¡ Åº¾à »óÅÂ Ãâ·Â
+        // ì½˜ì†”ì— íƒ„ì•½ ìƒíƒœ ì¶œë ¥
         Debug.Log($"Fire! Ammo: {currentAmmo}/{maxAmmo} | Reserve: {reserveAmmo}");
     }
 
     /// <summary>
-    /// ÀçÀåÀü ½ÃÀÛ
+    /// ì¬ì¥ì „ ì‹œì‘
     /// </summary>
     void StartReload()
     {
-        // ¿¹ºñ Åº¾àÀÌ ¾øÀ¸¸é ÀçÀåÀü ºÒ°¡
+        // ì˜ˆë¹„ íƒ„ì•½ì´ ì—†ìœ¼ë©´ ì¬ì¥ì „ ë¶ˆê°€
         if (reserveAmmo <= 0)
         {
             Debug.Log("No reserve ammo!");
             return;
         }
 
-        // ÀÌ¹Ì ÅºÃ¢ÀÌ °¡µæ Â÷ÀÖÀ¸¸é ÀçÀåÀü ºÒÇÊ¿ä
+        // ì´ë¯¸ íƒ„ì°½ì´ ê°€ë“ ì°¨ìˆìœ¼ë©´ ì¬ì¥ì „ ë¶ˆí•„ìš”
         if (currentAmmo == maxAmmo)
         {
             Debug.Log("Magazine is full!");
@@ -132,19 +130,19 @@ public class WeaponController : MonoBehaviour
         Debug.Log("Reloading...");
         isReloading = true;
 
-        // ÀçÀåÀü ½Ã°£ ÈÄ ¿Ï·á
+        // ì¬ì¥ì „ ì‹œê°„ í›„ ì™„ë£Œ
         Invoke(nameof(FinishReload), reloadTime);
     }
 
     /// <summary>
-    /// ÀçÀåÀü ¿Ï·á
+    /// ì¬ì¥ì „ ì™„ë£Œ
     /// </summary>
     void FinishReload()
     {
-        // ÇÊ¿äÇÑ Åº¾à °è»ê
+        // í•„ìš”í•œ íƒ„ì•½ ê³„ì‚°
         int ammoNeeded = maxAmmo - currentAmmo;
 
-        // ¿¹ºñ Åº¾à¿¡¼­ °¡Á®¿À±â
+        // ì˜ˆë¹„ íƒ„ì•½ì—ì„œ ê°€ì ¸ì˜¤ê¸°
         int ammoToReload = Mathf.Min(ammoNeeded, reserveAmmo);
 
         currentAmmo += ammoToReload;
@@ -155,7 +153,7 @@ public class WeaponController : MonoBehaviour
         Debug.Log($"Reload Complete! Ammo: {currentAmmo}/{maxAmmo} | Reserve: {reserveAmmo}");
     }
     /// <summary>
-    /// ÄÁÆ®·Ñ·¯ È°¼ºÈ­/ºñÈ°¼ºÈ­ (»ç¸Á¿ë)
+    /// ì»¨íŠ¸ë¡¤ëŸ¬ í™œì„±í™”/ë¹„í™œì„±í™” (ì‚¬ë§ìš©)
     /// </summary>
     public void SetEnabled(bool enabled)
     {

@@ -1,25 +1,30 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
+using Photon.Pun;
 
 /// <summary>
-/// Àû ½ºÆù °ü¸®
-/// - ¿şÀÌºêº°·Î Àû »ı¼º
-/// - ½ºÆù À§Ä¡ °ü¸®
+/// ì  ìŠ¤í° ê´€ë¦¬
+/// - ì›¨ì´ë¸Œë³„ë¡œ ì  ìƒì„±
+/// - ìŠ¤í° ìœ„ì¹˜ ê´€ë¦¬
 /// </summary>
 public class EnemyManager : MonoBehaviour
 {
     // ============================================================
-    // ½Ì±ÛÅÏ
+    // ì‹±ê¸€í„´
     // ============================================================
     public static EnemyManager Instance { get; private set; }
 
     // ============================================================
-    // º¯¼ö
+    // ë³€ìˆ˜
     // ============================================================
     [Header("Enemy Prefabs")]
     [SerializeField] private GameObject basicEnemyPrefab;
     [SerializeField] private GameObject tankEnemyPrefab;
     [SerializeField] private GameObject fastEnemyPrefab;
+
+    [SerializeField] private string basicEnemyPrefabPath = "Prefabs/Enemies/BasicEnemy";
+    [SerializeField] private string tankEnemyPrefabPath  = "Prefabs/Enemies/TankEnemy";
+    [SerializeField] private string fastEnemyPrefabPath  = "Prefabs/Enemies/FastEnemy";
 
     [Header("Spawn Points")]
     [SerializeField] private Transform[] spawnPoints;
@@ -32,7 +37,7 @@ public class EnemyManager : MonoBehaviour
     private List<GameObject> activeEnemies = new List<GameObject>();
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Awake()
     {
@@ -45,8 +50,12 @@ public class EnemyManager : MonoBehaviour
     }
 
     void Start()
-    {
-        // Å×½ºÆ® ¸ğµå¸é Àû ½ºÆù
+    {   
+        // ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ë§Œ ì‹¤í–‰
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        // í…ŒìŠ¤íŠ¸ ëª¨ë“œë©´ ì  ìŠ¤í°
         if (testMode)
         {
             SpawnTestEnemies();
@@ -54,7 +63,23 @@ public class EnemyManager : MonoBehaviour
     }
 
     // ============================================================
-    // ½ºÆù
+    // ë„¤íŠ¸ì›Œí¬ ë™ê¸°í™” í…ŒìŠ¤íŠ¸ìš© ì½”ë“œ
+    // ============================================================
+    public void BeginEnemySystem()
+    {
+        // ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ë§Œ ì‹¤í–‰
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        // í…ŒìŠ¤íŠ¸ ëª¨ë“œë©´ ì  ìŠ¤í°
+        if (testMode)
+        {
+            SpawnTestEnemies();
+        }
+    }
+
+    // ============================================================
+    // ìŠ¤í°
     // ============================================================
     void SpawnTestEnemies()
     {
@@ -69,55 +94,58 @@ public class EnemyManager : MonoBehaviour
             );
             Vector3 spawnPosition = spawnPoint.position + randomOffset;
 
-            GameObject enemyPrefab = GetRandomEnemyPrefab();
+            string enemyPrefabPath = GetRandomEnemyPrefabPath();
 
-            SpawnEnemy(enemyPrefab, spawnPosition);
+            SpawnEnemy(enemyPrefabPath, spawnPosition);
         }
 
         Debug.Log($"Spawned {testEnemyCount} test enemies");
     }
 
     /// <summary>
-    /// Àû ½ºÆù
+    /// ì  ìŠ¤í°
     /// </summary>
-    public GameObject SpawnEnemy(GameObject prefab, Vector3 position)
+    public GameObject SpawnEnemy(string prefabPath, Vector3 position)
     {
-        GameObject enemy = Instantiate(prefab, position, Quaternion.identity);
+        if (!PhotonNetwork.IsMasterClient)
+            return null;
+
+        GameObject enemy = PhotonNetwork.Instantiate(prefabPath, position, Quaternion.identity);
         activeEnemies.Add(enemy);
         return enemy;
     }
 
     /// <summary>
-    /// ·£´ı Àû ÇÁ¸®ÆÕ ¹İÈ¯
+    /// ëœë¤ ì  í”„ë¦¬íŒ¹ ë°˜í™˜
     /// </summary>
-    GameObject GetRandomEnemyPrefab()
+    string GetRandomEnemyPrefabPath()
     {
         int random = Random.Range(0, 3);
         switch (random)
         {
-            case 0: return basicEnemyPrefab;
-            case 1: return tankEnemyPrefab;
-            case 2: return fastEnemyPrefab;
-            default: return basicEnemyPrefab;
+            case 0: return basicEnemyPrefabPath;
+            case 1: return tankEnemyPrefabPath;
+            case 2: return fastEnemyPrefabPath;
+            default: return basicEnemyPrefabPath;
         }
     }
 
     /// <summary>
-    /// Àû Å¸ÀÔÀ¸·Î ÇÁ¸®ÆÕ °¡Á®¿À±â (WaveManager¿ë) ¡ç Ãß°¡!
+    /// ì  íƒ€ì…ìœ¼ë¡œ í”„ë¦¬íŒ¹ ê²½ë¡œ ê°€ì ¸ì˜¤ê¸° (WaveManagerìš©) â† ì¶”ê°€!
     /// </summary>
-    public GameObject GetEnemyPrefab(EnemyType type)
+    public string GetEnemyPrefabPath(EnemyType type)
     {
         switch (type)
         {
-            case EnemyType.Basic: return basicEnemyPrefab;
-            case EnemyType.Tank: return tankEnemyPrefab;
-            case EnemyType.Fast: return fastEnemyPrefab;
-            default: return basicEnemyPrefab;
+            case EnemyType.Basic: return basicEnemyPrefabPath;
+            case EnemyType.Tank: return tankEnemyPrefabPath;
+            case EnemyType.Fast: return fastEnemyPrefabPath;
+            default: return basicEnemyPrefabPath;
         }
     }
 
     /// <summary>
-    /// ·£´ı ½ºÆù À§Ä¡ °¡Á®¿À±â (WaveManager¿ë) ¡ç Ãß°¡!
+    /// ëœë¤ ìŠ¤í° ìœ„ì¹˜ ê°€ì ¸ì˜¤ê¸° (WaveManagerìš©) â† ì¶”ê°€!
     /// </summary>
     public Vector3 GetRandomSpawnPosition()
     {
@@ -133,13 +161,13 @@ public class EnemyManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Àû Á¦°Å ½Ã ¸®½ºÆ®¿¡¼­ »èÁ¦
+    /// ì  ì œê±° ì‹œ ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
     /// </summary>
     public void RemoveEnemy(GameObject enemy)
     {
         activeEnemies.Remove(enemy);
 
-        // WaveManager¿¡ ¾Ë¸² ¡ç Ãß°¡!
+        // WaveManagerì— ì•Œë¦¼ â† ì¶”ê°€!
         if (WaveManager.Instance != null)
         {
             WaveManager.Instance.OnEnemyKilled();
@@ -147,7 +175,7 @@ public class EnemyManager : MonoBehaviour
     }
 
     // ============================================================
-    // Public ¼Ó¼º
+    // Public ì†ì„±
     // ============================================================
     public int ActiveEnemyCount => activeEnemies.Count;
 }

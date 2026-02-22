@@ -5,10 +5,13 @@ public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager Instance { get; private set; }
 
-    [SerializeField] private int gold = 200;
-    public int Gold => gold;
-
-    public event Action<int> OnGoldChanged;
+    [SerializeField] private int money;
+    [SerializeField] private int score;
+    [SerializeField] private int kills;
+    
+    public event Action<int> OnMoneyChanged;
+    public event Action<int> OnScoreChanged;
+    public event Action<int> OnKillsChanged;
 
     private void Awake()
     {
@@ -20,41 +23,31 @@ public class ResourceManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        OnGoldChanged?.Invoke(gold);
-    }
-
     // 로컬 UI 판단용
-    public bool CanAfford(int cost) => gold >= cost;
+    public bool CanAfford(int cost) => money >= cost;
 
-    // 마스터가 확정한 값이 내려오면 클라들은 이걸로만 갱신
-    public void SetGoldFromMaster(int newGold)
+    public void SetMoneyFromNet(int newMoney)
     {
-        if (gold == newGold) return;
-        gold = newGold;
-        OnGoldChanged?.Invoke(gold);
+        if (money == newMoney) return;
+        money = newMoney;
+        OnMoneyChanged?.Invoke(money);
     }
 
-    // 마스터에서만 쓰는 헬퍼
-    public bool TrySpendMaster(int cost)
+    public void SetScoreFromNet(int newScore)
     {
-        if (gold < cost) return false;
-        gold -= cost;
-        OnGoldChanged?.Invoke(gold);
-        return true;
+        if (score == newScore) return;
+        score = newScore;
+        OnScoreChanged?.Invoke(score);
     }
 
-    public void AddGoldMaster(int amount)
+    public void SetKillsFromNet(int newKills)
     {
-        gold += amount;
-        OnGoldChanged?.Invoke(gold);
+        if (kills == newKills) return;
+        kills = newKills;
+        OnKillsChanged?.Invoke(kills);
     }
 
-    // 테스트용
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-            AddGoldMaster(50);
-    }
+    public int Money => money;
+    public int Score => score;
+    public int Kills => kills;
 }
