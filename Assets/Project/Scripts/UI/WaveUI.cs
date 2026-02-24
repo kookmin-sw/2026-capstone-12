@@ -1,14 +1,14 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// ¿şÀÌºê UI °ü¸®
-/// - ¿şÀÌºê ¹øÈ£, ³²Àº Àû, Å¸ÀÌ¸Ó Ç¥½Ã
+/// ì›¨ì´ë¸Œ UI ê´€ë¦¬
+/// - ì›¨ì´ë¸Œ ë²ˆí˜¸, ë‚¨ì€ ì , íƒ€ì´ë¨¸ í‘œì‹œ
 /// </summary>
 public class WaveUI : MonoBehaviour
 {
     // ============================================================
-    // ÂüÁ¶
+    // ì°¸ì¡°
     // ============================================================
     [Header("References")]
     [SerializeField] private Text waveText;
@@ -16,26 +16,26 @@ public class WaveUI : MonoBehaviour
     [SerializeField] private Text timerText;
 
     // ============================================================
-    // Unity »ı¸íÁÖ±â
+    // Unity ìƒëª…ì£¼ê¸°
     // ============================================================
     void Start()
     {
-        // WaveManager ÀÌº¥Æ® ±¸µ¶
+        // WaveManager ì´ë²¤íŠ¸ êµ¬ë…
         WaveManager.Instance.OnWaveStart.AddListener(UpdateWaveNumber);
         WaveManager.Instance.OnRemainingEnemiesUpdate.AddListener(UpdateEnemyCount);
         WaveManager.Instance.OnWaveTimerUpdate.AddListener(UpdateWaveTimer);
         WaveManager.Instance.OnPrepareTimerUpdate.AddListener(UpdatePrepareTimer);
 
-        // ÃÊ±â »óÅÂ
+        // ì´ˆê¸° ìƒíƒœ
         UpdateWaveNumber(1);
         UpdateEnemyCount(0);
     }
 
     // ============================================================
-    // UI ¾÷µ¥ÀÌÆ®
+    // UI ì—…ë°ì´íŠ¸
     // ============================================================
     /// <summary>
-    /// ¿şÀÌºê ¹øÈ£ ¾÷µ¥ÀÌÆ®
+    /// ì›¨ì´ë¸Œ ë²ˆí˜¸ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateWaveNumber(int wave)
     {
@@ -43,15 +43,15 @@ public class WaveUI : MonoBehaviour
     }
 
     /// <summary>
-    /// ³²Àº Àû ¼ö ¾÷µ¥ÀÌÆ®
+    /// ë‚¨ì€ ì  ìˆ˜ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateEnemyCount(int count)
     {
-        enemyCountText.text = $"³²Àº Àû: {count}";
+        enemyCountText.text = $"ë‚¨ì€ ì : {count}";
     }
 
     /// <summary>
-    /// ¿şÀÌºê Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
+    /// ì›¨ì´ë¸Œ íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateWaveTimer(float seconds)
     {
@@ -62,12 +62,12 @@ public class WaveUI : MonoBehaviour
     }
 
     /// <summary>
-    /// ÁØºñ Å¸ÀÌ¸Ó ¾÷µ¥ÀÌÆ®
+    /// ì¤€ë¹„ íƒ€ì´ë¨¸ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdatePrepareTimer(float seconds)
     {
         int secs = (int)seconds;
-        timerText.text = $"½ÃÀÛ±îÁö: {secs}ÃÊ";
+        timerText.text = $"ì‹œì‘ê¹Œì§€: {secs}ì´ˆ";
         timerText.color = Color.yellow;
     }
 }

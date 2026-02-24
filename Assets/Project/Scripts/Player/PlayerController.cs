@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// FPS 플레이어 컨트롤러
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
 	void OnEnable()
 	{
-		// 마우스 커서 잠금
+		    // 마우스 커서 잠금
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 	}

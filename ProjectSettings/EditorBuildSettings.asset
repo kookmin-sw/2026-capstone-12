@@ -9,8 +9,17 @@ EditorBuildSettings:
     path: Assets/Project/Scenes/MainMenu.unity
     guid: 4d8cc3778de4dda44a43a624af2bad0e
   - enabled: 1
+    path: Assets/Project/Scenes/Lobby.unity
+    guid: a36375e439d9e7a4e928d0751ededefa
+  - enabled: 1
+    path: Assets/Project/Scenes/RoomScene.unity
+    guid: 7c853c5917e54104fb66bbb0f165a899
+  - enabled: 1
     path: Assets/Project/Scenes/TestScene.unity
     guid: 45c7431d8584e8d43b3d8d83582c6364
+  - enabled: 1
+    path: Assets/Project/Scenes/SupporterScene.unity
+    guid: 4e86db9c97f8a7c40851663a387e6d7c
   - enabled: 1
     path: Assets/Project/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05

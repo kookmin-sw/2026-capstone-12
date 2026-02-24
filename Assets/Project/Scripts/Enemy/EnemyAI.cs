@@ -56,6 +56,7 @@ public class EnemyAI : MonoBehaviour
             return;
         if (player == null)
             return;
+
         // 플레이어와의 거리 계산
         float distance = Vector3.Distance(transform.position, player.position);
 

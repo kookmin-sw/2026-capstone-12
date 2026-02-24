@@ -1,9 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Åº¾à UI Ç¥½Ã
-/// WeaponController¿¡¼­ Åº¾à Á¤º¸¸¦ ¹Ş¾Æ¿Í¼­ ÅØ½ºÆ®·Î Ç¥½Ã
+/// íƒ„ì•½ UI í‘œì‹œ
+/// WeaponControllerì—ì„œ íƒ„ì•½ ì •ë³´ë¥¼ ë°›ì•„ì™€ì„œ í…ìŠ¤íŠ¸ë¡œ í‘œì‹œ
 /// </summary>
 public class AmmoUI : MonoBehaviour
 {
@@ -17,18 +17,18 @@ public class AmmoUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Åº¾à Ç¥½Ã ¾÷µ¥ÀÌÆ®
+    /// íƒ„ì•½ í‘œì‹œ ì—…ë°ì´íŠ¸
     /// </summary>
     void UpdateAmmoDisplay()
     {
         if (weaponController == null || ammoText == null)
             return;
 
-        // WeaponController¿¡¼­ Åº¾à Á¤º¸ °¡Á®¿À±â
+        // WeaponControllerì—ì„œ íƒ„ì•½ ì •ë³´ ê°€ì ¸ì˜¤ê¸°
         int current = weaponController.CurrentAmmo;
         int reserve = weaponController.ReserveAmmo;
 
-        // ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
+        // í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
         ammoText.text = $"{current} / {reserve}";
     }
 }
