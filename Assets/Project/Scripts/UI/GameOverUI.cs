@@ -53,8 +53,8 @@ public class GameOverUI : MonoBehaviour
         gameOverPanel.SetActive(true);
 
         // 결과 표시
-        scoreText.text = $"점수: {GameManager.Instance.TotalScore}";
-        killText.text = $"처치: {GameManager.Instance.TotalKills}명";
+        scoreText.text = $"점수: {ResourceManager.Instance.Score}";
+        killText.text = $"처치: {ResourceManager.Instance.Kills}명";
 
         // 마우스 커서 표시
         Cursor.lockState = CursorLockMode.None;

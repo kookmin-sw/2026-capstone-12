@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 
 /// <summary>
 /// 적 AI
@@ -20,8 +21,8 @@ public class EnemyAI : MonoBehaviour
 
     // Components
     private Transform player;                                // 플레이어 Transform
-    private HealthManager playerHealth;                      // 플레이어 체력
     private Rigidbody rb;
+    private PhotonView pv;
 
     // State
     private float nextAttackTime = 0f;
@@ -29,21 +30,30 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     // Unity 생명주기
     // ============================================================
-    void Start()
+    void Awake()
     {
+        pv = GetComponent<PhotonView>();
+        rb = GetComponent<Rigidbody>();
+    }
+
+    void Start()
+    {       
         // 플레이어 찾기
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             player = playerObj.transform;
-            playerHealth = playerObj.GetComponent<HealthManager>();
         }
 
-        rb = GetComponent<Rigidbody>();
+        // 마스터 클라이언트만 물리이동, 나머지는 동기화를 위해 kinematic true
+        if (pv != null && rb != null)
+            rb.isKinematic = !pv.IsMine;
     }
 
     void FixedUpdate()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
         if (player == null)
             return;
 
@@ -93,10 +103,9 @@ public class EnemyAI : MonoBehaviour
             return;
 
         // 공격 실행
-        if (playerHealth != null)
+        if (ShooterHealthNet.Instance != null)
         {
-            playerHealth.TakeDamage(attackDamage);
-            Debug.Log($"{gameObject.name} attacked Player for {attackDamage} damage!");
+            ShooterHealthNet.Instance.MasterApplyDamageToShooter(Mathf.RoundToInt(attackDamage));
         }
 
         // 다음 공격 시간 설정

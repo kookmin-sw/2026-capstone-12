@@ -3,9 +3,6 @@ using UnityEngine.UI;
 
 public class RepairButton : MonoBehaviour
 {
-    public float repairRate = 0.1f;
-    public int repairCost = 0;
-
     private Button btn;
     private StructurePopupUI popup;
 
@@ -15,11 +12,6 @@ public class RepairButton : MonoBehaviour
         popup = GetComponentInParent<StructurePopupUI>();
         btn.onClick.AddListener(OnClick);
     }
-
-	private void Start()
-	{
-		repairCost = (int)(popup.Target.Cost * repairRate);
-	}
 
 	public void Refresh()
     {
@@ -35,18 +27,14 @@ public class RepairButton : MonoBehaviour
             return;
         }
 
-        btn.interactable = popup.Target.CanRepair(repairCost);
+        btn.interactable = popup.Target.CanRepairLocal();
     }
 
     private void OnClick()
     {
         if (popup == null || popup.Target == null) return;
-        if (popup.Target.IsFullHp) return;
-
-        if (ResourceManager.Instance != null && !ResourceManager.Instance.TrySpend(repairCost))
-            return;
-
-        popup.Target.Repair();
+        popup.Target.RequestRepair();
+        
         Destroy(popup.gameObject);
     }
 }

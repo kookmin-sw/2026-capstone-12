@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: BT_Tower_1x1
   m_EditorClassIdentifier: 
   prefab: {fileID: 1879385777915753179, guid: abbf69bc9f698be4bbc166cfd65ed9ca, type: 3}
+  typeId: 1
+  photonPrefabPath: Prefabs/Buildings/Tower_1x1_Root
   footprint: {x: 1, y: 1}
   allowRotate: 1
   cost: 10

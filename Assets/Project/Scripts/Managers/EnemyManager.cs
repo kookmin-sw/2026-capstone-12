@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Photon.Pun;
 
 /// <summary>
 /// 적 스폰 관리
@@ -20,6 +21,10 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private GameObject basicEnemyPrefab;
     [SerializeField] private GameObject tankEnemyPrefab;
     [SerializeField] private GameObject fastEnemyPrefab;
+
+    [SerializeField] private string basicEnemyPrefabPath = "Prefabs/Enemies/BasicEnemy";
+    [SerializeField] private string tankEnemyPrefabPath  = "Prefabs/Enemies/TankEnemy";
+    [SerializeField] private string fastEnemyPrefabPath  = "Prefabs/Enemies/FastEnemy";
 
     [Header("Spawn Points")]
     [SerializeField] private Transform[] spawnPoints;
@@ -45,7 +50,27 @@ public class EnemyManager : MonoBehaviour
     }
 
     void Start()
+    {   
+        // 마스터 클라이언트만 실행
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        // 테스트 모드면 적 스폰
+        if (testMode)
+        {
+            SpawnTestEnemies();
+        }
+    }
+
+    // ============================================================
+    // 네트워크 동기화 테스트용 코드
+    // ============================================================
+    public void BeginEnemySystem()
     {
+        // 마스터 클라이언트만 실행
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         // 테스트 모드면 적 스폰
         if (testMode)
         {
@@ -69,9 +94,9 @@ public class EnemyManager : MonoBehaviour
             );
             Vector3 spawnPosition = spawnPoint.position + randomOffset;
 
-            GameObject enemyPrefab = GetRandomEnemyPrefab();
+            string enemyPrefabPath = GetRandomEnemyPrefabPath();
 
-            SpawnEnemy(enemyPrefab, spawnPosition);
+            SpawnEnemy(enemyPrefabPath, spawnPosition);
         }
 
         Debug.Log($"Spawned {testEnemyCount} test enemies");
@@ -80,9 +105,12 @@ public class EnemyManager : MonoBehaviour
     /// <summary>
     /// 적 스폰
     /// </summary>
-    public GameObject SpawnEnemy(GameObject prefab, Vector3 position)
+    public GameObject SpawnEnemy(string prefabPath, Vector3 position)
     {
-        GameObject enemy = Instantiate(prefab, position, Quaternion.identity);
+        if (!PhotonNetwork.IsMasterClient)
+            return null;
+
+        GameObject enemy = PhotonNetwork.Instantiate(prefabPath, position, Quaternion.identity);
         activeEnemies.Add(enemy);
         return enemy;
     }
@@ -90,29 +118,29 @@ public class EnemyManager : MonoBehaviour
     /// <summary>
     /// 랜덤 적 프리팹 반환
     /// </summary>
-    GameObject GetRandomEnemyPrefab()
+    string GetRandomEnemyPrefabPath()
     {
         int random = Random.Range(0, 3);
         switch (random)
         {
-            case 0: return basicEnemyPrefab;
-            case 1: return tankEnemyPrefab;
-            case 2: return fastEnemyPrefab;
-            default: return basicEnemyPrefab;
+            case 0: return basicEnemyPrefabPath;
+            case 1: return tankEnemyPrefabPath;
+            case 2: return fastEnemyPrefabPath;
+            default: return basicEnemyPrefabPath;
         }
     }
 
     /// <summary>
-    /// 적 타입으로 프리팹 가져오기 (WaveManager용) ← 추가!
+    /// 적 타입으로 프리팹 경로 가져오기 (WaveManager용) ← 추가!
     /// </summary>
-    public GameObject GetEnemyPrefab(EnemyType type)
+    public string GetEnemyPrefabPath(EnemyType type)
     {
         switch (type)
         {
-            case EnemyType.Basic: return basicEnemyPrefab;
-            case EnemyType.Tank: return tankEnemyPrefab;
-            case EnemyType.Fast: return fastEnemyPrefab;
-            default: return basicEnemyPrefab;
+            case EnemyType.Basic: return basicEnemyPrefabPath;
+            case EnemyType.Tank: return tankEnemyPrefabPath;
+            case EnemyType.Fast: return fastEnemyPrefabPath;
+            default: return basicEnemyPrefabPath;
         }
     }
 

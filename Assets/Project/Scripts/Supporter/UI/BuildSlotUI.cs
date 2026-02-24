@@ -25,13 +25,13 @@ public class BuildSlotUI : MonoBehaviour
     {
         Refresh();
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnGoldChanged += HandleGoldChanged;
+            ResourceManager.Instance.OnMoneyChanged += HandleGoldChanged;
     }
 
     private void OnDestroy()
     {
         if (ResourceManager.Instance != null)
-            ResourceManager.Instance.OnGoldChanged -= HandleGoldChanged;
+            ResourceManager.Instance.OnMoneyChanged -= HandleGoldChanged;
     }
 
     private void HandleGoldChanged(int _)

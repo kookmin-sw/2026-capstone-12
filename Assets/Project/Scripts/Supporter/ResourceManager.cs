@@ -5,10 +5,13 @@ public class ResourceManager : MonoBehaviour
 {
     public static ResourceManager Instance { get; private set; }
 
-    [SerializeField] private int gold = 200;
-    public int Gold => gold;
-
-    public event Action<int> OnGoldChanged;
+    [SerializeField] private int money;
+    [SerializeField] private int score;
+    [SerializeField] private int kills;
+    
+    public event Action<int> OnMoneyChanged;
+    public event Action<int> OnScoreChanged;
+    public event Action<int> OnKillsChanged;
 
     private void Awake()
     {
@@ -20,37 +23,31 @@ public class ResourceManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    // 로컬 UI 판단용
+    public bool CanAfford(int cost) => money >= cost;
+
+    public void SetMoneyFromNet(int newMoney)
     {
-        OnGoldChanged?.Invoke(gold);
+        if (money == newMoney) return;
+        money = newMoney;
+        OnMoneyChanged?.Invoke(money);
     }
 
-    public bool CanAfford(int amount)
+    public void SetScoreFromNet(int newScore)
     {
-        return gold >= amount;
+        if (score == newScore) return;
+        score = newScore;
+        OnScoreChanged?.Invoke(score);
     }
 
-    public bool TrySpend(int amount)
+    public void SetKillsFromNet(int newKills)
     {
-        if (amount <= 0) return true;
-        if (gold < amount) return false;
-
-        gold -= amount;
-        OnGoldChanged?.Invoke(gold);
-        return true;
+        if (kills == newKills) return;
+        kills = newKills;
+        OnKillsChanged?.Invoke(kills);
     }
 
-    public void AddGold(int amount)
-    {
-        if (amount <= 0) return;
-        gold += amount;
-        OnGoldChanged?.Invoke(gold);
-    }
-
-    // 테스트용
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.G))
-            AddGold(50);
-    }
+    public int Money => money;
+    public int Score => score;
+    public int Kills => kills;
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using Photon.Pun;
 
 /// <summary>
 /// 웨이브 시스템 관리
@@ -74,12 +75,18 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         // 첫 웨이브 시작
         StartPreparePhase();
     }
 
     void Update()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         if (isPreparing)
         {
             UpdatePreparePhase();
@@ -88,6 +95,18 @@ public class WaveManager : MonoBehaviour
         {
             UpdateWavePhase();
         }
+    }
+
+    // ============================================================
+    // 네트워크 동기화 테스트용 코드
+    // ============================================================
+    public void BeginWaveSystem()
+    {
+        // 여기서부터 원래 Start에서 하던 로직 실행
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        StartPreparePhase();
     }
 
     // ============================================================
@@ -190,7 +209,7 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < wave.basicEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Basic),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Basic),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
@@ -202,7 +221,7 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < wave.tankEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Tank),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Tank),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
@@ -214,7 +233,7 @@ public class WaveManager : MonoBehaviour
         for (int i = 0; i < wave.fastEnemyCount; i++)
         {
             EnemyManager.Instance.SpawnEnemy(
-                EnemyManager.Instance.GetEnemyPrefab(EnemyType.Fast),
+                EnemyManager.Instance.GetEnemyPrefabPath(EnemyType.Fast),
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;

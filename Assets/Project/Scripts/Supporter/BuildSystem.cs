@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class BuildSystem : MonoBehaviour
 {
     [Header("References")]
-    public Camera topDownCamera;
+    [SerializeField] public Camera topDownCamera;
     public GridManager gridManager;
 
     [Header("Building Types")]
@@ -19,14 +19,11 @@ public class BuildSystem : MonoBehaviour
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
-    private void Start()
-    {
-        if (topDownCamera == null)
-            topDownCamera = Camera.main;
-    }
-
     private void Update()
     {
+        if (!Photon.Pun.PhotonNetwork.InRoom)
+            return;
+
         HandleSelectType(); // UI의 구현으로 지우거나 연동할 필요가 있음
 
         if (selectedType == null)
@@ -131,37 +128,20 @@ public class BuildSystem : MonoBehaviour
 
     private void PlaceBuilding(Vector2Int anchor)
     {
-        // 비용 차감 (성공 시에만 배치)
-        if (ResourceManager.Instance != null)
-        {
-            if (!ResourceManager.Instance.TrySpend(selectedType.cost))
-                return;
-        }
+        if (selectedType == null)
+            return;
 
-        // 실제 건물 생성
-        GameObject obj = Instantiate(selectedType.prefab);
-        obj.transform.position = gridManager.AnchorToWorldCenter(anchor, selectedType.footprint, rotationY);
-        obj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
+        if (BuildNetManager.Instance == null)
+            return;
 
-        // 점유 처리
-        gridManager.SetAreaOccupied(anchor.x, anchor.y, selectedType.footprint, rotationY, true);
+        if (!Photon.Pun.PhotonNetwork.InRoom)
+            return;
 
-        // 판매/수리 등을 위해 인스턴스에 점유 정보 저장
-        StructureSelectable selectable = obj.GetComponent<StructureSelectable>();
-        if (selectable == null)
-            selectable = obj.AddComponent<StructureSelectable>();
+        if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(selectedType.cost))
+            return;
 
-        selectable.type = selectedType;
-        selectable.hp = selectedType.maxHp;
-        selectable.BindGrid(gridManager, anchor, selectedType.footprint, rotationY);
-
-        BuildingInstance inst = obj.GetComponent<BuildingInstance>();
-        if (inst == null)
-            inst = obj.AddComponent<BuildingInstance>();
-
-        inst.type = selectedType;
-        inst.gridPos = anchor;
-        inst.rotationY = rotationY;        
+        // 로컬 생성/점유/차감은 하지 않고 "요청"만 보냄
+        BuildNetManager.Instance.RequestPlace(selectedType.typeId, anchor.x, anchor.y, rotationY);
     }
 
     private void CancelBuildMode()

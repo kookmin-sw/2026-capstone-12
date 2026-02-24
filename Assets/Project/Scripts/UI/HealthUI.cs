@@ -58,8 +58,8 @@ public class HealthUI : MonoBehaviour
             healthBarFill.color = lowColor;
 
         // 텍스트 업데이트
-        int current = (int)(healthRatio * healthManager.MaxHealth);
-        int max = (int)healthManager.MaxHealth;
+        int current = (int)(healthRatio * healthManager.MaxHp);
+        int max = (int)healthManager.MaxHp;
         healthText.text = $"{current} / {max}";
     }
 }

@@ -33,13 +33,22 @@ public class PlayerController : MonoBehaviour
         // 컴포넌트 참조 가져오기
         controller = GetComponent<CharacterController>();
         cameraTransform = Camera.main.transform;
-
-        // 마우스 커서 잠금
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
-    void Update()
+	void OnEnable()
+	{
+		    // 마우스 커서 잠금
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+	}
+
+    private void OnDisable()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+	void Update()
     {
         HandleMovement();
         HandleLook();

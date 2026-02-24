@@ -39,6 +39,19 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RpcRequestPlace
+  - RpcRequestRepair
+  - RpcRequestSell
+  - RpcApplyStructureHp
+  - RpcRequestAddGold
+  - RpcRequestDamage
+  - RpcSetGold
+  - RpcSetShooterHp
+  - RpcShooterDied
+  - RpcSetEnemyHp
+  - RpcSetMoney
+  - RpcSetScore
+  - RpcSetKills
   - StartGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1

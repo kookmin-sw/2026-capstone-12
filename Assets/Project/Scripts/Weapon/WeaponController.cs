@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using Photon.Pun;
 
 /// <summary>
 /// 무기 컨트롤러
@@ -93,11 +94,8 @@ public class WeaponController : MonoBehaviour
             // 예: hit.collider.GetComponent<Enemy>()?.TakeDamage(damage);
             if (hit.collider.CompareTag("Enemy"))
             {
-                EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
-                if (enemyHealth != null)
-                {
-                    enemyHealth.TakeDamage(damage);
-                }
+                PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
+                EnemyHealthNet.Instance.MasterApplyDamage(enemyPv.ViewID, damage);
             }
         }
         else

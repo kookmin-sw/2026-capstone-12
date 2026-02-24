@@ -16,19 +16,12 @@ public class GameManager : MonoBehaviour
         Victory
     }
 
-    [Header("Game Settings")]
-    [SerializeField] private int totalScore = 0;
-    [SerializeField] private int totalKills = 0;
-
     private GameState currentState = GameState.Playing;
 
-    public UnityEventInt OnScoreChanged = new UnityEventInt();
     public UnityEvent OnGameOver = new UnityEvent();
     public UnityEvent OnVictory = new UnityEvent();
 
     public GameState CurrentState => currentState;
-    public int TotalScore => totalScore;
-    public int TotalKills => totalKills;
 
     void Awake()
     {
@@ -66,31 +59,10 @@ public class GameManager : MonoBehaviour
     // public으로 변경 ← 수정!
     public void InitializeGame()
     {
-        totalScore = 0;
-        totalKills = 0;
+        ResourceNet.Instance.InitResource();
         currentState = GameState.Playing;
-        OnScoreChanged.Invoke(totalScore);
 
         Debug.Log("Game Initialized!");
-    }
-
-    public void AddScore(int score)
-    {
-        if (currentState != GameState.Playing)
-            return;
-
-        totalScore += score;
-        OnScoreChanged.Invoke(totalScore);
-
-        Debug.Log($"Score +{score} | Total: {totalScore}");
-    }
-
-    public void AddKill()
-    {
-        if (currentState != GameState.Playing)
-            return;
-
-        totalKills++;
     }
 
     public void TriggerGameOver()
@@ -102,7 +74,7 @@ public class GameManager : MonoBehaviour
         OnGameOver.Invoke();
 
         Debug.Log("=== GAME OVER ===");
-        Debug.Log($"Score: {totalScore} | Kills: {totalKills}");
+        Debug.Log($"Score: {ResourceManager.Instance.Score} | Kills: {ResourceManager.Instance.Kills}");
     }
 
     public void TriggerVictory()
@@ -114,7 +86,7 @@ public class GameManager : MonoBehaviour
         OnVictory.Invoke();
 
         Debug.Log("=== VICTORY ===");
-        Debug.Log($"Score: {totalScore} | Kills: {totalKills}");
+        Debug.Log($"Score: {ResourceManager.Instance.Score} | Kills: {ResourceManager.Instance.Kills}");
     }
 }
 

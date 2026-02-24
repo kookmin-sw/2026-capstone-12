@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 /// <summary>
 /// 플레이어 체력 관리
@@ -13,13 +14,11 @@ public class HealthManager : MonoBehaviour
     // ============================================================
     // 변수
     // ============================================================
-    [Header("Health Settings")]
-    [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float currentHealth;
+    public event Action OnDied;
 
-    // Components
-    private PlayerController playerController;
-    private WeaponController weaponController;
+    [Header("Health Settings")]
+    [SerializeField] private float maxHp = 100f;
+    [SerializeField] private float currentHp = 100;
 
     // State
     private bool isDead = false;
@@ -32,62 +31,24 @@ public class HealthManager : MonoBehaviour
     // ============================================================
     // Public 속성
     // ============================================================
-    public float CurrentHealth => currentHealth;
-    public float MaxHealth => maxHealth;
+    public float CurrentHp => currentHp;
+    public float MaxHp => maxHp;
     public bool IsDead => isDead;
 
     // ============================================================
-    // Unity 생명주기
-    // ============================================================
-    void Start()
-    {
-        playerController = GetComponent<PlayerController>();
-        weaponController = GetComponent<WeaponController>();
-
-        // 체력 초기화
-        currentHealth = maxHealth;
-    }
-
-    // ============================================================
-    // 체력 관련
+    // 체력 관리
     // ============================================================
     /// <summary>
-    /// 데미지 받기
+    /// 체력 변경
     /// </summary>
-    public void TakeDamage(float amount)
+    public void SetHpFromNetwork(float newHp, float newMaxHp)
     {
-        if (isDead)
-            return;
+        maxHp = newMaxHp;
+        currentHp = Mathf.Clamp(newHp, 0, maxHp);
+        OnHealthChanged.Invoke(currentHp / maxHp);
 
-        currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-
-        // UI 업데이트 (0~1 비율로 전달)
-        OnHealthChanged.Invoke(currentHealth / maxHealth);
-
-        Debug.Log($"Damage: -{amount} | HP: {currentHealth}/{maxHealth}");
-
-        // 체력 0이면 사망
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
-    }
-
-    /// <summary>
-    /// 체력 회복 (나중에 서포터 지원용)
-    /// </summary>
-    public void Heal(float amount)
-    {
-        if (isDead)
-            return;
-
-        currentHealth += amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
-
-        OnHealthChanged.Invoke(currentHealth / maxHealth);
-
-        Debug.Log($"Heal: +{amount} | HP: {currentHealth}/{maxHealth}");
+        if (!isDead && currentHp <= 0)
+            DieInternal();
     }
 
     // ============================================================
@@ -96,18 +57,17 @@ public class HealthManager : MonoBehaviour
     /// <summary>
     /// 사망 처리
     /// </summary>
-    void Die()
+    public void ForceDieFromNetwork()
+    {
+        if (isDead) return;
+        currentHp = 0;
+        DieInternal();
+    }
+
+    private void DieInternal()
     {
         isDead = true;
-
-        // 이동/발사 불가
-        playerController.SetEnabled(false);
-        weaponController.SetEnabled(false);
-
-        Debug.Log("Player Died! Triggering Game Over...");
-
-        // GameManager에 게임 오버 알림
-        GameManager.Instance.TriggerGameOver();
+        OnDied?.Invoke();
     }
 }
 

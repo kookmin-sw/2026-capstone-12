@@ -12,16 +12,16 @@ public class ResourcePanel : MonoBehaviour
         if (subscribed) return;
         if (ResourceManager.Instance == null) return;
 
-        ResourceManager.Instance.OnGoldChanged += HandleGoldChanged;
+        ResourceManager.Instance.OnMoneyChanged += HandleGoldChanged;
         subscribed = true;
 
-        HandleGoldChanged(ResourceManager.Instance.Gold);
+        HandleGoldChanged(ResourceManager.Instance.Money);
     }
 
     private void OnDisable()
     {
         if (subscribed && ResourceManager.Instance != null)
-            ResourceManager.Instance.OnGoldChanged -= HandleGoldChanged;
+            ResourceManager.Instance.OnMoneyChanged -= HandleGoldChanged;
 
         subscribed = false;
     }

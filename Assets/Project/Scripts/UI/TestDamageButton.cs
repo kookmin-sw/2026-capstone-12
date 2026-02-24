@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 /// <summary>
 /// 테스트용 데미지 버튼 (나중에 삭제 예정)
@@ -19,6 +20,8 @@ public class TestDamageButton : MonoBehaviour
 
     void OnButtonClick()
     {
-        healthManager.TakeDamage(testDamage);
+        //healthManager.TakeDamage(testDamage);
+        if (!PhotonNetwork.IsMasterClient) return;
+            ShooterHealthNet.Instance.MasterApplyDamageToShooter(testDamage);
     }
 }

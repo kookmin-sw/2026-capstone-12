@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Photon.Pun;
+using System;
 
 /// <summary>
 /// 적 체력 관리
@@ -11,9 +13,11 @@ public class EnemyHealth : MonoBehaviour
     // ============================================================
     // 변수
     // ============================================================
+    public event Action OnDied;
+
     [Header("Health Settings")]
-    [SerializeField] private float maxHealth = 30f;
-    [SerializeField] private float currentHealth;
+    [SerializeField] private float maxHp = 30f;
+    [SerializeField] private float currentHp;
 
     [Header("Rewards")]
     [SerializeField] private int scoreReward = 100;         // 처치 시 점수
@@ -30,7 +34,7 @@ public class EnemyHealth : MonoBehaviour
     // ============================================================
     void Start()
     {
-        currentHealth = maxHealth;
+        currentHp = maxHp;
     }
 
     // ============================================================
@@ -39,29 +43,23 @@ public class EnemyHealth : MonoBehaviour
     /// <summary>
     /// 데미지 받기
     /// </summary>
-    public void TakeDamage(float damage)
+    public void SetHealthFromNet(float newHp, float newMaxHp)
     {
-        if (isDead)
-            return;
+        maxHp = newMaxHp;
+        currentHp = Mathf.Clamp(newHp, 0f, maxHp);
 
-        // 데미지 감소 적용 (방어형 적용)
-        float actualDamage = damage * (1f - damageReduction);
-        currentHealth -= actualDamage;
-
-        Debug.Log($"{gameObject.name} took {actualDamage} damage! HP: {currentHealth}/{maxHealth}");
-
-        // 체력 0이면 사망
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
+        if (!isDead && currentHp <= 0f)
+            DieLocal();
     }
 
     // ============================================================
     // 사망
     // ============================================================
-    void Die()
+    /*void Die()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+        
         isDead = true;
 
         // GameManager에 점수 및 처치 수 추가
@@ -73,13 +71,23 @@ public class EnemyHealth : MonoBehaviour
         Debug.Log($"{gameObject.name} died! Score +{scoreReward}, Money +{moneyReward}");
 
         // 적 제거
-        Destroy(gameObject);
+        PhotonNetwork.Destroy(gameObject);
+    }*/
+
+    private void DieLocal()
+    {
+        isDead = true;
+        OnDied?.Invoke();
+        // 여기서는 Destroy하지 않음 (Destroy는 마스터가 PhotonNetwork.Destroy로)
     }
 
     // ============================================================
     // Public 속성
     // ============================================================
-    public float CurrentHealth => currentHealth;
-    public float MaxHealth => maxHealth;
+    public float CurrentHp => currentHp;
+    public float MaxHp => maxHp;
     public bool IsDead => isDead;
+    public float DamageReduction => damageReduction;
+    public int ScoreReward => scoreReward;
+    public int MoneyReward => moneyReward;
 }
