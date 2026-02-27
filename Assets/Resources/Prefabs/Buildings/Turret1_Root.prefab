@@ -12,10 +12,12 @@ GameObject:
   - component: {fileID: 8022385045622714503}
   - component: {fileID: 3284874650199100207}
   - component: {fileID: 8664403214330196979}
+  - component: {fileID: -7286828667695122027}
   - component: {fileID: 6473456124118591295}
   - component: {fileID: 3312213224262479478}
   - component: {fileID: -6390944174672484528}
   - component: {fileID: 9030654193680950245}
+  - component: {fileID: 1437666098188286991}
   m_Layer: 8
   m_Name: Turret1_Root
   m_TagString: Untagged
@@ -85,11 +87,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   muzzle: {fileID: 7441277757561582796}
-  shootEffectRoot: {fileID: 5206079865076379273}
   fireRate: 4
   damage: 10
   range: 30
   fireConeDegrees: 7
+--- !u!114 &-7286828667695122027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3389874939188217537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7df77fa00344664bacfd56f936fecca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootEffectRoot: {fileID: 5206079865076379273}
 --- !u!114 &6473456124118591295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +173,18 @@ MonoBehaviour:
   type: {fileID: 0}
   gridPos: {x: 0, y: 0}
   rotationY: 0
+--- !u!114 &1437666098188286991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3389874939188217537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 504857034587d8f47b1d1d9e82a8d666, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8615139784943117070
 GameObject:
   m_ObjectHideFlags: 0

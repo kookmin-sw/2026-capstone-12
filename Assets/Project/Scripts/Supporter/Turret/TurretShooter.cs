@@ -5,10 +5,10 @@ using Photon.Pun;
 public class TurretShooter : GhostDisabledBehaviour
 {
     private TurretTargeting targeting;
+    private TurretVfxNet net;
 
     [Header("Transforms")]
     public Transform muzzle;
-    public Transform shootEffectRoot;
 
     [Header("Shoot Settings")]
     public float fireRate = 4f;
@@ -19,13 +19,11 @@ public class TurretShooter : GhostDisabledBehaviour
     public float fireConeDegrees = 7f;  // 이 각도 이내면 발사 허용
 
     private float fireTimer;
-    private ParticleSystem[] particles;
 
     private void Awake()
     {
         targeting = GetComponent<TurretTargeting>();
-        if (shootEffectRoot != null)
-            particles = shootEffectRoot.GetComponentsInChildren<ParticleSystem>(true);
+        net = GetComponent<TurretVfxNet>();
     }
 
     private void Update()
@@ -48,19 +46,9 @@ public class TurretShooter : GhostDisabledBehaviour
 
         fireTimer = 1f / Mathf.Max(0.01f, fireRate);
 
-        PlayShootVfx();
+        net?.BroadcastShotFx();
+
         FireOnce(target);
-    }
-
-    private void PlayShootVfx()
-    {
-        if (particles == null || particles.Length == 0)
-            return;
-
-        for (int i = 0; i < particles.Length; i++)
-        {
-            particles[i].Play(true);
-        }
     }
 
     private void FireOnce(Transform target)
@@ -81,8 +69,3 @@ public class TurretShooter : GhostDisabledBehaviour
         }
     }
 }
-
-/*public interface IDamageable
-{
-    void TakeDamage(float amount);
-}*/
