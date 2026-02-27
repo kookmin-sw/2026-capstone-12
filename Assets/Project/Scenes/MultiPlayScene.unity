@@ -379,7 +379,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   canvas: {fileID: 305604097}
-  popupPrefab: {fileID: -7965040029803954103, guid: a150462b5e2f3664e9b6b2235255a432,
+  popupPrefab: {fileID: -7965040029803954103, guid: a2efc61c37ac0e94fb408fffb1790e35,
     type: 3}
 --- !u!1 &231732022
 GameObject:

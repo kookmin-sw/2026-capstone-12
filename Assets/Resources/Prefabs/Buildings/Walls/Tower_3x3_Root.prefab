@@ -115,6 +115,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3725205075196251811}
   - component: {fileID: -2959304137496402221}
+  - component: {fileID: -5684954768683686720}
+  - component: {fileID: 6830221354723954559}
   m_Layer: 8
   m_Name: Tower_3x3_Root
   m_TagString: Untagged
@@ -160,3 +162,35 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-5684954768683686720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6824110937904739417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc9123cd57f6bc947b8a1a7c6da98e52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: {fileID: 0}
+  grid: {fileID: 0}
+--- !u!114 &6830221354723954559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6824110937904739417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: {fileID: 0}
+  hp: 0
+  grid: {fileID: 0}
+  anchor: {x: 0, y: 0}
+  footprint: {x: 0, y: 0}
+  rotationY: 0

@@ -35,6 +35,6 @@ public class RepairButton : MonoBehaviour
         if (popup == null || popup.Target == null) return;
         popup.Target.RequestRepair();
         
-        Destroy(popup.gameObject);
+        popup.Close();
     }
 }

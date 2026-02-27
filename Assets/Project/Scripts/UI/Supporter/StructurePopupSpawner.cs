@@ -63,13 +63,13 @@ public class StructurePopupSpawner : MonoBehaviour
         InputLock.Lock();
 
         current = Instantiate(popupPrefab, canvas.transform);
-        current.SetTarget(target);
+        current.SetTarget(this, target);
 
         // 위치 보정 포함
         PositionPopup(current.GetComponent<RectTransform>(), screenPos);
     }
 
-    private void Close()
+    public void Close()
     {
         if (current != null) Destroy(current.gameObject);
         current = null;

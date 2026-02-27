@@ -24,6 +24,6 @@ public class SellButton : MonoBehaviour
         if (popup == null || popup.Target == null) return;
         popup.Target.RequestSell();
         
-        Destroy(popup.gameObject);
+        popup.Close();
     }
 }
