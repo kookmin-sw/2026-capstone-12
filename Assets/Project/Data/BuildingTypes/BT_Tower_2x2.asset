@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_Tower_2x2
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6824110937904739417, guid: 85d6a1c6b817e264786dd8abc1260cc0, type: 3}
+  prefab: {fileID: 6824110937904739417, guid: 776f5c07683814f468b12ccfc0aa035e, type: 3}
   typeId: 2
-  photonPrefabPath: Prefabs/Buildings/Tower_3x3_Root
+  photonPrefabPath: Prefabs/Buildings/Walls/Tower_3x3_Root
   footprint: {x: 3, y: 3}
   allowRotate: 1
   cost: 30

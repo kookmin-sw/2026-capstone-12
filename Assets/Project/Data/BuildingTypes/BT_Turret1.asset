@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_Turret1
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3389874939188217537, guid: 04dfe95609ad732459ca100f13893855, type: 3}
+  prefab: {fileID: 3389874939188217537, guid: d05e22ba94aee3d4a8181ac8ee9aaaba, type: 3}
   typeId: 0
-  photonPrefabPath: Prefabs/Buildings/Turret1_Root
+  photonPrefabPath: Prefabs/Buildings/Turrets/Turret1_Root
   footprint: {x: 2, y: 2}
   allowRotate: 1
   cost: 50
