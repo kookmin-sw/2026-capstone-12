@@ -1,6 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using Photon.Pun;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// 게임 오버 화면 UI 관리
@@ -71,10 +72,13 @@ public class GameOverUI : MonoBehaviour
     // ============================================================
     void OnRestartButton()
     {
+        // 시간 복구
         Time.timeScale = 1f;
 
-        Debug.Log("Restarting...");
-        SceneManager.LoadScene(gameSceneName);
+        Debug.Log("Returning to room...");
+
+        // 방은 유지하고 RoomScene으로 복귀
+        SceneManager.LoadScene("RoomScene");
     }
 
     void OnMainMenuButton()
@@ -82,6 +86,17 @@ public class GameOverUI : MonoBehaviour
         Time.timeScale = 1f;
 
         Debug.Log("Going to Main Menu...");
+
+        // Photon 연결 완전히 끊기
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+        }
+
         SceneManager.LoadScene(mainMenuSceneName);
     }
 }

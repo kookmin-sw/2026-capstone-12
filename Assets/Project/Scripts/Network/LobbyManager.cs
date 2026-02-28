@@ -48,7 +48,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
             Debug.Log("Connecting to Photon...");
         }
-
+        else if (PhotonNetwork.InRoom)
+        {
+            // 방에 있으면 나가기
+            PhotonNetwork.LeaveRoom();
+        }
         // 초기 패널 설정
         ShowLobbyPanel();
     }
@@ -59,6 +63,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Master Server!");
+
+        // 이미 방에 있으면 나가기
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
     }
 
     public override void OnJoinedRoom()
@@ -102,6 +112,23 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     /// </summary>
     public void OnCreateRoomButton()
     {
+        // 연결 상태 확인
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogWarning("Not ready to create room. Please wait...");
+            return;
+        }
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogWarning("Connecting to Photon... Please wait.");
+            return;
+        }
+
+        if (PhotonNetwork.InRoom)
+        {
+            Debug.LogWarning("Already in a room!");
+            return;
+        }
         // 4자리 랜덤 코드 생성
         string roomCode = Random.Range(1000, 9999).ToString();
 
@@ -143,6 +170,13 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     /// </summary>
     public void OnConfirmJoinButton()
     {
+        // 연결 상태 확인
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogWarning("Not ready to join room. Please wait...");
+            return;
+        }
+
         string roomCode = roomCodeInput.text;
 
         // 4자리 확인

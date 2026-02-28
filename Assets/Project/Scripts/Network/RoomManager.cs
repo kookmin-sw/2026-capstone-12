@@ -86,6 +86,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
             { READY_KEY, false }
         };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
+        Debug.Log("Player properties cleared!");
     }
 
     // ============================================================
@@ -299,6 +301,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
     // ============================================================
     void CheckStartGame()
     {
+        // 씬 로드 후 잠깐 대기 ← 추가!
+        if (Time.timeSinceLevelLoad < 1f)
+            return;
+
         // 2명이 모두 준비되었는지 확인
         if (PhotonNetwork.PlayerList.Length < 2)
             return;
@@ -321,23 +327,13 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (allReady && allHaveRole)
         {
             Debug.Log("All players ready! Starting game...");
-            StartGame();  // ← RPC 제거!
+            StartGame();
         }
     }
 
     void StartGame()
     {
-        // 내 역할 확인
-        string myRole = (string)PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY];
-
-        // 역할에 따라 씬 로드
-        if (myRole == ROLE_SHOOTER)
-        {
-            SceneManager.LoadScene("TestScene");
-        }
-        else if (myRole == ROLE_SUPPORTER)
-        {
-            SceneManager.LoadScene("SupporterScene");
-        }
+        // MultiPlayScene으로 이동
+        SceneManager.LoadScene("MultiPlayScene");
     }
 }
