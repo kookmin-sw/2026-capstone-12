@@ -27,6 +27,7 @@ public class WeaponController : MonoBehaviour
 
     // Components
     private Camera playerCamera;
+    private ShooterWeaponNet shooterWeaponNet;
 
     // State
     private float nextTimeToFire = 0f;
@@ -36,6 +37,9 @@ public class WeaponController : MonoBehaviour
     {
         // 카메라 참조
         playerCamera = Camera.main;
+
+        // 네트워크 연결
+        shooterWeaponNet = GetComponent<ShooterWeaponNet>();
 
         // 시작 시 탄창 가득 채우기
         currentAmmo = maxAmmo;
@@ -95,7 +99,7 @@ public class WeaponController : MonoBehaviour
             if (hit.collider.CompareTag("Enemy"))
             {
                 PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
-                EnemyHealthNet.Instance.MasterApplyDamage(enemyPv.ViewID, damage);
+                shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
             }
         }
         else
