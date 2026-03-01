@@ -5006,6 +5006,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8311b2b701dd85f458dde0be0fb24ec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shooterOwnership: {fileID: 8708646526427126031}
 --- !u!1 &1647011531
 GameObject:
   m_ObjectHideFlags: 0
@@ -6227,6 +6228,7 @@ GameObject:
   - component: {fileID: 6917112937863077453}
   - component: {fileID: 3797320134046962192}
   - component: {fileID: 8708646526427126026}
+  - component: {fileID: 8708646526427126031}
   - component: {fileID: 8708646526427126029}
   - component: {fileID: 8708646526427126028}
   m_Layer: 0
@@ -6559,7 +6561,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 8708646526427126028}
@@ -6582,6 +6584,18 @@ MonoBehaviour:
   disableOnDeath:
   - {fileID: 6917112937863077453}
   - {fileID: 3797320134046962192}
+--- !u!114 &8708646526427126031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093071822631863941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5730484dbf3629b48ae0e4015ac5757c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

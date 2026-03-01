@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class RoleManager : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private ShooterOwnership shooterOwnership;
     private bool applied;
     private void OnEnable()
     {
@@ -34,7 +35,11 @@ public class RoleManager : MonoBehaviourPunCallbacks
             string roleStr = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
 
             if (roleStr == "Shooter")
+            {
                 localRole = RoleType.Shooter;
+                shooterOwnership.EnsureLocalOwnership();
+
+            }                
             else if (roleStr == "Supporter")
                 localRole = RoleType.Supporter;
 
