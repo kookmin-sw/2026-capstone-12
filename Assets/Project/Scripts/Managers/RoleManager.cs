@@ -5,13 +5,15 @@ public class RoleManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private ShooterOwnership shooterOwnership;
     private bool applied;
-    private void OnEnable()
+    
+    public override void OnEnable()
     {
+        base.OnEnable();
         // 씬 로드될 때마다 초기화
         applied = false;
     }
 
-    public override void OnJoinedRoom()
+    public void Start()
     {
         ApplyOnce();
     }

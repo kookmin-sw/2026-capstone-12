@@ -19,7 +19,7 @@ public class ResourceNet : MonoBehaviourPunCallbacks
         Instance = this;
     }
 
-    public override void OnJoinedRoom()
+    public void Start()
     {
         // 마스터가 초기값 확정 후 전체 동기화
         if (PhotonNetwork.IsMasterClient)

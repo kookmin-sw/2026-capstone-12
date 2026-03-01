@@ -17,7 +17,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         Instance = this;
     }
 
-    public override void OnJoinedRoom()
+    private void Start()
     {
         // 마스터가 초기 HP를 정하고 모두에게 동기화
         if (PhotonNetwork.IsMasterClient)
