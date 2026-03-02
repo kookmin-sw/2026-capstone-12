@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3312213224262479478}
   - component: {fileID: -6390944174672484528}
   - component: {fileID: 1437666098188286991}
+  - component: {fileID: 7799937523274129970}
   m_Layer: 8
   m_Name: Turret1_Root
   m_TagString: Untagged
@@ -151,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: {fileID: 0}
-  hp: 0
+  type: {fileID: 11400000, guid: 7709a8a41b09ac4438bbd9f554bed1b1, type: 2}
+  health: {fileID: 0}
   grid: {fileID: 0}
   anchor: {x: 0, y: 0}
   footprint: {x: 0, y: 0}
@@ -169,6 +170,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 504857034587d8f47b1d1d9e82a8d666, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7799937523274129970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3389874939188217537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59faa794ec6eeaa4ea16ac13c832f69e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 0
+  currentHp: 0
 --- !u!1 &8615139784943117070
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5086176353655114358}
   - component: {fileID: 8585272048512058566}
   - component: {fileID: -3730540951160048987}
+  - component: {fileID: 3192558521739607921}
   m_Layer: 8
   m_Name: Tower_1x1_Root
   m_TagString: Untagged
@@ -83,12 +84,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: {fileID: 0}
-  hp: 0
+  type: {fileID: 11400000, guid: a64741a46942f34498c096ce68141448, type: 2}
+  health: {fileID: 0}
   grid: {fileID: 0}
   anchor: {x: 0, y: 0}
   footprint: {x: 0, y: 0}
   rotationY: 0
+--- !u!114 &3192558521739607921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879385777915753179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59faa794ec6eeaa4ea16ac13c832f69e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 0
+  currentHp: 0
 --- !u!1 &6855386924770396931
 GameObject:
   m_ObjectHideFlags: 0

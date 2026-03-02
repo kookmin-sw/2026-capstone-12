@@ -13,8 +13,8 @@ public class BuildingTypeSO : ScriptableObject
 
     public bool allowRotate = true;
     public int cost = 0;
-    public int maxHp = 0;
+    public float maxHp = 0;
 
     public int repairCost => (int)(cost * 0.1);
-    public int repairAmount => (int)(maxHp * 0.5);
+    public float repairAmount => (int)(maxHp * 0.5);
 }

@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 6768210215267533859}
   - component: {fileID: -6910560426757471932}
   - component: {fileID: -386472015961234030}
+  - component: {fileID: -8146040329451179740}
   m_Layer: 8
   m_Name: Wall_1_Root
   m_TagString: Untagged
@@ -188,9 +189,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: {fileID: 0}
-  hp: 0
+  type: {fileID: 11400000, guid: eaf1739f373770940943530aceb51ae0, type: 2}
+  health: {fileID: 0}
   grid: {fileID: 0}
   anchor: {x: 0, y: 0}
   footprint: {x: 0, y: 0}
   rotationY: 0
+--- !u!114 &-8146040329451179740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7307361376702685315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59faa794ec6eeaa4ea16ac13c832f69e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHp: 0
+  currentHp: 0

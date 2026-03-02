@@ -25,7 +25,7 @@ public class BuildingNet : MonoBehaviourPun, IPunInstantiateMagicCallback
 
         // 기존 PlaceBuilding이 하던 세팅을 여기서
         selectable.type = type;
-        selectable.hp = type.maxHp;
+        //selectable.hp = type.maxHp;
         selectable.BindGrid(grid, new Vector2Int(ax, az), type.footprint, rotY);
 
         grid.SetAreaOccupied(ax, az, type.footprint, rotY, true);

@@ -91,52 +91,18 @@ public class BuildNetManager : MonoBehaviourPun
         var s = pv.GetComponent<StructureSelectable>();
         if (s == null || s.type == null) return;
 
-        int maxHp = s.type.maxHp;
-        if (s.hp >= maxHp) return;
+        var health = pv.GetComponent<BuildingHealthNet>();
+        if (health == null) return;
+
+        float maxHp = health.MaxHp;
+        if (health.CurrentHp >= maxHp) return;
 
         int repairCost = s.type.repairCost;
-        int healAmount = s.type.repairAmount;
+        float healAmount = s.type.repairAmount;
 
         if (ResourceNet.Instance == null) return;
         if (!ResourceNet.Instance.MasterTrySpendMoney(repairCost)) return;
 
-        int newHp = Mathf.Min(maxHp, s.hp + healAmount);
-
-        // HP 결과를 전체에 브로드캐스트
-        photonView.RPC(nameof(RpcApplyStructureHp), RpcTarget.All, viewId, newHp);
-    }
-
-    // Damage 관련
-    public void RequestDamage(int viewId, int damage)
-    {
-        photonView.RPC(nameof(RpcRequestDamage), RpcTarget.MasterClient, viewId, damage);
-    }
-
-    [PunRPC]
-    private void RpcRequestDamage(int viewId, int damage)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-
-        PhotonView pv = PhotonView.Find(viewId);
-        if (pv == null) return;
-
-        StructureSelectable s = pv.GetComponent<StructureSelectable>();
-        if (s == null || s.type == null) return;
-
-        int newHp = Mathf.Max(0, s.hp - damage);
-        pv.RPC(nameof(RpcApplyStructureHp), RpcTarget.All, viewId, newHp);
-    }
-
-    // hp 관련 요청
-    [PunRPC]
-    private void RpcApplyStructureHp(int viewId, int newHp)
-    {
-        PhotonView pv = PhotonView.Find(viewId);
-        if (pv == null) return;
-
-        var s = pv.GetComponent<StructureSelectable>();
-        if (s == null) return;
-
-        s.hp = newHp;
+        health.MasterRepair(healAmount);
     }
 }
