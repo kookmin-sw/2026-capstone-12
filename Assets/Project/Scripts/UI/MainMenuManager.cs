@@ -31,12 +31,17 @@ public class MainMenuManager : MonoBehaviour
     /// <summary>
     /// 설정 버튼
     /// </summary>
+    [Header("Panels")]
+    [SerializeField] private GameObject settingsPanel;
+
     public void OnSettingsButton()
     {
         Debug.Log("설정 열기!");
 
-        // TODO: 설정 패널 열기
-        // 지금은 로그만 출력
+        if (settingsPanel != null)
+        {
+            settingsPanel.SetActive(true);
+        }
     }
 
     /// <summary>

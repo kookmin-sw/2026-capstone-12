@@ -213,7 +213,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(totalEnemiesInWave - EnemyManager.Instance.ActiveEnemyCount);
+            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -225,7 +225,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(totalEnemiesInWave - EnemyManager.Instance.ActiveEnemyCount);
+            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -237,7 +237,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(totalEnemiesInWave - EnemyManager.Instance.ActiveEnemyCount);
+            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -254,7 +254,7 @@ public class WaveManager : MonoBehaviour
     {
         if (isWaveActive)
         {
-            int remaining = totalEnemiesInWave - (spawnedEnemies - EnemyManager.Instance.ActiveEnemyCount);
+            int remaining =  EnemyManager.Instance.ActiveEnemyCount;
             OnRemainingEnemiesUpdate.Invoke(remaining);
         }
     }

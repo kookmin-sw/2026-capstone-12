@@ -94,9 +94,16 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void HandleLook()
     {
+        // SettingsManager에서 감도 가져오기
+        float sensitivity = mouseSensitivity;
+        if (SettingsManager.Instance != null)
+        {
+            sensitivity = SettingsManager.Instance.mouseSensitivity;
+        }
+
         // 마우스 입력
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
 
         // 좌우 회전 (Y축 - 플레이어 전체)
         transform.Rotate(Vector3.up * mouseX);
