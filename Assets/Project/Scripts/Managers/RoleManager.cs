@@ -3,14 +3,17 @@ using UnityEngine;
 
 public class RoleManager : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private ShooterOwnership shooterOwnership;
     private bool applied;
-    private void OnEnable()
+    
+    public override void OnEnable()
     {
+        base.OnEnable();
         // 씬 로드될 때마다 초기화
         applied = false;
     }
 
-    public override void OnJoinedRoom()
+    public void Start()
     {
         ApplyOnce();
     }
@@ -34,7 +37,11 @@ public class RoleManager : MonoBehaviourPunCallbacks
             string roleStr = (string)PhotonNetwork.LocalPlayer.CustomProperties["Role"];
 
             if (roleStr == "Shooter")
+            {
                 localRole = RoleType.Shooter;
+                shooterOwnership.EnsureLocalOwnership();
+
+            }                
             else if (roleStr == "Supporter")
                 localRole = RoleType.Supporter;
 

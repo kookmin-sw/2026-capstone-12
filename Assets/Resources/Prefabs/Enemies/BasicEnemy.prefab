@@ -155,6 +155,11 @@ MonoBehaviour:
   attackRange: 1.5
   attackCooldown: 1
   attackDamage: 5
+  structureMask:
+    serializedVersion: 2
+    m_Bits: 256
+  structureDetectDistance: 1.8
+  boxHalfExtents: {x: 0.35, y: 0.6, z: 0.35}
 --- !u!114 &5650221106321991607
 MonoBehaviour:
   m_ObjectHideFlags: 0

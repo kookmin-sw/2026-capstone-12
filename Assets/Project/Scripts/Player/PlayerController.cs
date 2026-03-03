@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
 	void OnEnable()
 	{
-		    // 마우스 커서 잠금
+		// 마우스 커서 잠금
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 	}

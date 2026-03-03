@@ -4,11 +4,7 @@ using Photon.Pun;
 public class StructureSelectable : MonoBehaviour
 {
     public BuildingTypeSO type;  // 이걸 기준으로 cost/maxHp 읽기
-    public int hp;
-
-    public int Cost => type != null ? type.cost : 0;
-    public int MaxHp => type != null ? type.maxHp : 0;
-    public bool IsFullHp => hp >= MaxHp;
+    public BuildingHealthNet health; 
 
     // Grid 관련
     public GridManager grid;
@@ -16,10 +12,15 @@ public class StructureSelectable : MonoBehaviour
     public Vector2Int footprint;    // 원본 footprint
     public int rotationY;   // 설치 당시 회전
 
-	private void Start()
-	{
-		hp = MaxHp;
-	}
+    public bool IsFullHp => health != null && health.IsFullHp;
+
+    private void Awake()
+    {
+        if (health == null)
+            health = GetComponent<BuildingHealthNet>();
+        if (type != null && health != null)
+            health.Init(type.maxHp);
+    }
 
     public void BindGrid(GridManager gridManager, Vector2Int anchor, Vector2Int footprint, int rotationY)
     {
@@ -52,7 +53,7 @@ public class StructureSelectable : MonoBehaviour
     public bool CanRepairLocal()
     {
         if (type == null) return false;
-        if (hp >= type.maxHp) return false;
+        if (IsFullHp) return false;
 
         int cost = type.repairCost;
         return ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(cost);
