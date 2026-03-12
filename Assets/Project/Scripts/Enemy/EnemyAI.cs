@@ -28,6 +28,8 @@ public class EnemyAI : MonoBehaviour
     private Transform player;                                // 플레이어 Transform
     private Rigidbody rb;
     private PhotonView pv;
+    private CapsuleCollider col;
+    private EnemyAnimationNet animationNet;
 
     // State
     private float nextAttackTime = 0f;
@@ -43,6 +45,8 @@ public class EnemyAI : MonoBehaviour
     {
         pv = GetComponent<PhotonView>();
         rb = GetComponent<Rigidbody>();
+        col = GetComponent<CapsuleCollider>();
+        animationNet = GetComponent<EnemyAnimationNet>();
     }
 
     void Start()
@@ -78,17 +82,19 @@ public class EnemyAI : MonoBehaviour
         // 타겟 선택: 구조물 없으면 플레이어
         Transform target = GetCurrentTarget();
 
-        float distance = Vector3.Distance(transform.position, target.position);
+        Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
+        float distance = Vector3.Distance(origin, target.position);
 
         if (distance > attackRange)
         {
+            animationNet?.SetMoveState(true, moveSpeed);
             MoveTowards(target);
+            // 애니메이션 동기화
         }
         else
         {
-            // 구조물이면 구조물 공격, 플레이어면 플레이어 공격
-            if (target == player) AttackPlayer();
-            else AttackStructure(target);
+            animationNet?.SetMoveState(false, 0);
+            TryAttack(target);
         }
     }
 
@@ -97,7 +103,7 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     private void UpdateStructureTarget(Vector3 dirToPlayer)
     {
-        Vector3 origin = transform.position;
+        Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
 
         // 플레이어 방향으로 전방 BoxCast
         if (Physics.BoxCast(origin, boxHalfExtents, dirToPlayer, out RaycastHit hit,
@@ -141,34 +147,29 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     // 공격
     // ============================================================
-    void AttackPlayer()
+    private void TryAttack(Transform target)
     {
-        // 쿨타임 확인
         if (Time.time < nextAttackTime)
             return;
 
-        // 공격 실행
-        if (ShooterHealthNet.Instance != null)
-        {
-            ShooterHealthNet.Instance.MasterApplyDamageToShooter(Mathf.RoundToInt(attackDamage));
-        }
-
-        // 다음 공격 시간 설정
         nextAttackTime = Time.time + attackCooldown;
+
+        int attackIndex = Random.Range(0, 4);
+        animationNet.PlayAttack(attackIndex, attackCooldown);
+
+        if (target == player) AttackPlayer();
+        else AttackStructure(target);
+    }
+    void AttackPlayer()
+    {
+        // 공격 실행
+        ShooterHealthNet.Instance?.MasterApplyDamageToShooter(Mathf.RoundToInt(attackDamage));
     }
 
     private void AttackStructure(Transform target)
     {
-        if (Time.time < nextAttackTime)
-            return;
-
         BuildingHealthNet healthNet = target.GetComponentInParent<BuildingHealthNet>();
-        if (healthNet != null)
-        {
-            healthNet.MasterTakeDamage(attackDamage);
-        }
-
-        nextAttackTime = Time.time + attackCooldown;
+        healthNet?.MasterTakeDamage(attackDamage);
     }
 
     // ============================================================
@@ -176,11 +177,12 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     void OnDrawGizmosSelected()
     {
+        Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
+
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(origin, attackRange);
 
         // boxCast(적 유닛 구조물 탐지 거리)
-        Vector3 origin = transform.position;
         Vector3 dir = transform.forward;
 
         float dist = structureDetectDistance;
