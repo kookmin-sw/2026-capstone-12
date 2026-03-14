@@ -158,7 +158,7 @@ public class EnemyAI : MonoBehaviour
         nextAttackTime = Time.time + attackCooldown;
 
         int attackIndex = Random.Range(0, 4);
-        animationNet.PlayAttack(attackIndex, attackCooldown);
+        animationNet?.PlayAttack(attackIndex, attackCooldown);
 
         if (target == player) AttackPlayer();
         else AttackStructure(target);
