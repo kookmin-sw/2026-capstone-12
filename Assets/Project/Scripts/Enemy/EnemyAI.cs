@@ -149,6 +149,9 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     private void TryAttack(Transform target)
     {
+        if (target == null || target.gameObject == null)
+            return;
+
         if (Time.time < nextAttackTime)
             return;
 
@@ -168,6 +171,9 @@ public class EnemyAI : MonoBehaviour
 
     private void AttackStructure(Transform target)
     {
+        if (target == null || target.gameObject == null)
+            return;
+
         BuildingHealthNet healthNet = target.GetComponentInParent<BuildingHealthNet>();
         healthNet?.MasterTakeDamage(attackDamage);
     }
