@@ -3,27 +3,47 @@ using Photon.Pun;
 
 /// <summary>
 /// 무기 컨트롤러
-/// - 마우스 좌클릭 발사
-/// - Raycast 히트스캔 방식
-/// - 탄약 관리
-/// - 재장전
+/// - 마우스 좌클릭 발사 (레이캐스트 히트스캔)
+/// - Easy FPS 팔 애니메이터 구동
+/// - 머즐 플래시 이펙트
+/// - 발사/재장전 사운드
+/// - 조준(우클릭) FOV 변경
+/// - 탄약 관리 및 재장전
 /// </summary>
 public class WeaponController : MonoBehaviour
 {
     [Header("Weapon Stats")]
-    [SerializeField] private float damage = 25f;              // 데미지
-    [SerializeField] private float range = 100f;              // 사거리
-    [SerializeField] private float fireRate = 0.1f;           // 연사 속도 (초)
+    [SerializeField] private float damage = 25f;
+    [SerializeField] private float range = 100f;
+    [SerializeField] private float fireRate = 0.1f;
 
     [Header("Ammo")]
-    [SerializeField] private int maxAmmo = 30;                // 탄창 크기
-    [SerializeField] private int currentAmmo;                 // 현재 탄창
-    [SerializeField] private int reserveAmmo = 120;           // 예비 탄약
-    [SerializeField] private float reloadTime = 2f;           // 재장전 시간
+    [SerializeField] private int maxAmmo = 30;
+    [SerializeField] private int currentAmmo;
+    [SerializeField] private int reserveAmmo = 120;
+    [SerializeField] private float reloadTime = 2f;
 
     public int CurrentAmmo => currentAmmo;
     public int ReserveAmmo => reserveAmmo;
     public int MaxAmmo => maxAmmo;
+
+    [Header("FPS Arms")]
+    [Tooltip("FPS_Character_prefab 오브젝트의 Animator")]
+    [SerializeField] private Animator handsAnimator;
+
+    [Header("Muzzle Flash")]
+    [Tooltip("Easy FPS의 muzzelFlash 01~05 프리팹 5개 등록")]
+    [SerializeField] private GameObject[] muzzleFlashPrefabs;
+    [Tooltip("총구 위치 (FPS_Character 하위 총구 끝 오브젝트)")]
+    [SerializeField] private Transform muzzlePoint;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource shootSoundSource;
+    [SerializeField] private AudioSource reloadSoundSource;
+
+    [Header("Aiming")]
+    [SerializeField] private float aimFOV = 40f;
+    private float normalFOV = 60f;
 
     // Components
     private Camera playerCamera;
@@ -32,40 +52,80 @@ public class WeaponController : MonoBehaviour
     // State
     private float nextTimeToFire = 0f;
     private bool isReloading = false;
+    private bool isAiming = false;
 
     void Start()
     {
-        // 카메라 참조
         playerCamera = Camera.main;
+        if (playerCamera != null)
+            normalFOV = playerCamera.fieldOfView;
 
-        // 네트워크 연결
         shooterWeaponNet = GetComponent<ShooterWeaponNet>();
-
-        // 시작 시 탄창 가득 채우기
         currentAmmo = maxAmmo;
+
+        AutoWireReferences();
+    }
+
+    /// <summary>
+    /// Inspector에 할당되지 않은 참조를 씬에서 자동으로 찾아 연결
+    /// </summary>
+    void AutoWireReferences()
+    {
+        // FPS Arms Animator - Main Camera 자식 "FPS_Arms"에서 찾기
+        if (handsAnimator == null)
+        {
+            if (playerCamera != null)
+            {
+                Transform fpsArms = playerCamera.transform.Find("FPS_Arms");
+                if (fpsArms != null)
+                    handsAnimator = fpsArms.GetComponent<Animator>();
+            }
+        }
+
+        // MuzzlePoint - FPS_Arms 하위에서 찾기
+        if (muzzlePoint == null)
+        {
+            if (playerCamera != null)
+            {
+                Transform mp = playerCamera.transform.Find("FPS_Arms/MuzzlePoint");
+                if (mp != null)
+                    muzzlePoint = mp;
+            }
+        }
+
+        // AudioSources - Player에 있는 AudioSource 순서대로 shoot / reload
+        if (shootSoundSource == null || reloadSoundSource == null)
+        {
+            AudioSource[] sources = GetComponents<AudioSource>();
+            if (sources.Length >= 1 && shootSoundSource == null)
+                shootSoundSource = sources[0];
+            if (sources.Length >= 2 && reloadSoundSource == null)
+                reloadSoundSource = sources[1];
+        }
+
+        // muzzleFlashPrefabs는 Inspector에서 직접 할당 필요
+        // (Assets/Easy FPS/MuzzelFlash/muzzelFlash 01~05.prefab 5개 드래그)
     }
 
     void Update()
     {
-        // 재장전 중이면 다른 동작 안 함
-        if (isReloading)
-            return;
+        if (isReloading) return;
 
-        // 재장전 입력 (R키)
+        HandleAiming();
+        DriveHandsAnimator();
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             StartReload();
             return;
         }
 
-        // 자동 재장전 (탄창이 비었을 때)
         if (currentAmmo <= 0)
         {
             StartReload();
             return;
         }
 
-        // 발사 입력 (마우스 좌클릭)
         if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
         {
             nextTimeToFire = Time.time + fireRate;
@@ -74,91 +134,112 @@ public class WeaponController : MonoBehaviour
     }
 
     /// <summary>
-    /// 총 발사
+    /// 우클릭 조준 처리 (FOV 변경 + 애니메이션)
+    /// </summary>
+    void HandleAiming()
+    {
+        isAiming = Input.GetButton("Fire2");
+
+        if (playerCamera != null)
+        {
+            float targetFOV = isAiming ? aimFOV : normalFOV;
+            playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * 10f);
+        }
+    }
+
+    /// <summary>
+    /// FPS 팔 애니메이터 파라미터 구동
+    /// GunAnimator.controller 파라미터: walkSpeed(float), maxSpeed(int), aiming(bool), reloading(bool)
+    /// </summary>
+    void DriveHandsAnimator()
+    {
+        if (handsAnimator == null) return;
+
+        // 이동 속도 계산 (CharacterController velocity 기준)
+        var cc = GetComponent<CharacterController>();
+        float horizontalSpeed = cc != null
+            ? new Vector3(cc.velocity.x, 0, cc.velocity.z).magnitude
+            : 0f;
+
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        int maxSpeed = isSprinting ? 5 : 3;
+
+        handsAnimator.SetFloat("walkSpeed", horizontalSpeed);
+        handsAnimator.SetInteger("maxSpeed", maxSpeed);
+        handsAnimator.SetBool("aiming", isAiming);
+    }
+
+    /// <summary>
+    /// 총 발사: 레이캐스트 + 머즐 플래시 + 사운드 + 애니메이션
     /// </summary>
     void Fire()
     {
-
-        // 탄약 소모
         currentAmmo--;
 
-        // 화면 중앙에서 Raycast 발사
+        // 머즐 플래시
+        SpawnMuzzleFlash();
+
+        // 발사 사운드
+        shootSoundSource?.Play();
+
+        // 발사 애니메이션 (walkSpeed 파라미터로 자동 처리됨, 별도 트리거 없음)
+
+        // 레이캐스트 히트스캔
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, range))
+        if (Physics.Raycast(ray, out RaycastHit hit, range))
         {
-            // 맞은 오브젝트 콘솔에 출력 (테스트용)
-            Debug.Log("Hit: " + hit.collider.name);
-
-            // 맞은 위치에 시각적 피드백 (Scene 뷰에서만 보임)
-            Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red, 1f);
-
-            // TODO: 나중에 데미지 처리 추가
-            // 예: hit.collider.GetComponent<Enemy>()?.TakeDamage(damage);
             if (hit.collider.CompareTag("Enemy"))
             {
                 PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
-                shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
+                if (enemyPv != null)
+                    shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
             }
         }
-        else
-        {
-            // 허공에 쏜 경우
-            Debug.DrawRay(ray.origin, ray.direction * range, Color.yellow, 1f);
-        }
-
-        // 콘솔에 탄약 상태 출력
-        Debug.Log($"Fire! Ammo: {currentAmmo}/{maxAmmo} | Reserve: {reserveAmmo}");
     }
 
     /// <summary>
-    /// 재장전 시작
+    /// 머즐 플래시 랜덤 스폰
     /// </summary>
+    void SpawnMuzzleFlash()
+    {
+        if (muzzleFlashPrefabs == null || muzzleFlashPrefabs.Length == 0 || muzzlePoint == null)
+            return;
+
+        int idx = Random.Range(0, muzzleFlashPrefabs.Length);
+        if (muzzleFlashPrefabs[idx] == null) return;
+
+        GameObject flash = Instantiate(
+            muzzleFlashPrefabs[idx],
+            muzzlePoint.position,
+            muzzlePoint.rotation * Quaternion.Euler(0, 0, 90)
+        );
+        flash.transform.SetParent(muzzlePoint);
+        Destroy(flash, 0.05f);
+    }
+
     void StartReload()
     {
-        // 예비 탄약이 없으면 재장전 불가
-        if (reserveAmmo <= 0)
-        {
-            Debug.Log("No reserve ammo!");
-            return;
-        }
+        if (reserveAmmo <= 0 || currentAmmo == maxAmmo) return;
 
-        // 이미 탄창이 가득 차있으면 재장전 불필요
-        if (currentAmmo == maxAmmo)
-        {
-            Debug.Log("Magazine is full!");
-            return;
-        }
-
-        Debug.Log("Reloading...");
         isReloading = true;
 
-        // 재장전 시간 후 완료
+        handsAnimator?.SetBool("reloading", true);
+        reloadSoundSource?.Play();
+
         Invoke(nameof(FinishReload), reloadTime);
     }
 
-    /// <summary>
-    /// 재장전 완료
-    /// </summary>
     void FinishReload()
     {
-        // 필요한 탄약 계산
         int ammoNeeded = maxAmmo - currentAmmo;
-
-        // 예비 탄약에서 가져오기
         int ammoToReload = Mathf.Min(ammoNeeded, reserveAmmo);
-
         currentAmmo += ammoToReload;
         reserveAmmo -= ammoToReload;
 
         isReloading = false;
-
-        Debug.Log($"Reload Complete! Ammo: {currentAmmo}/{maxAmmo} | Reserve: {reserveAmmo}");
+        handsAnimator?.SetBool("reloading", false);
     }
-    /// <summary>
-    /// 컨트롤러 활성화/비활성화 (사망용)
-    /// </summary>
+
     public void SetEnabled(bool enabled)
     {
         this.enabled = enabled;

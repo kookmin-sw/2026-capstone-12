@@ -1,11 +1,15 @@
+using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
 /// Player 자식으로 넣은 Robot_Soldier의 달리기 애니메이션 제어
 /// - 이동 중: Run_Aim 애니메이션 재생
 /// - 정지 중: 애니메이션 멈춤
+/// - 역할에 따라 로봇 몸체 / FPS_Arms 가시성 제어
+///   · 로컬 슈터  → 로봇 몸체 숨김, FPS_Arms 표시
+///   · 로컬 서포터 → 로봇 몸체 표시, FPS_Arms 숨김
 /// </summary>
-public class PlayerBodyController : MonoBehaviour
+public class PlayerBodyController : MonoBehaviourPun
 {
     [Header("3인칭 바디")]
     [Tooltip("Player 자식으로 넣은 Robot_Soldier 오브젝트를 여기에 연결")]
@@ -19,6 +23,39 @@ public class PlayerBodyController : MonoBehaviour
         if (thirdPersonBody == null) return;
         bodyAnimator = thirdPersonBody.GetComponentInChildren<Animator>();
         lastPosition = transform.position;
+
+        ApplyRoleVisibility();
+    }
+
+    /// <summary>
+    /// CustomProperties["Role"] 기준으로 가시성 설정
+    /// photonView.IsMine 대신 Role을 사용해 타이밍 이슈 방지
+    /// </summary>
+    void ApplyRoleVisibility()
+    {
+        bool isLocalShooter;
+        if (!PhotonNetwork.IsConnected)
+        {
+            isLocalShooter = true; // 단독 에디터 테스트는 슈터로 처리
+        }
+        else
+        {
+            var props = PhotonNetwork.LocalPlayer.CustomProperties;
+            isLocalShooter = props.ContainsKey("Role") && (string)props["Role"] == "Shooter";
+        }
+
+        // 로봇 몸체: 슈터 본인에게는 숨김 (FPS_Arms가 대체), 서포터에게는 보임
+        foreach (var r in thirdPersonBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            r.enabled = !isLocalShooter;
+
+        // FPS_Arms: 슈터일 때만 활성화 (서포터 탑뷰 카메라에 팔이 떠다니지 않도록)
+        Camera mainCam = Camera.main;
+        if (mainCam != null)
+        {
+            Transform fpsArms = mainCam.transform.Find("FPS_Arms");
+            if (fpsArms != null)
+                fpsArms.gameObject.SetActive(isLocalShooter);
+        }
     }
 
     void Update()
