@@ -4,7 +4,14 @@
       "mcp__UnityMCP__manage_components",
       "mcp__UnityMCP__find_gameobjects",
       "mcp__UnityMCP__manage_gameobject",
-      "mcp__UnityMCP__manage_scene"
+      "mcp__UnityMCP__manage_scene",
+      "Bash(find Assets/ -iname *muzzle* -o -iname *muzzel*)",
+      "Bash(find Assets/ -iname *muzzel* -o -iname *muzzle*)",
+      "Bash(find 'Assets/Easy FPS' -iname *.wav -o -iname *.mp3 -o -iname *.ogg)",
+      "Bash(for i:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/PC1/kmu-coop-defense/Assets/Easy FPS/MuzzelFlash/MuzzlePrefabs/**)",
+      "Bash(done)"
     ]
   }
 }
