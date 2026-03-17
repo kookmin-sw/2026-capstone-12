@@ -56,9 +56,6 @@ MonoBehaviour:
   - RpcPlayShotFx
   - RpcRequestHitEnemy
   - RpcSetHp
-  - RPC_PlayAttack
-  - RPC_PlayDeath
-  - RPC_SetMoveState
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

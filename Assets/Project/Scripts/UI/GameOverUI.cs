@@ -78,7 +78,6 @@ public class GameOverUI : MonoBehaviour
         Debug.Log("Returning to room...");
 
         // 방은 유지하고 RoomScene으로 복귀
-        InputLock.Unlock();
         SceneManager.LoadScene("RoomScene");
     }
 

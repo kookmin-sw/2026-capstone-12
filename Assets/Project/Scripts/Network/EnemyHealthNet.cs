@@ -31,10 +31,6 @@ public class EnemyHealthNet : MonoBehaviourPun
         // 사망
         if (newHp <= 0f)
         {
-            // 애니메이션 동기화
-            EnemyAnimationNet animationNet = enemyPv.GetComponent<EnemyAnimationNet>();
-            animationNet?.PlayDeath();
-
             // 보상 처리
             if (ResourceNet.Instance != null)
             {
