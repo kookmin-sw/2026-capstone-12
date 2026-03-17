@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
-  m_Name: BT_Wall_1
+  m_Name: BT_Barrier
   m_EditorClassIdentifier: 
   prefab: {fileID: 7307361376702685315, guid: d4a437af5a66ca14195f30d43cb37271, type: 3}
   typeId: 3
-  photonPrefabPath: Prefabs/Buildings/Walls/Wall_1_Root
+  photonPrefabPath: Prefabs/Buildings/Walls/Barrier_Root
   footprint: {x: 1, y: 1}
   allowRotate: 1
   cost: 10
