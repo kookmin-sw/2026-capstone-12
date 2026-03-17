@@ -37,13 +37,29 @@ public class BuildSystem : MonoBehaviour
         if (TryGetMouseWorldOnGround(out Vector3 hitWorld))
         {
             Vector2Int centerCell = gridManager.WorldToGrid(hitWorld);
+
+            if (!gridManager.IsInside(centerCell.x, centerCell.y))
+            {
+                DestroyGhost();
+                return;
+            }
+
             Vector2Int anchor = gridManager.CenterToAnchor(centerCell, selectedType.footprint, rotationY);
 
-            Vector3 snapped = gridManager.AnchorToWorldCenter(anchor, selectedType.footprint, rotationY);
-
             EnsureGhost();
-            ghostObj.transform.position = snapped;
-            ghostObj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
+
+            bool hasPlacementPos = gridManager.TryGetPlacementPosition(anchor, selectedType.footprint, rotationY, out Vector3 snapped, out _);
+
+            if (hasPlacementPos)
+            {
+                ghostObj.transform.position = snapped;
+                ghostObj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
+            }
+            else
+            {
+                ghostObj.transform.position = hitWorld;
+                ghostObj.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
+            }
 
             bool hasMoney = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(selectedType.cost);
             bool canPlace = hasMoney && gridManager.IsAreaFree(anchor.x, anchor.y, selectedType.footprint, rotationY);
@@ -111,13 +127,13 @@ public class BuildSystem : MonoBehaviour
     {
         worldPos = Vector3.zero;
 
-        if (topDownCamera == null)
+        if (topDownCamera == null || gridManager == null)
             return false;
 
         Ray ray = topDownCamera.ScreenPointToRay(Input.mousePosition);
 
         // Ground 레이어에만 맞추고 싶으면 Physics.Raycast에 LayerMask 사용
-        if (Physics.Raycast(ray, out RaycastHit hit, 500f))
+        if (Physics.Raycast(ray, out RaycastHit hit, 500f, gridManager.BuildSurfaceMask, QueryTriggerInteraction.Ignore))
         {
             worldPos = hit.point;
             return true;
