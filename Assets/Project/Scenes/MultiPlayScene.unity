@@ -4654,7 +4654,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 815263296}
   costText: {fileID: 1354034023}
-  buildingType: {fileID: 11400000, guid: a64741a46942f34498c096ce68141448, type: 2}
+  buildingType: {fileID: 11400000, guid: 345476f1061d59e46b5d452815b5383b, type: 2}
   buildSystem: {fileID: 2097214242}
 --- !u!1 &1271021339
 GameObject:
@@ -6904,7 +6904,7 @@ MonoBehaviour:
   buildSystem: {fileID: 2097214242}
   types:
   - {fileID: 11400000, guid: 7709a8a41b09ac4438bbd9f554bed1b1, type: 2}
-  - {fileID: 11400000, guid: a64741a46942f34498c096ce68141448, type: 2}
+  - {fileID: 11400000, guid: 345476f1061d59e46b5d452815b5383b, type: 2}
   - {fileID: 11400000, guid: 7017437aa4e7a084c8421b26d08a17ea, type: 2}
   - {fileID: 11400000, guid: eaf1739f373770940943530aceb51ae0, type: 2}
 --- !u!114 &1898816824
@@ -7171,8 +7171,9 @@ MonoBehaviour:
   gridManager: {fileID: 894042877}
   buildingTypes:
   - {fileID: 11400000, guid: 7709a8a41b09ac4438bbd9f554bed1b1, type: 2}
-  - {fileID: 11400000, guid: a64741a46942f34498c096ce68141448, type: 2}
+  - {fileID: 11400000, guid: 345476f1061d59e46b5d452815b5383b, type: 2}
   - {fileID: 11400000, guid: 7017437aa4e7a084c8421b26d08a17ea, type: 2}
+  - {fileID: 11400000, guid: eaf1739f373770940943530aceb51ae0, type: 2}
   ghostMaterial: {fileID: 2100000, guid: 81bf0319d60a644478d632905878297f, type: 2}
 --- !u!1 &2145844352
 GameObject:
