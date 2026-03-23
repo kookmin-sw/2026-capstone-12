@@ -191,6 +191,9 @@ public class BuildSystem : MonoBehaviour
         foreach (var c in go.GetComponentsInChildren<Collider>(true))
             c.enabled = false;
 
+        foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true))
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
         // 고스트 재질 적용
         if (ghostMaterial != null)
         {

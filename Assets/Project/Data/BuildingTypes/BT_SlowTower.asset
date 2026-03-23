@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
-  m_Name: BT_Tower_1x1
+  m_Name: BT_SlowTower
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1879385777915753179, guid: 95fec60f37205c143aba1281d66c114c, type: 3}
+  prefab: {fileID: 2121033438344569908, guid: 337146785e7f2e048adfd0ed88d6f251, type: 3}
   typeId: 1
-  photonPrefabPath: Prefabs/Buildings/Walls/Tower_1x1_Root
-  footprint: {x: 1, y: 1}
+  photonPrefabPath: Prefabs/Buildings/Turrets/SlowTower_Root
+  footprint: {x: 2, y: 2}
   allowRotate: 1
-  cost: 10
+  cost: 50
   maxHp: 100

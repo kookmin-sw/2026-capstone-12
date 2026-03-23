@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Photon.Pun;
+using System.Collections.Generic;
 
 /// <summary>
 /// 적 AI
@@ -8,13 +9,20 @@ using Photon.Pun;
 /// </summary>
 public class EnemyAI : MonoBehaviour
 {
+    private struct SlowState
+    {
+        public float moveSpeedMultiplier;
+        public float attackSpeedMultiplier;
+        public float expireTime;
+    }
+
     // ============================================================
     // 변수
     // ============================================================
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 3f;          // 이동 속도
+    [SerializeField] private float moveSpeed = 3f;          // 기본 이동 속도
     [SerializeField] private float attackRange = 1.5f;      // 공격 범위
-    [SerializeField] private float attackCooldown = 1f;     // 공격 쿨타임
+    [SerializeField] private float attackCooldown = 1f;     // 기본 공격 쿨타임
 
     [Header("Combat")]
     [SerializeField] private float attackDamage = 5f;       // 공격 데미지
@@ -33,6 +41,9 @@ public class EnemyAI : MonoBehaviour
 
     // State
     private float nextAttackTime = 0f;
+    private float currentMoveSpeed;
+    private float currentAttackCooldown;
+    private readonly Dictionary<int, SlowState> activeSlows = new Dictionary<int, SlowState>();
 
     // 건물 공격 관련 변수
     private Transform structureTarget;
@@ -47,6 +58,9 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
         animationNet = GetComponent<EnemyAnimationNet>();
+
+        currentMoveSpeed = moveSpeed;
+        currentAttackCooldown = attackCooldown;
     }
 
     void Start()
@@ -70,6 +84,9 @@ public class EnemyAI : MonoBehaviour
         if (player == null)
             return;
 
+        UpdateSlowState();
+        UpdateCurrentStats();
+
         // 플레이어 방향 계산
         Vector3 toPlayer = (player.position - transform.position);
         toPlayer.y = 0f;
@@ -87,7 +104,7 @@ public class EnemyAI : MonoBehaviour
 
         if (distance > attackRange)
         {
-            animationNet?.SetMoveState(true, moveSpeed);
+            animationNet?.SetMoveState(true, currentMoveSpeed);
             MoveTowards(target);
             // 애니메이션 동기화
         }
@@ -96,6 +113,67 @@ public class EnemyAI : MonoBehaviour
             animationNet?.SetMoveState(false, 0);
             TryAttack(target);
         }
+    }
+
+    // ============================================================
+    // 슬로우
+    // ============================================================
+    public void ApplySlow(int sourceId, float moveSpeedMultiplier, float attackSpeedMultiplier, float duration)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        activeSlows[sourceId] = new SlowState
+        {
+            moveSpeedMultiplier = Mathf.Clamp(moveSpeedMultiplier, 0.01f, 1f),
+            attackSpeedMultiplier = Mathf.Clamp(attackSpeedMultiplier, 0.01f, 1f),
+            expireTime = Time.time + Mathf.Max(0.01f, duration)
+        };
+    }
+
+    public void RemoveSlow(int sourceId)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        activeSlows.Remove(sourceId);
+    }
+
+    private void UpdateSlowState()
+    {
+        if (activeSlows.Count == 0)
+            return;
+
+        List<int> expiredKeys = null;
+        foreach (KeyValuePair<int, SlowState> pair in activeSlows)
+        {
+            if (pair.Value.expireTime > Time.time)
+                continue;
+
+            expiredKeys ??= new List<int>();
+            expiredKeys.Add(pair.Key);
+        }
+
+        if (expiredKeys == null)
+            return;
+
+        for (int i = 0; i < expiredKeys.Count; i++)
+            activeSlows.Remove(expiredKeys[i]);
+    }
+
+    private void UpdateCurrentStats()
+    {
+        float moveSpeedMultiplier = 1f;
+        float attackSpeedMultiplier = 1f;
+
+        foreach (KeyValuePair<int, SlowState> pair in activeSlows)
+        {
+            moveSpeedMultiplier = Mathf.Min(moveSpeedMultiplier, pair.Value.moveSpeedMultiplier);
+            attackSpeedMultiplier = Mathf.Min(attackSpeedMultiplier, pair.Value.attackSpeedMultiplier);
+        }
+
+        currentMoveSpeed = moveSpeed * moveSpeedMultiplier;
+        currentAttackCooldown = attackCooldown / Mathf.Max(0.01f, attackSpeedMultiplier);
     }
 
     // ============================================================
@@ -135,7 +213,7 @@ public class EnemyAI : MonoBehaviour
         direction.y = 0f;
         direction.Normalize();
 
-        rb.MovePosition(transform.position + direction * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(transform.position + direction * currentMoveSpeed * Time.fixedDeltaTime);
 
         if (direction != Vector3.zero)
         {
@@ -155,10 +233,10 @@ public class EnemyAI : MonoBehaviour
         if (Time.time < nextAttackTime)
             return;
 
-        nextAttackTime = Time.time + attackCooldown;
+        nextAttackTime = Time.time + currentAttackCooldown;
 
         int attackIndex = Random.Range(0, 4);
-        animationNet?.PlayAttack(attackIndex, attackCooldown);
+        animationNet?.PlayAttack(attackIndex, currentAttackCooldown);
 
         if (target == player) AttackPlayer();
         else AttackStructure(target);
