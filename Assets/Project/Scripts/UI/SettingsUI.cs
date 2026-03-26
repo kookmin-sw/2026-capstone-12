@@ -14,6 +14,7 @@ public class SettingsUI : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private Slider volumeSlider;
+    [SerializeField] private Slider voiceVolumeSlider;
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Toggle fullscreenToggle;
 
@@ -26,6 +27,7 @@ public class SettingsUI : MonoBehaviour
     // ============================================================
     private float tempSensitivity;
     private float tempVolume;
+    private float tempVoiceVolume;
     private int tempResolutionIndex;
     private bool tempFullscreen;
 
@@ -52,6 +54,8 @@ public class SettingsUI : MonoBehaviour
         // 슬라이더/드롭다운 이벤트 연결
         sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
         volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        if (voiceVolumeSlider != null)
+            voiceVolumeSlider.onValueChanged.AddListener(OnVoiceVolumeChanged);
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
     }
@@ -99,12 +103,15 @@ public class SettingsUI : MonoBehaviour
         // SettingsManager에서 현재 설정 가져오기
         tempSensitivity = SettingsManager.Instance.mouseSensitivity;
         tempVolume = SettingsManager.Instance.masterVolume;
+        tempVoiceVolume = SettingsManager.Instance.voiceVolume;
         tempResolutionIndex = SettingsManager.Instance.resolutionIndex;
         tempFullscreen = SettingsManager.Instance.isFullscreen;
 
         // UI에 반영
         sensitivitySlider.value = tempSensitivity;
         volumeSlider.value = tempVolume;
+        if (voiceVolumeSlider != null)
+            voiceVolumeSlider.value = tempVoiceVolume;
         resolutionDropdown.value = tempResolutionIndex;
         fullscreenToggle.isOn = tempFullscreen;
     }
@@ -120,6 +127,11 @@ public class SettingsUI : MonoBehaviour
     void OnVolumeChanged(float value)
     {
         tempVolume = value;
+    }
+
+    void OnVoiceVolumeChanged(float value)
+    {
+        tempVoiceVolume = value;
     }
 
     void OnResolutionChanged(int index)
@@ -143,6 +155,7 @@ public class SettingsUI : MonoBehaviour
         // SettingsManager에 설정 저장
         SettingsManager.Instance.mouseSensitivity = tempSensitivity;
         SettingsManager.Instance.masterVolume = tempVolume;
+        SettingsManager.Instance.voiceVolume = tempVoiceVolume;
         SettingsManager.Instance.resolutionIndex = tempResolutionIndex;
         SettingsManager.Instance.isFullscreen = tempFullscreen;
 

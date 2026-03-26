@@ -18,6 +18,7 @@ public class SettingsManager : MonoBehaviour
 
     [Header("Audio")]
     public float masterVolume = 1f;
+    public float voiceVolume = 1f;
 
     [Header("Graphics")]
     public int resolutionIndex = 0;
@@ -28,6 +29,7 @@ public class SettingsManager : MonoBehaviour
     // ============================================================
     private const string MOUSE_SENSITIVITY_KEY = "MouseSensitivity";
     private const string MASTER_VOLUME_KEY = "MasterVolume";
+    private const string VOICE_VOLUME_KEY = "VoiceVolume";
     private const string RESOLUTION_INDEX_KEY = "ResolutionIndex";
     private const string FULLSCREEN_KEY = "Fullscreen";
 
@@ -56,6 +58,7 @@ public class SettingsManager : MonoBehaviour
     {
         mouseSensitivity = PlayerPrefs.GetFloat(MOUSE_SENSITIVITY_KEY, 2f);
         masterVolume = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 1f);
+        voiceVolume = PlayerPrefs.GetFloat(VOICE_VOLUME_KEY, 1f);
         resolutionIndex = PlayerPrefs.GetInt(RESOLUTION_INDEX_KEY, 0);
         isFullscreen = PlayerPrefs.GetInt(FULLSCREEN_KEY, 1) == 1;
 
@@ -66,6 +69,7 @@ public class SettingsManager : MonoBehaviour
     {
         PlayerPrefs.SetFloat(MOUSE_SENSITIVITY_KEY, mouseSensitivity);
         PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, masterVolume);
+        PlayerPrefs.SetFloat(VOICE_VOLUME_KEY, voiceVolume);
         PlayerPrefs.SetInt(RESOLUTION_INDEX_KEY, resolutionIndex);
         PlayerPrefs.SetInt(FULLSCREEN_KEY, isFullscreen ? 1 : 0);
         PlayerPrefs.Save();
@@ -80,6 +84,12 @@ public class SettingsManager : MonoBehaviour
     {
         // 볼륨 적용
         AudioListener.volume = masterVolume;
+
+        // 음성 볼륨 적용
+        if (VoiceChatManager.Instance != null)
+        {
+            VoiceChatManager.Instance.SetVoiceVolume(voiceVolume);
+        }
 
         // 해상도 적용
         Resolution[] resolutions = Screen.resolutions;

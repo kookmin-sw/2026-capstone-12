@@ -15,8 +15,8 @@ MonoBehaviour:
   AppSettings:
     AppIdRealtime: d3052c16-ee4c-4fff-aa37-5f5c421fd327
     AppIdFusion: 
-    AppIdChat: 
-    AppIdVoice: 
+    AppIdChat: d3052c16-ee4c-4fff-aa37-5f5c421fd327
+    AppIdVoice: d3052c16-ee4c-4fff-aa37-5f5c421fd327
     AppVersion: 
     UseNameServer: 1
     FixedRegion: 
@@ -28,37 +28,35 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: kr
+  DevRegion: 
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CantHearYou
+  - ChangeColour
   - ClickRpc
   - DestroyRpc
+  - HeresWhy
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
-  - RpcRequestPlace
-  - RpcRequestRepair
-  - RpcRequestSell
-  - RpcApplyStructureHp
-  - RpcRequestAddGold
-  - RpcRequestDamage
-  - RpcSetGold
-  - RpcSetShooterHp
-  - RpcShooterDied
-  - RpcSetEnemyHp
-  - RpcSetMoney
-  - RpcSetScore
-  - RpcSetKills
-  - StartGame
-  - RpcPlayShotFx
-  - RpcRequestHitEnemy
-  - RpcSetHp
   - RPC_PlayAttack
   - RPC_PlayDeath
   - RPC_SetMoveState
+  - RpcPlayShotFx
+  - RpcRequestHitEnemy
+  - RpcRequestPlace
+  - RpcRequestRepair
+  - RpcRequestSell
+  - RpcSetEnemyHp
+  - RpcSetHp
+  - RpcSetKills
+  - RpcSetMoney
+  - RpcSetScore
+  - RpcSetShooterHp
+  - RpcShooterDied
   DisableAutoOpenWizard: 1
   ShowSettings: 1
-  DevRegionSetOnce: 1
+  DevRegionSetOnce: 0
