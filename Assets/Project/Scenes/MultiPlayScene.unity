@@ -8207,6 +8207,8 @@ GameObject:
   - component: {fileID: 8708646526427126029}
   - component: {fileID: 8708646526427126028}
   - component: {fileID: 8708646526427126033}
+  - component: {fileID: 8708646526427126036}
+  - component: {fileID: 8708646526427126037}
   - component: {fileID: 8708646526427126034}
   - component: {fileID: 8708646526427126035}
   m_Layer: 0
@@ -8445,6 +8447,7 @@ GameObject:
   - component: {fileID: 880582219099208052}
   - component: {fileID: 6078586685841882673}
   - component: {fileID: 7147144714688411390}
+  - component: {fileID: 7147144714688411391}
   m_Layer: 0
   m_Name: Supporter Camera
   m_TagString: MainCamera
@@ -8477,6 +8480,26 @@ MonoBehaviour:
   maxPitch: 75
   fallbackToGroundPlane: 1
   groundPlaneY: 0
+--- !u!114 &7147144714688411391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6995496300289369734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f71771c69dc49e6a792292613032998, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pingKey: 103
+  selectorSensitivity: 45
+  selectorThreshold: 35
+  selectorClamp: 120
+  pingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxPingDistance: 500
 --- !u!33 &8624253758623181658
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -8517,6 +8540,7 @@ MonoBehaviour:
   - {fileID: 6917112937863077453}
   - {fileID: 3797320134046962192}
   - {fileID: 672004872}
+  - {fileID: 8708646526427126036}
   localOnlyCameras:
   - {fileID: 2081484028746210772}
 --- !u!114 &8708646526427126028
@@ -8574,6 +8598,7 @@ MonoBehaviour:
   disableOnDeath:
   - {fileID: 6917112937863077453}
   - {fileID: 3797320134046962192}
+  - {fileID: 8708646526427126036}
 --- !u!114 &8708646526427126031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8611,6 +8636,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thirdPersonBody: {fileID: 1036628711}
+--- !u!114 &8708646526427126036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093071822631863941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7099d1c4b7ce41a48df18d34dd42b551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pingKey: 103
+  selectorSensitivity: 45
+  selectorThreshold: 35
+  selectorClamp: 120
+  pingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  maxPingDistance: 200
+  fallbackDistance: 30
+--- !u!114 &8708646526427126037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093071822631863941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57d991ce7b7f4f78b16b4444a3f50f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visibleDuration: 1
+  fadeDuration: 1
 --- !u!82 &8708646526427126034
 AudioSource:
   m_ObjectHideFlags: 0
