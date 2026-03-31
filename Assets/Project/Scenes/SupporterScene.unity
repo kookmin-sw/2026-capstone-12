@@ -5040,16 +5040,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4927394343169404680, guid: 337146785e7f2e048adfd0ed88d6f251,
-        type: 3}
-      propertyPath: m_MaxParticleSize
-      value: 10000
-      objectReference: {fileID: 0}
-    - target: {fileID: 5573499764269964804, guid: 337146785e7f2e048adfd0ed88d6f251,
-        type: 3}
-      propertyPath: sceneViewId
-      value: 4
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
