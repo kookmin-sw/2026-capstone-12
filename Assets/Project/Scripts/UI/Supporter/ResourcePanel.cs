@@ -9,6 +9,9 @@ public class ResourcePanel : MonoBehaviour
 
     private void Update()
     {
+        if (goldText == null)
+            goldText = FindGoldText();
+
         if (subscribed) return;
         if (ResourceManager.Instance == null) return;
 
@@ -30,5 +33,14 @@ public class ResourcePanel : MonoBehaviour
     {
         if (goldText != null)
             goldText.text = $"Gold: {value}";
+    }
+
+    private TextMeshProUGUI FindGoldText()
+    {
+        Transform child = transform.Find("GoldText");
+        if (child != null)
+            return child.GetComponent<TextMeshProUGUI>();
+
+        return GetComponentInChildren<TextMeshProUGUI>(true);
     }
 }
