@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class BuildSystem : MonoBehaviour
@@ -12,6 +13,8 @@ public class BuildSystem : MonoBehaviour
 
     [Header("Placement Visual")]
     public Material ghostMaterial;
+
+    public event Action BuildModeEnded;
 
     private BuildingTypeSO selectedType;
     private GameObject ghostObj;
@@ -71,15 +74,11 @@ public class BuildSystem : MonoBehaviour
                     return;
 
                 if (canPlace)
-                {
                     PlaceBuilding(anchor);
-                }
             }
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-            {
                 CancelBuildMode();
-            }
         }
         else
         {
@@ -102,6 +101,7 @@ public class BuildSystem : MonoBehaviour
             SelectType(2);
     }
 
+    // 인덱스로 구조물 타입을 선택하고 고스트를 준비
     private void SelectType(int index)
     {
         if (index < 0 || index >= buildingTypes.Length)
@@ -112,6 +112,7 @@ public class BuildSystem : MonoBehaviour
         EnsureGhost();
     }
 
+    // 회전 가능한 구조물의 방향 입력을 처리
     private void HandleRotate()
     {
         if (selectedType == null || !selectedType.allowRotate)
@@ -123,6 +124,7 @@ public class BuildSystem : MonoBehaviour
             rotationY = (rotationY + 90) % 360;
     }
 
+    // 마우스 위치를 설치 가능한 월드 좌표로 변환
     private bool TryGetMouseWorldOnGround(out Vector3 worldPos)
     {
         worldPos = Vector3.zero;
@@ -142,6 +144,7 @@ public class BuildSystem : MonoBehaviour
         return false;
     }
 
+    // 네트워크 매니저에 설치 요청을 보내고 빌드 모드를 종료
     private void PlaceBuilding(Vector2Int anchor)
     {
         if (selectedType == null)
@@ -158,15 +161,19 @@ public class BuildSystem : MonoBehaviour
 
         // 로컬 생성/점유/차감은 하지 않고 "요청"만 보냄
         BuildNetManager.Instance.RequestPlace(selectedType.typeId, anchor.x, anchor.y, rotationY);
+        CancelBuildMode();
     }
 
+    // 현재 빌드 모드를 종료하고 고스트를 정리
     private void CancelBuildMode()
     {
         selectedType = null;
         rotationY = 0;
         DestroyGhost();
+        BuildModeEnded?.Invoke();
     }
 
+    // 선택된 구조물의 고스트 오브젝트를 생성
     private void EnsureGhost()
     {
         if (ghostObj != null || selectedType == null || selectedType.prefab == null)
@@ -176,6 +183,7 @@ public class BuildSystem : MonoBehaviour
         SetGhostMode(ghostObj);
     }
 
+    // 현재 고스트 오브젝트를 제거
     private void DestroyGhost()
     {
         if (ghostObj != null)
@@ -183,6 +191,7 @@ public class BuildSystem : MonoBehaviour
         ghostObj = null;
     }
 
+    // 고스트 오브젝트를 배치 미리보기 상태로 변경
     private void SetGhostMode(GameObject go)
     {
         if (go.GetComponent<GhostMarker>() == null)
@@ -208,6 +217,7 @@ public class BuildSystem : MonoBehaviour
         }
     }
 
+    // 설치 가능 여부에 따라 고스트 색상을 갱신
     private void ApplyGhostColor(bool canPlace)
     {
         if (ghostObj == null)
@@ -228,6 +238,7 @@ public class BuildSystem : MonoBehaviour
         }
     }
 
+    // 현재 마우스가 UI 위에 있는지 확인
     private bool IsPointerOverUI()
     {
         if (EventSystem.current == null)
@@ -236,6 +247,7 @@ public class BuildSystem : MonoBehaviour
         return EventSystem.current.IsPointerOverGameObject();
     }
 
+    // UI에서 선택한 구조물을 현재 빌드 대상으로 설정
     public void SelectBuilding(BuildingTypeSO type)
     {
         if (type == null)

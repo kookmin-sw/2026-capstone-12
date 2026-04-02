@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_Tower_2x2
   m_EditorClassIdentifier: 
+  displayName: BigBarrier
+  description: BigBarrier
+  icon: {fileID: 21300000, guid: b1eceb0b4d13e6542a77a9ce0d89c265, type: 3}
   prefab: {fileID: 6824110937904739417, guid: 776f5c07683814f468b12ccfc0aa035e, type: 3}
   typeId: 2
   photonPrefabPath: Prefabs/Buildings/Walls/Tower_3x3_Root
