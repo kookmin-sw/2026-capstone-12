@@ -53,11 +53,18 @@ public class PlayerController : MonoBehaviour
         HandleMovement();
         HandleLook();
 
-        // ESC로 커서 해제 (테스트용)
+        // ESC로 커서 해제
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+        }
+
+        // 화면 클릭 시 커서 다시 잠금
+        if (Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 

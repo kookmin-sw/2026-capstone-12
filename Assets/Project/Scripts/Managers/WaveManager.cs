@@ -9,7 +9,7 @@ using Photon.Pun;
 /// - 적 스폰
 /// - 승리 조건 확인
 /// </summary>
-public class WaveManager : MonoBehaviour
+public class WaveManager : MonoBehaviourPun
 {
     // ============================================================
     // 싱글턴
@@ -84,16 +84,32 @@ public class WaveManager : MonoBehaviour
 
     void Update()
     {
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
+        // 타이머와 UI 업데이트는 모든 클라이언트에서 실행
         if (isPreparing)
         {
-            UpdatePreparePhase();
+            prepareTimer -= Time.deltaTime;
+            OnPrepareTimerUpdate.Invoke(prepareTimer);
+
+            // 웨이브 시작 판정은 마스터만
+            if (PhotonNetwork.IsMasterClient && prepareTimer <= 0f)
+            {
+                isPreparing = false;
+                StartWave();
+            }
         }
         else if (isWaveActive)
         {
-            UpdateWavePhase();
+            waveTimer -= Time.deltaTime;
+            OnWaveTimerUpdate.Invoke(waveTimer);
+
+            // 웨이브 완료 판정은 마스터만
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (EnemyManager.Instance.ActiveEnemyCount == 0 && spawnedEnemies >= totalEnemiesInWave)
+                    CompleteWave();
+                else if (waveTimer <= 0f)
+                    CompleteWave();
+            }
         }
     }
 
@@ -114,23 +130,20 @@ public class WaveManager : MonoBehaviour
     // ============================================================
     void StartPreparePhase()
     {
+        // 마스터가 모든 클라이언트에 준비 단계 시작 알림
+        photonView.RPC(nameof(RPC_StartPrepare), RpcTarget.All, currentWaveIndex);
+    }
+
+    [PunRPC]
+    private void RPC_StartPrepare(int waveIndex)
+    {
+        currentWaveIndex = waveIndex;
         isPreparing = true;
+        isWaveActive = false;
         prepareTimer = prepareTime;
 
         Debug.Log($"=== Prepare for Wave {CurrentWave} ===");
         OnPrepareTimerUpdate.Invoke(prepareTimer);
-    }
-
-    void UpdatePreparePhase()
-    {
-        prepareTimer -= Time.deltaTime;
-        OnPrepareTimerUpdate.Invoke(prepareTimer);
-
-        if (prepareTimer <= 0f)
-        {
-            isPreparing = false;
-            StartWave();
-        }
     }
 
     // ============================================================
@@ -138,44 +151,30 @@ public class WaveManager : MonoBehaviour
     // ============================================================
     void StartWave()
     {
-        isWaveActive = true;
-        waveTimer = waveDuration;
-
-        // 웨이브 구성 가져오기
+        // 웨이브 구성 가져오기 (적 스폰은 마스터만)
         WaveConfig wave = waves[currentWaveIndex];
-
-        // 적 스폰
         SpawnWaveEnemies(wave);
+
+        // 모든 클라이언트에 웨이브 시작 알림
+        photonView.RPC(nameof(RPC_StartWave), RpcTarget.All, currentWaveIndex);
+    }
+
+    [PunRPC]
+    private void RPC_StartWave(int waveIndex)
+    {
+        currentWaveIndex = waveIndex;
+        isWaveActive = true;
+        isPreparing = false;
+        waveTimer = waveDuration;
 
         Debug.Log($"=== Wave {CurrentWave} Start! ===");
         OnWaveStart.Invoke(CurrentWave);
     }
 
-    void UpdateWavePhase()
-    {
-        waveTimer -= Time.deltaTime;
-        OnWaveTimerUpdate.Invoke(waveTimer);
-
-        // 모든 적을 처치하면 웨이브 완료
-        if (EnemyManager.Instance.ActiveEnemyCount == 0 && spawnedEnemies >= totalEnemiesInWave)
-        {
-            CompleteWave();
-        }
-
-        // 시간 초과 시에도 웨이브 완료 (기획에 따라 조정 가능)
-        if (waveTimer <= 0f)
-        {
-            // 남은 적이 있어도 웨이브 종료
-            CompleteWave();
-        }
-    }
-
     void CompleteWave()
     {
-        isWaveActive = false;
-
-        Debug.Log($"=== Wave {CurrentWave} Complete! ===");
-        OnWaveComplete.Invoke(CurrentWave);
+        // 모든 클라이언트에 웨이브 완료 알림
+        photonView.RPC(nameof(RPC_CompleteWave), RpcTarget.All, currentWaveIndex);
 
         // 다음 웨이브로
         currentWaveIndex++;
@@ -187,9 +186,18 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            // 다음 웨이브 준비
             StartPreparePhase();
         }
+    }
+
+    [PunRPC]
+    private void RPC_CompleteWave(int waveIndex)
+    {
+        isWaveActive = false;
+        isPreparing = false;
+
+        Debug.Log($"=== Wave {waveIndex + 1} Complete! ===");
+        OnWaveComplete.Invoke(waveIndex + 1);
     }
 
     // ============================================================
@@ -213,7 +221,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
+            photonView.RPC(nameof(RPC_UpdateEnemyCount), RpcTarget.All, EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -225,7 +233,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
+            photonView.RPC(nameof(RPC_UpdateEnemyCount), RpcTarget.All, EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -237,7 +245,7 @@ public class WaveManager : MonoBehaviour
                 EnemyManager.Instance.GetRandomSpawnPosition()
             );
             spawnedEnemies++;
-            OnRemainingEnemiesUpdate.Invoke(EnemyManager.Instance.ActiveEnemyCount);
+            photonView.RPC(nameof(RPC_UpdateEnemyCount), RpcTarget.All, EnemyManager.Instance.ActiveEnemyCount);
             yield return new WaitForSeconds(0.5f);
         }
 
@@ -248,15 +256,21 @@ public class WaveManager : MonoBehaviour
     // 적 처치 이벤트
     // ============================================================
     /// <summary>
-    /// 적이 죽었을 때 호출됨
+    /// 적이 죽었을 때 호출됨 (마스터에서 호출)
     /// </summary>
     public void OnEnemyKilled()
     {
-        if (isWaveActive)
+        if (isWaveActive && PhotonNetwork.IsMasterClient)
         {
-            int remaining =  EnemyManager.Instance.ActiveEnemyCount;
-            OnRemainingEnemiesUpdate.Invoke(remaining);
+            int remaining = EnemyManager.Instance.ActiveEnemyCount;
+            photonView.RPC(nameof(RPC_UpdateEnemyCount), RpcTarget.All, remaining);
         }
+    }
+
+    [PunRPC]
+    private void RPC_UpdateEnemyCount(int count)
+    {
+        OnRemainingEnemiesUpdate.Invoke(count);
     }
 
     // ============================================================

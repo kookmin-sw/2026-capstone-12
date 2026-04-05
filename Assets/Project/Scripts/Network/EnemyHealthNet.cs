@@ -1,5 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
+using System.Collections;
 
 public class EnemyHealthNet : MonoBehaviourPun
 {
@@ -46,8 +47,17 @@ public class EnemyHealthNet : MonoBehaviourPun
             if (EnemyManager.Instance != null)
                 EnemyManager.Instance.RemoveEnemy(enemyPv.gameObject);
 
-            PhotonNetwork.Destroy(enemyPv.gameObject);
+            // 죽는 애니메이션 재생 후 삭제 (딜레이)
+            StartCoroutine(DestroyAfterDeathAnimation(enemyPv));
         }
+    }
+
+    private IEnumerator DestroyAfterDeathAnimation(PhotonView enemyPv)
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if (enemyPv != null && enemyPv.gameObject != null)
+            PhotonNetwork.Destroy(enemyPv.gameObject);
     }
 
     [PunRPC]

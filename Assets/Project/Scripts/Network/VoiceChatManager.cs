@@ -2,6 +2,8 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Voice.Unity;
 using Photon.Voice.PUN;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
 using System.Reflection;
 
 /// <summary>
@@ -9,9 +11,9 @@ using System.Reflection;
 /// - Photon Voice 2 (PunVoiceClient) 기반
 /// - PUN2 연동 자동 연결
 /// - 마이크 음소거/해제
-/// - 음성 볼륨 조절
+/// - 내 마이크 볼륨 조절 (Custom Properties → 상대방 Speaker 볼륨에 반영)
 /// </summary>
-public class VoiceChatManager : MonoBehaviour
+public class VoiceChatManager : MonoBehaviour, IInRoomCallbacks
 {
     // ============================================================
     // 싱글턴
@@ -29,9 +31,11 @@ public class VoiceChatManager : MonoBehaviour
     // ============================================================
     [Header("Voice Settings")]
     [SerializeField] private bool muteOnStart = false;
-    [SerializeField] [Range(0f, 1f)] private float voiceVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float micVolume = 1f;
 
     private bool isMuted = false;
+
+    private const string MIC_VOL_KEY = "MicVol";
 
     // ============================================================
     // 프로퍼티
@@ -63,8 +67,27 @@ public class VoiceChatManager : MonoBehaviour
             SetMute(true);
         }
 
-        // 저장된 볼륨 설정 로드
-        voiceVolume = PlayerPrefs.GetFloat("VoiceVolume", 1f);
+        // 저장된 볼륨 설정 로드 및 Custom Properties에 반영
+        micVolume = PlayerPrefs.GetFloat("VoiceVolume", 1f);
+        SyncMicVolumeToNetwork();
+    }
+
+    void OnEnable()
+    {
+        PhotonNetwork.AddCallbackTarget(this);
+    }
+
+    void OnDisable()
+    {
+        PhotonNetwork.RemoveCallbackTarget(this);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            ToggleMute();
+        }
     }
 
     void OnDestroy()
@@ -98,7 +121,7 @@ public class VoiceChatManager : MonoBehaviour
                 audioSource = speakerPrefab.AddComponent<AudioSource>();
             }
             audioSource.spatialBlend = 0f;
-            audioSource.volume = voiceVolume;
+            audioSource.volume = 1f;
             audioSource.playOnAwake = false;
 
             speakerPrefab.transform.SetParent(this.transform);
@@ -147,6 +170,18 @@ public class VoiceChatManager : MonoBehaviour
     // ============================================================
 
     /// <summary>
+    /// Voice 연결 해제 (PUN Disconnect 전에 호출)
+    /// </summary>
+    public void DisconnectVoice()
+    {
+        if (punVoiceClient != null && punVoiceClient.Client != null && punVoiceClient.Client.IsConnected)
+        {
+            punVoiceClient.Client.Disconnect();
+            Debug.Log("[VoiceChat] Voice client disconnected");
+        }
+    }
+
+    /// <summary>
     /// 마이크 음소거 토글
     /// </summary>
     public void ToggleMute()
@@ -170,34 +205,92 @@ public class VoiceChatManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 상대방 음성 볼륨 설정 (0~1)
+    /// 내 마이크 볼륨 설정 (0~1 슬라이더 값)
+    /// Custom Properties를 통해 상대방에게 전달 → 상대방이 Speaker 볼륨 조절
     /// </summary>
-    public void SetVoiceVolume(float volume)
+    public void SetVoiceVolume(float sliderValue)
     {
-        voiceVolume = Mathf.Clamp01(volume);
-        PlayerPrefs.SetFloat("VoiceVolume", voiceVolume);
-        UpdateAllSpeakerVolumes();
-        Debug.Log($"[VoiceChat] Voice volume: {voiceVolume}");
+        micVolume = Mathf.Clamp01(sliderValue);
+        PlayerPrefs.SetFloat("VoiceVolume", micVolume);
+        SyncMicVolumeToNetwork();
+        Debug.Log($"[VoiceChat] My mic volume: {micVolume} (actual: {SliderToActualVolume(micVolume)})");
     }
 
     public float GetVoiceVolume()
     {
-        return voiceVolume;
+        return micVolume;
     }
 
     /// <summary>
-    /// 모든 Speaker(상대 음성 출력) 볼륨 업데이트
+    /// 내 마이크 볼륨을 Photon Custom Properties로 동기화
     /// </summary>
-    void UpdateAllSpeakerVolumes()
+    void SyncMicVolumeToNetwork()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            float actualVolume = SliderToActualVolume(micVolume);
+            Hashtable props = new Hashtable { { MIC_VOL_KEY, actualVolume } };
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
+    }
+
+    /// <summary>
+    /// 슬라이더 값(0~1)을 체감 볼륨으로 변환 (지수 커브)
+    /// </summary>
+    float SliderToActualVolume(float sliderValue)
+    {
+        return sliderValue * sliderValue * sliderValue;
+    }
+
+    /// <summary>
+    /// 상대방의 MicVol Custom Property를 읽어 Speaker 볼륨에 반영
+    /// </summary>
+    void ApplyRemoteMicVolumes()
     {
         Speaker[] speakers = FindObjectsOfType<Speaker>();
         foreach (Speaker speaker in speakers)
         {
             AudioSource audioSource = speaker.GetComponent<AudioSource>();
-            if (audioSource != null)
-            {
-                audioSource.volume = voiceVolume;
-            }
+            if (audioSource == null) continue;
+
+            // 상대방이 설정한 마이크 볼륨 가져오기
+            float remoteVolume = GetRemotePlayerMicVolume();
+            audioSource.volume = remoteVolume;
         }
     }
+
+    /// <summary>
+    /// 상대 플레이어의 MicVol Custom Property 값 반환
+    /// </summary>
+    float GetRemotePlayerMicVolume()
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (player.IsLocal) continue;
+
+            if (player.CustomProperties.TryGetValue(MIC_VOL_KEY, out object vol))
+            {
+                return (float)vol;
+            }
+        }
+        return 1f; // 기본값
+    }
+
+    // ============================================================
+    // IInRoomCallbacks - 상대방 Custom Properties 변경 감지
+    // ============================================================
+    public void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        // 상대방이 MicVol을 변경했을 때 Speaker 볼륨 업데이트
+        if (!targetPlayer.IsLocal && changedProps.ContainsKey(MIC_VOL_KEY))
+        {
+            ApplyRemoteMicVolumes();
+            Debug.Log($"[VoiceChat] Remote player mic volume changed: {changedProps[MIC_VOL_KEY]}");
+        }
+    }
+
+    public void OnPlayerEnteredRoom(Player newPlayer) { }
+    public void OnPlayerLeftRoom(Player otherPlayer) { }
+    public void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged) { }
+    public void OnMasterClientSwitched(Player newMasterClient) { }
 }

@@ -14,14 +14,15 @@ public class EnemyAnimationController : MonoBehaviour
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
     private static readonly int AttackIndexHash = Animator.StringToHash("AttackIndex");
-    private static readonly int DeadHash = Animator.StringToHash("Dead");
+    private static readonly int DieHash = Animator.StringToHash("Die");
+    private static readonly int DeathIndexHash = Animator.StringToHash("DeathIndex");
     private static readonly int MoveAnimationSpeedHash = Animator.StringToHash("MoveAnimationSpeed");
     private static readonly int AttackAnimationSpeedHash = Animator.StringToHash("AttackAnimationSpeed");
 
     private void Awake()
     {
         if (animator == null)
-            animator = GetComponent<Animator>();
+            animator = GetComponentInChildren<Animator>();
     }
 
     public void SetMove(bool isMoving, float currentMoveSpeed)
@@ -60,6 +61,9 @@ public class EnemyAnimationController : MonoBehaviour
     public void SetDead()
     {
         animator.SetFloat(SpeedHash, 0f);
-        animator.SetBool(DeadHash, true);
+
+        // Trigger 대신 CrossFade로 직접 전환 (전환 중 trigger 소실 방지)
+        string deathState = Random.Range(0, 2) == 0 ? "death1" : "death2";
+        animator.CrossFade(deathState, 0.1f, 0);
     }
 }

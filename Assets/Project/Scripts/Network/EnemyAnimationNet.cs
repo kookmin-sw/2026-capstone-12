@@ -15,7 +15,7 @@ public class EnemyAnimationNet : MonoBehaviourPun
             controller = GetComponent<EnemyAnimationController>();
     }
 
-    public void SetMoveState(bool moving , float currentMoveSpeed)
+    public void SetMoveState(bool moving, float currentMoveSpeed)
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
@@ -29,6 +29,9 @@ public class EnemyAnimationNet : MonoBehaviourPun
         if (sameMoving && sameSpeed)
             return;
 
+        isMoving = moving;
+        lastMoveSpeed = currentMoveSpeed;
+
         photonView.RPC(nameof(RPC_SetMoveState), RpcTarget.All, moving, currentMoveSpeed);
     }
 
@@ -39,7 +42,11 @@ public class EnemyAnimationNet : MonoBehaviourPun
 
         if (isDead)
             return;
-        
+
+        // 공격 시 이동 상태 리셋 → 공격 후 다시 이동할 때 RPC가 반드시 발생
+        isMoving = false;
+        lastMoveSpeed = -1f;
+
         float attackAnimationSpeed = controller.GetAttackAnimationSpeed(attackIndex, attackCooldown);
 
         photonView.RPC(nameof(RPC_PlayAttack), RpcTarget.All, attackIndex, attackAnimationSpeed);
@@ -73,8 +80,6 @@ public class EnemyAnimationNet : MonoBehaviourPun
         if (isDead)
             return;
 
-        Debug.Log($"attackIndex: {attackIndex}");
-        Debug.Log($"attackAnimationSpeed: {attackAnimationSpeed}");
         controller.PlayAttack(attackIndex, attackAnimationSpeed);
     }
 

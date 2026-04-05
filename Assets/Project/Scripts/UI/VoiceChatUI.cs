@@ -55,8 +55,13 @@ public class VoiceChatUI : MonoBehaviour
 
     void Update()
     {
+        if (VoiceChatManager.Instance == null) return;
+
+        // 음소거 아이콘 항상 동기화 (M키 토글 대응)
+        UpdateUI();
+
         // 말하는 중 표시 업데이트
-        if (speakingIndicator != null && VoiceChatManager.Instance != null)
+        if (speakingIndicator != null)
         {
             speakingIndicator.SetActive(
                 VoiceChatManager.Instance.IsTransmitting &&

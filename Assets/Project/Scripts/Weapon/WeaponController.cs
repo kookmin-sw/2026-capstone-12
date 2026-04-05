@@ -36,6 +36,8 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private GameObject[] muzzleFlashPrefabs;
     [Tooltip("총구 위치 (FPS_Character 하위 총구 끝 오브젝트)")]
     [SerializeField] private Transform muzzlePoint;
+    [Tooltip("총구 방향으로 머즐 플래시 오프셋 (앞으로 이동)")]
+    [SerializeField] private float muzzleForwardOffset = 0.3f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource shootSoundSource;
@@ -208,9 +210,10 @@ public class WeaponController : MonoBehaviour
         int idx = Random.Range(0, muzzleFlashPrefabs.Length);
         if (muzzleFlashPrefabs[idx] == null) return;
 
+        Vector3 spawnPos = muzzlePoint.position + muzzlePoint.forward * muzzleForwardOffset;
         GameObject flash = Instantiate(
             muzzleFlashPrefabs[idx],
-            muzzlePoint.position,
+            spawnPos,
             muzzlePoint.rotation * Quaternion.Euler(0, 0, 90)
         );
         flash.transform.SetParent(muzzlePoint);

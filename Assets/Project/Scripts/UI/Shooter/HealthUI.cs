@@ -24,13 +24,18 @@ public class HealthUI : MonoBehaviour
     private readonly Color midColor = new Color(1f, 1f, 0f);          // 노란색 (25%~50%)
     private readonly Color lowColor = new Color(1f, 0f, 0f);          // 빨간색 (25% 이하)
 
-    private const float BAR_WIDTH = 200f;                              // 체력바 기본 가로 길이
+    private float barWidth;
+    private float barHeight;
 
     // ============================================================
     // Unity 생명주기
     // ============================================================
     void Start()
     {
+        // 현재 Inspector에서 설정한 크기를 기준으로 사용
+        barWidth = healthBarFill.rectTransform.sizeDelta.x;
+        barHeight = healthBarFill.rectTransform.sizeDelta.y;
+
         // HealthManager 이벤트에 구독
         healthManager.OnHealthChanged.AddListener(UpdateHealthBar);
 
@@ -47,7 +52,7 @@ public class HealthUI : MonoBehaviour
     void UpdateHealthBar(float healthRatio)
     {
         // 체력바 길이 변경
-        healthBarFill.rectTransform.sizeDelta = new Vector2(BAR_WIDTH * healthRatio, 30f);
+        healthBarFill.rectTransform.sizeDelta = new Vector2(barWidth * healthRatio, barHeight);
 
         // 색상 변경
         if (healthRatio > 0.5f)

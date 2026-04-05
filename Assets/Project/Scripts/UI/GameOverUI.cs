@@ -88,10 +88,10 @@ public class GameOverUI : MonoBehaviour
 
         Debug.Log("Going to Main Menu...");
 
-        // Photon 연결 완전히 끊기
-        if (PhotonNetwork.InRoom)
+        // Voice 먼저 끊고 PUN 끊기 (순서 중요: Voice가 PUN 상태를 따라가므로)
+        if (VoiceChatManager.Instance != null)
         {
-            PhotonNetwork.LeaveRoom();
+            VoiceChatManager.Instance.DisconnectVoice();
         }
         if (PhotonNetwork.IsConnected)
         {

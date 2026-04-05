@@ -84,6 +84,11 @@ public class EnemyAI : MonoBehaviour
         if (player == null)
             return;
 
+        // 사망 시 이동/공격 중단
+        EnemyHealth health = GetComponent<EnemyHealth>();
+        if (health != null && health.IsDead)
+            return;
+
         UpdateSlowState();
         UpdateCurrentStats();
 

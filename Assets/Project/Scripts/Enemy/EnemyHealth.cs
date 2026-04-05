@@ -78,6 +78,20 @@ public class EnemyHealth : MonoBehaviour
     {
         isDead = true;
         OnDied?.Invoke();
+
+        // 바닥에 내려놓기 (공중에서 죽는 경우 대비)
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 10f))
+            transform.position = new Vector3(transform.position.x, hit.point.y, transform.position.z);
+
+        // kinematic으로 전환 (중력/물리 무시) 후 콜라이더 비활성화
+        // → 바닥 안 뚫고, 다른 적/총알도 통과
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.isKinematic = true;
+
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+            col.enabled = false;
+
         // 여기서는 Destroy하지 않음 (Destroy는 마스터가 PhotonNetwork.Destroy로)
     }
 
