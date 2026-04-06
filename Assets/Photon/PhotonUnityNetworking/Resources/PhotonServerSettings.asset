@@ -57,6 +57,7 @@ MonoBehaviour:
   - RpcSetScore
   - RpcSetShooterHp
   - RpcShooterDied
+  - RpcSetShooterAmmo
   - RpcSpawnPing
   - RPC_CompleteWave
   - RPC_StartPrepare

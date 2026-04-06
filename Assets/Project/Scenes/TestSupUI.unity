@@ -1680,6 +1680,7 @@ GameObject:
   - component: {fileID: 231732023}
   - component: {fileID: 231732025}
   - component: {fileID: 231732024}
+  - component: {fileID: 231732026}
   m_Layer: 0
   m_Name: ShooterHealthNet
   m_TagString: Untagged
@@ -1737,6 +1738,18 @@ MonoBehaviour:
   sceneViewId: 3
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &231732026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231732022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b9d1820bb64af08c42ed1ff94122f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &233371322
 GameObject:
   m_ObjectHideFlags: 0

@@ -3731,12 +3731,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1393653264}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 270e4232ee8f8474b850561a0a0279b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e7e6397891740ceaf5c9ec51cbfe23c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarFill: {fileID: 1399116045}
   healthText: {fileID: 264427876}
-  healthManager: {fileID: 925099828}
+  shooterHealthManager: {fileID: 925099828}
 --- !u!114 &1393653267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3746,11 +3746,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1393653264}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33991994f941d274aae8ccb44c31483c, type: 3}
+  m_Script: {fileID: 11500000, guid: 11f1775b90e341e7bf04704e366a1f18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ammoText: {fileID: 938551831}
-  weaponController: {fileID: 925099829}
+  shooterWeaponController: {fileID: 925099829}
 --- !u!114 &1393653268
 MonoBehaviour:
   m_ObjectHideFlags: 0

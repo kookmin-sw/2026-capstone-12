@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -11,9 +11,22 @@ public class AmmoUI : MonoBehaviour
     [SerializeField] private Text ammoText;
     [SerializeField] private WeaponController weaponController;
 
-    void Update()
+    private AmmoManager ammoManager;
+
+    void Start()
     {
+        ResolveAmmoManager();
+
+        if (ammoManager != null)
+            ammoManager.OnAmmoChanged += HandleAmmoChanged;
+
         UpdateAmmoDisplay();
+    }
+
+    void OnDestroy()
+    {
+        if (ammoManager != null)
+            ammoManager.OnAmmoChanged -= HandleAmmoChanged;
     }
 
     /// <summary>
@@ -21,14 +34,30 @@ public class AmmoUI : MonoBehaviour
     /// </summary>
     void UpdateAmmoDisplay()
     {
-        if (weaponController == null || ammoText == null)
+        if (ammoManager == null || ammoText == null)
             return;
 
         // WeaponController에서 탄약 정보 가져오기
-        int current = weaponController.CurrentAmmo;
-        int reserve = weaponController.ReserveAmmo;
+        int current = ammoManager.CurrentAmmo;
+        int reserve = ammoManager.ReserveAmmo;
 
         // 텍스트 업데이트
+        ammoText.text = $"{current} / {reserve}";
+    }
+
+    void ResolveAmmoManager()
+    {
+        if (weaponController == null)
+            return;
+
+        ammoManager = weaponController.GetComponent<AmmoManager>();
+    }
+
+    void HandleAmmoChanged(int current, int reserve)
+    {
+        if (ammoText == null)
+            return;
+
         ammoText.text = $"{current} / {reserve}";
     }
 }
