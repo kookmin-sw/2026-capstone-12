@@ -1422,7 +1422,7 @@ MonoBehaviour:
   structureMask:
     serializedVersion: 2
     m_Bits: 256
-  canvas: {fileID: 0}
+  canvas: {fileID: 471808687}
   popupPrefab: {fileID: -7965040029803954103, guid: a2efc61c37ac0e94fb408fffb1790e35,
     type: 3}
 --- !u!1 &231732022
