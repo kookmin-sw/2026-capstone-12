@@ -35,6 +35,7 @@ public class EnemyManager : MonoBehaviour
 
     // State
     private List<GameObject> activeEnemies = new List<GameObject>();
+    private int spawnCoreDifficulty = 0;
 
     // ============================================================
     // Unity 생명주기
@@ -172,6 +173,16 @@ public class EnemyManager : MonoBehaviour
         {
             WaveManager.Instance.OnEnemyKilled();
         }
+    }
+
+    public void ApplySpawnCoreDifficulty(int destroyedCoreCount)
+    {
+        // 코어 파괴 단계 저장
+        spawnCoreDifficulty = Mathf.Max(0, destroyedCoreCount);
+
+        // Placeholder:
+        // SpawnCore 파괴 단계에 따라 적 능력치 버프, 추가 스폰 수, 특수 적 비율 등을
+        // 나중에 여기서 적용한다.
     }
 
     // ============================================================

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
+  m_Name: BT_SpawnCore
+  m_EditorClassIdentifier: 
+  displayName: SpanwCore
+  description: SpanwCore
+  icon: {fileID: 0}
+  prefab: {fileID: 8805579323114019885, guid: 703a23420fe3ee64fab057c4be7c382b, type: 3}
+  typeId: 10
+  photonPrefabPath: Prefabs/SpawnCore/SpawnCore
+  footprint: {x: 4, y: 4}
+  allowRotate: 1
+  cost: 0
+  maxHp: 1000
+  canRepair: 0
+  canSell: 0

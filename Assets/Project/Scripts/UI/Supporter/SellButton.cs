@@ -16,7 +16,9 @@ public class SellButton : MonoBehaviour
 
     public void Refresh()
     {
-        btn.interactable = popup != null && popup.Target != null;
+        bool canShow = popup != null && popup.Target != null && popup.Target.CanSell;
+        gameObject.SetActive(canShow);
+        btn.interactable = canShow;
     }
 
     private void OnClick()

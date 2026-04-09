@@ -211,7 +211,16 @@ public class WeaponController : MonoBehaviour
                 PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
                 if (enemyPv != null)
                     shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
+                return;
             }
+
+            SpawnCore spawnCore = hit.collider.GetComponentInParent<SpawnCore>();
+            if (spawnCore == null)
+                return;
+
+            PhotonView structurePv = spawnCore.GetComponent<PhotonView>();
+            if (structurePv != null)
+                shooterWeaponNet.RequestHitStructure(structurePv.ViewID, damage);
         }
     }
 

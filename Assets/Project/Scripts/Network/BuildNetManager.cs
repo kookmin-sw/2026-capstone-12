@@ -66,6 +66,9 @@ public class BuildNetManager : MonoBehaviourPun
         var selectable = pv.GetComponent<StructureSelectable>();
         if (selectable != null && selectable.type != null)
         {
+            if (!selectable.CanSell)
+                return;
+
             int refund = Mathf.RoundToInt(selectable.type.cost * 0.3f);
             ResourceNet.Instance?.MasterAddMoney(refund);
         }
@@ -90,6 +93,7 @@ public class BuildNetManager : MonoBehaviourPun
 
         var s = pv.GetComponent<StructureSelectable>();
         if (s == null || s.type == null) return;
+        if (!s.CanRepair) return;
 
         var health = pv.GetComponent<BuildingHealthNet>();
         if (health == null) return;

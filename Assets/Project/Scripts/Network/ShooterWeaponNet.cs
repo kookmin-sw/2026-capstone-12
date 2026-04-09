@@ -20,4 +20,26 @@ public class ShooterWeaponNet : MonoBehaviourPun
         if (EnemyHealthNet.Instance != null)
             EnemyHealthNet.Instance.MasterApplyDamage(enemyViewId, damage);
     }
+
+    public void RequestHitStructure(int structureViewId, float damage)
+    {
+        if (!photonView.IsMine) return;
+
+        photonView.RPC(nameof(RpcRequestHitStructure), RpcTarget.MasterClient, structureViewId, damage);
+    }
+
+    [PunRPC]
+    private void RpcRequestHitStructure(int structureViewId, float damage)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        PhotonView structurePv = PhotonView.Find(structureViewId);
+        if (structurePv == null) return;
+
+        SpawnCore spawnCore = structurePv.GetComponent<SpawnCore>();
+        if (spawnCore == null) return;
+
+        BuildingHealthNet buildingHealth = structurePv.GetComponent<BuildingHealthNet>();
+        buildingHealth?.MasterTakeDamage(damage);
+    }
 }

@@ -13,6 +13,8 @@ public class StructureSelectable : MonoBehaviour
     public int rotationY;   // 설치 당시 회전
 
     public bool IsFullHp => health != null && health.IsFullHp;
+    public bool CanRepair => type != null && type.canRepair;
+    public bool CanSell => type != null && type.canSell;
 
     private void Awake()
     {
@@ -32,6 +34,9 @@ public class StructureSelectable : MonoBehaviour
 
 	public void RequestSell()
     {
+        if (!CanSell)
+            return;
+
         PhotonView pv = GetComponent<PhotonView>();
         if (PhotonNetwork.InRoom && pv != null)
         {
@@ -42,6 +47,9 @@ public class StructureSelectable : MonoBehaviour
 
     public void RequestRepair()
     {
+        if (!CanRepair)
+            return;
+
         PhotonView pv = GetComponent<PhotonView>();
         if (PhotonNetwork.InRoom && pv != null)
         {
@@ -53,6 +61,7 @@ public class StructureSelectable : MonoBehaviour
     public bool CanRepairLocal()
     {
         if (type == null) return false;
+        if (!CanRepair) return false;
         if (IsFullHp) return false;
 
         int cost = type.repairCost;

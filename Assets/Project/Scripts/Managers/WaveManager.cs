@@ -59,6 +59,7 @@ public class WaveManager : MonoBehaviourPun
     public bool IsPreparing => isPreparing;
     public float WaveTimer => waveTimer;
     public float PrepareTimer => prepareTimer;
+    public int SpawnCoreDifficulty { get; private set; }
 
     // ============================================================
     // Unity 생명주기
@@ -280,6 +281,16 @@ public class WaveManager : MonoBehaviourPun
     {
         Debug.Log("=== ALL WAVES COMPLETE! VICTORY! ===");
         GameManager.Instance.TriggerVictory();
+    }
+
+    public void ApplySpawnCoreDifficulty(int destroyedCoreCount)
+    {
+        // 코어 파괴 단계 저장
+        SpawnCoreDifficulty = Mathf.Max(0, destroyedCoreCount);
+
+        // Placeholder:
+        // SpawnCore 파괴 단계에 따라 웨이브 길이, 스폰 간격, 웨이브 구성 가중치 등을
+        // 나중에 여기서 조정할 수 있다.
     }
 }
 
