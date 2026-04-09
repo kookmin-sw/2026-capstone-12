@@ -6273,7 +6273,7 @@ GameObject:
   - component: {fileID: 1098213769}
   - component: {fileID: 1098213770}
   m_Layer: 0
-  m_Name: WaveManager
+  m_Name: CombatUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

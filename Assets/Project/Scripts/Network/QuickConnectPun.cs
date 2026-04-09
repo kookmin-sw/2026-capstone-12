@@ -30,9 +30,6 @@ public class QuickConnectPun : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            if (WaveManager.Instance != null)
-                WaveManager.Instance.BeginWaveSystem();
-
             if (EnemyManager.Instance != null)
                 EnemyManager.Instance.BeginEnemySystem();
         }

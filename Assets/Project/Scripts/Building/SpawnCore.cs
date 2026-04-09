@@ -16,11 +16,18 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     // 개별 잔해 프리팹 경로
     [SerializeField] private string destroyedRemainsPrefabPath;
 
-    // 중복 파괴 처리 방지 상태
+    [Header("Core Spawn Settings")]
+    [SerializeField] private bool allowEnemySpawn = true;
+    [SerializeField] private float spawnRadiusMin = 4f;
+    [SerializeField] private float spawnRadiusMax = 8f;
+
     private bool destructionHandled = false;
 
     public int CoreOrder => coreOrder;
     public int RequiredDestroyedCoreCountToUnlock => requiredDestroyedCoreCountToUnlock;
+    public bool AllowEnemySpawn => allowEnemySpawn;
+    public float SpawnRadiusMin => Mathf.Max(0f, spawnRadiusMin);
+    public float SpawnRadiusMax => Mathf.Max(SpawnRadiusMin, spawnRadiusMax);
     // 현재 코어 피격 가능 상태
     public bool IsUnlocked => SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.IsCoreUnlocked(this);
 
