@@ -12,7 +12,12 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float sprintSpeed = 8f;
+    [SerializeField] private float jumpHeight = 1.5f;
     [SerializeField] private float gravity = -9.81f;
+
+    [Header("Ground Check")]
+    [SerializeField] private float groundCheckDistance = 0.3f;
+    [SerializeField] private LayerMask groundMask = ~0; // 모든 레이어
 
     [Header("Look Settings")]
     [SerializeField] private float mouseSensitivity = 2f;
@@ -27,6 +32,7 @@ public class PlayerController : MonoBehaviour
 
     // Movement
     private Vector3 velocity;
+    private bool isGrounded;
 
     void Start()
     {
@@ -87,11 +93,28 @@ public class PlayerController : MonoBehaviour
         // 이동 적용
         controller.Move(move * currentSpeed * Time.deltaTime);
 
+        // 바닥 체크 (CharacterController 하단에서 Raycast)
+        float checkOriginY = controller.skinWidth + 0.01f;
+        isGrounded = controller.isGrounded || Physics.Raycast(
+            transform.position + Vector3.up * checkOriginY,
+            Vector3.down,
+            groundCheckDistance + checkOriginY,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
         // 중력 적용
-        if (controller.isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // 바닥에 붙어있기
+            velocity.y = -0.5f;
         }
+
+        // 점프 (Space)
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
