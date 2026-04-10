@@ -57,11 +57,14 @@ MonoBehaviour:
   - RpcSetScore
   - RpcSetShooterHp
   - RpcShooterDied
+  - RpcSetShooterAmmo
   - RpcSpawnPing
   - RPC_CompleteWave
   - RPC_StartPrepare
   - RPC_StartWave
   - RPC_UpdateEnemyCount
+  - RPC_NotifyCoreDestroyed
+  - RpcRequestHitStructure
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -15,7 +15,10 @@ public class RepairButton : MonoBehaviour
 
 	public void Refresh()
     {
-        if (popup == null || popup.Target == null)
+        bool canShow = popup != null && popup.Target != null && popup.Target.CanRepair;
+        gameObject.SetActive(canShow);
+
+        if (!canShow)
         {
             btn.interactable = false;
             return;

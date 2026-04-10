@@ -23,9 +23,9 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private int reserveAmmo = 120;
     [SerializeField] private float reloadTime = 2f;
 
-    public int CurrentAmmo => currentAmmo;
-    public int ReserveAmmo => reserveAmmo;
-    public int MaxAmmo => maxAmmo;
+    public int CurrentAmmo => ammoManager != null ? ammoManager.CurrentAmmo : currentAmmo;
+    public int ReserveAmmo => ammoManager != null ? ammoManager.ReserveAmmo : reserveAmmo;
+    public int MaxAmmo => ammoManager != null ? ammoManager.MaxAmmo : maxAmmo;
 
     [Header("FPS Arms")]
     [Tooltip("FPS_Character_prefab 오브젝트의 Animator")]
@@ -50,11 +50,24 @@ public class WeaponController : MonoBehaviour
     // Components
     private Camera playerCamera;
     private ShooterWeaponNet shooterWeaponNet;
+    private ShooterAmmoNet shooterAmmoNet;
+    private PhotonView photonView;
+    private AmmoManager ammoManager;
 
     // State
     private float nextTimeToFire = 0f;
     private bool isReloading = false;
     private bool isAiming = false;
+
+    void Awake()
+    {
+        photonView = GetComponent<PhotonView>();
+        ammoManager = GetComponent<AmmoManager>();
+        if (ammoManager == null)
+            ammoManager = gameObject.AddComponent<AmmoManager>();
+
+        ammoManager.ConfigureDefaults(maxAmmo, currentAmmo, reserveAmmo);
+    }
 
     void Start()
     {
@@ -63,9 +76,10 @@ public class WeaponController : MonoBehaviour
             normalFOV = playerCamera.fieldOfView;
 
         shooterWeaponNet = GetComponent<ShooterWeaponNet>();
-        currentAmmo = maxAmmo;
+        shooterAmmoNet = ShooterAmmoNet.Instance;
 
         AutoWireReferences();
+        BroadcastAmmoState();
     }
 
     /// <summary>
@@ -111,6 +125,7 @@ public class WeaponController : MonoBehaviour
 
     void Update()
     {
+        if (!HasLocalAuthority()) return;
         if (isReloading) return;
 
         HandleAiming();
@@ -122,7 +137,7 @@ public class WeaponController : MonoBehaviour
             return;
         }
 
-        if (currentAmmo <= 0)
+        if (CurrentAmmo <= 0)
         {
             StartReload();
             return;
@@ -176,7 +191,8 @@ public class WeaponController : MonoBehaviour
     /// </summary>
     void Fire()
     {
-        currentAmmo--;
+        ammoManager.UseAmmo();
+        BroadcastAmmoState();
 
         // 머즐 플래시
         SpawnMuzzleFlash();
@@ -195,7 +211,16 @@ public class WeaponController : MonoBehaviour
                 PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
                 if (enemyPv != null)
                     shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
+                return;
             }
+
+            SpawnCore spawnCore = hit.collider.GetComponentInParent<SpawnCore>();
+            if (spawnCore == null)
+                return;
+
+            PhotonView structurePv = spawnCore.GetComponent<PhotonView>();
+            if (structurePv != null)
+                shooterWeaponNet.RequestHitStructure(structurePv.ViewID, damage);
         }
     }
 
@@ -222,7 +247,7 @@ public class WeaponController : MonoBehaviour
 
     void StartReload()
     {
-        if (reserveAmmo <= 0 || currentAmmo == maxAmmo) return;
+        if (ammoManager == null || !ammoManager.CanReload()) return;
 
         isReloading = true;
 
@@ -234,13 +259,35 @@ public class WeaponController : MonoBehaviour
 
     void FinishReload()
     {
-        int ammoNeeded = maxAmmo - currentAmmo;
-        int ammoToReload = Mathf.Min(ammoNeeded, reserveAmmo);
-        currentAmmo += ammoToReload;
-        reserveAmmo -= ammoToReload;
+        ammoManager.Reload();
+        BroadcastAmmoState();
 
         isReloading = false;
         handsAnimator?.SetBool("reloading", false);
+    }
+
+    public void SetAmmoFromNetwork(int newCurrentAmmo, int newReserveAmmo, int newMaxAmmo)
+    {
+        if (ammoManager == null)
+            return;
+
+        ammoManager.SetAmmoFromNetwork(newCurrentAmmo, newReserveAmmo, newMaxAmmo);
+    }
+
+    void BroadcastAmmoState()
+    {
+        if (!HasLocalAuthority()) return;
+        if (ammoManager == null) return;
+
+        shooterAmmoNet?.SyncAmmoFromShooter(CurrentAmmo, ReserveAmmo, MaxAmmo);
+    }
+
+    bool HasLocalAuthority()
+    {
+        if (!PhotonNetwork.IsConnected)
+            return true;
+
+        return photonView == null || photonView.IsMine;
     }
 
     public void SetEnabled(bool enabled)

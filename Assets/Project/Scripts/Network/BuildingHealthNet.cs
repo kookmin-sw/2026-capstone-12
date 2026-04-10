@@ -1,5 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(PhotonView))]
 public class BuildingHealthNet : MonoBehaviourPun
@@ -23,6 +24,7 @@ public class BuildingHealthNet : MonoBehaviourPun
         if (!PhotonNetwork.IsMasterClient) return;
 
         if (damage <= 0f) return;
+        if (!CanTakeDamage(damage)) return;
 
         ApplyDamageInternal(damage);
     }
@@ -65,6 +67,8 @@ public class BuildingHealthNet : MonoBehaviourPun
     private void MasterKill()
     {
         if (!PhotonNetwork.IsMasterClient) return;
+
+        NotifyDestroyedByMaster();
         PhotonNetwork.Destroy(gameObject);
     }
 
@@ -73,4 +77,48 @@ public class BuildingHealthNet : MonoBehaviourPun
     {
         currentHp = Mathf.Clamp(hp, 0f, maxHp);
     }
+
+    private bool CanTakeDamage(float damage)
+    {
+        // 동일 오브젝트 내 데미지 허용 컴포넌트 검사
+        foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
+        {
+            if (behaviour is IBuildingDamageGate gate && !gate.CanTakeDamage(this, damage))
+                return false;
+        }
+
+        return true;
+    }
+
+    private void NotifyDestroyedByMaster()
+    {
+        // 동일 대상 중복 호출 방지 집합
+        HashSet<Object> notifiedTargets = new HashSet<Object>();
+
+        // 동일 오브젝트 내 파괴 알림 수신 컴포넌트 호출
+        foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
+        {
+            IBuildingDestroyedListener listener = behaviour as IBuildingDestroyedListener;
+            if (listener == null)
+                continue;
+
+            Object target = behaviour as Object;
+            if (target == null || !notifiedTargets.Add(target))
+                continue;
+
+            listener.OnBuildingDestroyedByMaster(this);
+        }
+    }
+}
+
+public interface IBuildingDamageGate
+{
+    // 데미지 허용 여부 판단 계약
+    bool CanTakeDamage(BuildingHealthNet buildingHealth, float incomingDamage);
+}
+
+public interface IBuildingDestroyedListener
+{
+    // 파괴 직전 후처리 알림 계약
+    void OnBuildingDestroyedByMaster(BuildingHealthNet buildingHealth);
 }
