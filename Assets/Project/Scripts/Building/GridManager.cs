@@ -19,8 +19,10 @@ public class GridManager : MonoBehaviour
     [SerializeField] private bool drawValidCells = true;
     [SerializeField] private bool drawInvalidCells = false;
     [SerializeField] private bool drawOccupiedCells = true;
+    [SerializeField] private bool drawBlockedCells = true;
 
     private bool[,] occupied;   // occupied[x, z] = true면 이미 누가 차지 중
+    private bool[,] blocked;    // blocked[x, z] = true면 장애물로 설치 불가
     private bool[,] valid;
     private Vector3[,] surfacePoints;
     private Vector3[,] surfaceNormals;
@@ -38,6 +40,7 @@ public class GridManager : MonoBehaviour
     private void AllocateArrays()
     {
         occupied = new bool[width, height];
+        blocked = new bool[width, height];
         valid = new bool[width, height];
         surfacePoints = new Vector3[width, height];
         surfaceNormals = new Vector3[width, height];
@@ -66,6 +69,7 @@ public class GridManager : MonoBehaviour
                 {
                     valid[x, z] = false;
                     occupied[x, z] = false;
+                    blocked[x, z] = false;
                     surfacePoints[x, z] = flatCenter;
                     surfaceNormals[x, z] = Vector3.up;
                 }
@@ -86,6 +90,12 @@ public class GridManager : MonoBehaviour
     public bool IsOccupied(int gx, int gz)
     {
         return IsInside(gx, gz) && occupied[gx, gz];
+    }
+
+    // 장애물 차단 여부 확인
+    public bool IsBlocked(int gx, int gz)
+    {
+        return IsInside(gx, gz) && blocked[gx, gz];
     }
 
     private Vector3 GetFlatCellCenter(int gx, int gz)
@@ -203,6 +213,10 @@ public class GridManager : MonoBehaviour
 
                 if (occupied[gx, gz])
                     return false;
+
+                // 설치 구조물 외 장애물 차단 검사
+                if (blocked[gx, gz])
+                    return false;
             }
         }
         return true;
@@ -224,6 +238,26 @@ public class GridManager : MonoBehaviour
                     continue;
 
                 occupied[gx, gz] = value;
+            }
+        }
+    }
+
+    // 잔해/소품 등 장애물 차단 처리
+    public void SetAreaBlocked(int baseGx, int baseGz, Vector2Int footprint, int rotationY, bool value)
+    {
+        Vector2Int size = GetRotatedFootprint(footprint, rotationY);
+
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int z = 0; z < size.y; z++)
+            {
+                int gx = baseGx + x;
+                int gz = baseGz + z;
+
+                if (!IsInside(gx, gz))
+                    continue;
+
+                blocked[gx, gz] = value;
             }
         }
     }
@@ -250,6 +284,11 @@ public class GridManager : MonoBehaviour
                     if (occupied != null && occupied[x, z] && drawOccupiedCells)
                     {
                         Gizmos.color = Color.red;
+                        Gizmos.DrawWireCube(pos, new Vector3(cellSize, 0.05f, cellSize));
+                    }
+                    else if (blocked != null && blocked[x, z] && drawBlockedCells)
+                    {
+                        Gizmos.color = Color.yellow;
                         Gizmos.DrawWireCube(pos, new Vector3(cellSize, 0.05f, cellSize));
                     }
                     else if (valid[x, z] && drawValidCells)

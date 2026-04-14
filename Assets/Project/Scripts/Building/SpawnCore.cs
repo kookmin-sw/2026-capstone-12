@@ -24,6 +24,7 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     private StructureSelectable selectable;
     private bool destructionHandled = false;
     private bool gridOccupied = false;
+    private bool blockGridOnDestroy = false;
 
     public int CoreOrder => coreOrder;
     public int RequiredDestroyedCoreCountToUnlock => requiredDestroyedCoreCountToUnlock;
@@ -52,6 +53,10 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
             return;
 
         selectable.grid.SetAreaOccupied(selectable.anchor.x, selectable.anchor.y, selectable.footprint, selectable.rotationY, false);
+
+        // 파괴 후 잔해 타일 차단 처리
+        if (blockGridOnDestroy)
+            selectable.grid.SetAreaBlocked(selectable.anchor.x, selectable.anchor.y, selectable.footprint, selectable.rotationY, true);
     }
 
     // BuildingHealthNet 공격 차단 연동 목적
@@ -70,6 +75,9 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
         destructionHandled = true;
         // 잔해 생성 처리
         SpawnDestroyedRemains();
+
+        // 파괴 후 잔해 타일 유지 플래그
+        blockGridOnDestroy = true;
 
         // 진행 상태 갱신 처리
         SpawnCoreManager.Instance?.HandleCoreDestroyed(this);

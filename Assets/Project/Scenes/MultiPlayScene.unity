@@ -8962,10 +8962,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b228104dc763014294e4e11459b0dba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 200
-  height: 200
+  width: 300
+  height: 300
   cellSize: 1
-  origin: {x: -100, y: 30, z: -100}
+  origin: {x: -150, y: 30, z: -150}
   buildSurfaceMask:
     serializedVersion: 2
     m_Bits: 512
@@ -8976,6 +8976,7 @@ MonoBehaviour:
   drawValidCells: 1
   drawInvalidCells: 0
   drawOccupiedCells: 1
+  drawBlockedCells: 1
 --- !u!4 &894042878
 Transform:
   m_ObjectHideFlags: 0
