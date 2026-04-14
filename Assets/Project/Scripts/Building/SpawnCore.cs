@@ -21,7 +21,9 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     [SerializeField] private float spawnRadiusMin = 4f;
     [SerializeField] private float spawnRadiusMax = 8f;
 
+    private StructureSelectable selectable;
     private bool destructionHandled = false;
+    private bool gridOccupied = false;
 
     public int CoreOrder => coreOrder;
     public int RequiredDestroyedCoreCountToUnlock => requiredDestroyedCoreCountToUnlock;
@@ -31,14 +33,35 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     // 현재 코어 피격 가능 상태
     public bool IsUnlocked => SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.IsCoreUnlocked(this);
 
-    // BuildingHealthNet 피격 차단 연동 목적
+    private void Awake()
+    {
+        selectable = GetComponent<StructureSelectable>();
+    }
+
+    private void Start()
+    {
+        SnapToGridAndOccupy();
+    }
+
+    private void OnDestroy()
+    {
+        if (!gridOccupied || selectable == null || selectable.grid == null)
+            return;
+
+        if (selectable.footprint.x <= 0 || selectable.footprint.y <= 0)
+            return;
+
+        selectable.grid.SetAreaOccupied(selectable.anchor.x, selectable.anchor.y, selectable.footprint, selectable.rotationY, false);
+    }
+
+    // BuildingHealthNet 공격 차단 연동 목적
     public bool CanTakeDamage(BuildingHealthNet buildingHealth, float incomingDamage)
     {
         // 잠금 상태 기반 피격 허용 판정
         return SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.CanDamageCore(this);
     }
 
-    // BuildingHealthNet 파괴 후처리 연동 목적
+    // BuildingHealthNet 파괴 전처리 연동 목적
     public void OnBuildingDestroyedByMaster(BuildingHealthNet buildingHealth)
     {
         if (destructionHandled)
@@ -65,6 +88,45 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
 
         // 룸 오브젝트 잔해 생성
         PhotonNetwork.InstantiateRoomObject(remainsPrefabPath, transform.position, transform.rotation);
+    }
+
+    // 씬 배치 코어 그리드 정렬 및 점유 등록 목적
+    private void SnapToGridAndOccupy()
+    {
+        if (selectable == null || selectable.type == null)
+            return;
+
+        GridManager grid = selectable.grid != null ? selectable.grid : FindObjectOfType<GridManager>();
+        if (grid == null)
+            return;
+
+        Vector2Int footprint = selectable.type.footprint;
+        if (footprint.x <= 0 || footprint.y <= 0)
+            return;
+
+        int snappedRotationY = GetSnappedRightAngle(transform.eulerAngles.y);
+        Vector2Int centerCell = grid.WorldToGrid(transform.position);
+        Vector2Int anchor = grid.CenterToAnchor(centerCell, footprint, snappedRotationY);
+
+        selectable.BindGrid(grid, anchor, footprint, snappedRotationY);
+
+        Vector3 snappedPosition = grid.AnchorToWorldCenter(anchor, footprint, snappedRotationY);
+        transform.SetPositionAndRotation(snappedPosition, Quaternion.Euler(0f, snappedRotationY, 0f));
+
+        grid.SetAreaOccupied(anchor.x, anchor.y, footprint, snappedRotationY, true);
+        gridOccupied = true;
+    }
+
+    // Y축 회전값 90도 단위 정규화 목적
+    private static int GetSnappedRightAngle(float yRotation)
+    {
+        int snapped = Mathf.RoundToInt(yRotation / 90f) * 90;
+        snapped %= 360;
+
+        if (snapped < 0)
+            snapped += 360;
+
+        return snapped;
     }
 
     // 잔해 프리팹 경로 결정 목적
