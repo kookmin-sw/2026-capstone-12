@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: -3948050410859110535}
   - component: {fileID: 4283098188081047300}
   - component: {fileID: 262137172051209356}
+  - component: {fileID: 7802526795692060350}
   m_Layer: 7
   m_Name: BasicEnemy
   m_TagString: Enemy
@@ -159,6 +160,7 @@ MonoBehaviour:
   currentHp: 0
   scoreReward: 100
   moneyReward: 10
+  xpReward: 30
   damageReduction: 0
 --- !u!114 &3083367531661020238
 MonoBehaviour:
@@ -231,6 +233,21 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &7802526795692060350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8868151383663485156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dd793db0ad39549a1f56e48d4248fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconType: 1
+  iconColor: {r: 1, g: 0, b: 0, a: 1}
+  iconSize: 3
 --- !u!1001 &7633025033148968346
 PrefabInstance:
   m_ObjectHideFlags: 0

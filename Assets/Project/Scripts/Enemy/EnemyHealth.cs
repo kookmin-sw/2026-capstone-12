@@ -22,6 +22,7 @@ public class EnemyHealth : MonoBehaviour
     [Header("Rewards")]
     [SerializeField] private int scoreReward = 100;         // 처치 시 점수
     [SerializeField] private int moneyReward = 10;          // 처치 시 돈
+    [SerializeField] private int xpReward = 30;             // 처치 시 경험치
 
     [Header("Defense")]
     [SerializeField] private float damageReduction = 0f;    // 데미지 감소율 (0~1)
@@ -104,4 +105,5 @@ public class EnemyHealth : MonoBehaviour
     public float DamageReduction => damageReduction;
     public int ScoreReward => scoreReward;
     public int MoneyReward => moneyReward;
+    public int XpReward => xpReward;
 }

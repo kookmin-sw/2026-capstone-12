@@ -43,6 +43,10 @@ public class EnemyHealthNet : MonoBehaviourPun
                 ResourceNet.Instance.MasterAddScore(eh.ScoreReward);
                 ResourceNet.Instance.MasterAddKills(1);
             }
+
+            // 경험치 지급
+            if (ShooterLevelNet.Instance != null)
+                ShooterLevelNet.Instance.MasterAddXp(eh.XpReward);
             // EnemyManager/CombatUIManager 연동도 마스터에서만
             if (EnemyManager.Instance != null)
                 EnemyManager.Instance.RemoveEnemy(enemyPv.gameObject);

@@ -8,6 +8,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
 
     [Header("Player HP")]
     [SerializeField] private float shooterMaxHp = 100;
+    private float bonusHp = 0f;
 
     // 테스트 규칙: 마스터(슈터) HP만 관리
     private float shooterHp;
@@ -22,8 +23,9 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         // 마스터가 초기 HP를 정하고 모두에게 동기화
         if (PhotonNetwork.IsMasterClient)
         {
-            shooterHp = shooterMaxHp;
-            photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, shooterMaxHp);
+            float effectiveMax = shooterMaxHp + bonusHp;
+            shooterHp = effectiveMax;
+            photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, effectiveMax);
         }
     }
 
@@ -33,7 +35,8 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
 
         shooterHp = Mathf.Max(0, shooterHp - damage);
-        photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, shooterMaxHp);
+        float effectiveMax = shooterMaxHp + bonusHp;
+        photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, effectiveMax);
 
         if (shooterHp <= 0)
         {
@@ -56,6 +59,25 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         var hm = FindShooterHealth();
         if (hm != null)
             hm.ForceDieFromNetwork();
+    }
+
+    /// <summary>
+    /// 레벨업에 의한 최대 체력 보너스 설정 (마스터에서만 실제 적용)
+    /// </summary>
+    public void SetBonusHp(float bonus)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        float oldMax = shooterMaxHp + bonusHp;
+        bonusHp = bonus;
+        float newMax = shooterMaxHp + bonusHp;
+
+        // 최대 체력 증가분만큼 현재 체력도 회복
+        float hpGain = newMax - oldMax;
+        if (hpGain > 0)
+            shooterHp = Mathf.Min(shooterHp + hpGain, newMax);
+
+        photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, newMax);
     }
 
     private HealthManager FindShooterHealth()

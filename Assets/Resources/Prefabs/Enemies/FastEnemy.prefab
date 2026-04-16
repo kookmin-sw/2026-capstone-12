@@ -2494,6 +2494,7 @@ GameObject:
   - component: {fileID: 4274237537831031147}
   - component: {fileID: 5026102016369987789}
   - component: {fileID: 4029748653292523382}
+  - component: {fileID: 4241267838122362496}
   m_Layer: 7
   m_Name: FastEnemy
   m_TagString: Enemy
@@ -2604,6 +2605,7 @@ MonoBehaviour:
   currentHp: 0
   scoreReward: 150
   moneyReward: 15
+  xpReward: 40
   damageReduction: 0
 --- !u!114 &-167439925760390618
 MonoBehaviour:
@@ -2672,6 +2674,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
+--- !u!114 &4241267838122362496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9133630192219561619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dd793db0ad39549a1f56e48d4248fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconType: 1
+  iconColor: {r: 1, g: 1, b: 0, a: 1}
+  iconSize: 2.5
 --- !u!1 &9149505305122108598
 GameObject:
   m_ObjectHideFlags: 0

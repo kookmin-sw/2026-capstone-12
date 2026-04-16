@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float sprintSpeed = 8f;
+    private float bonusSpeed = 0f;
     [SerializeField] private float jumpHeight = 1.5f;
     [SerializeField] private float gravity = -9.81f;
 
@@ -85,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         // 달리기 체크 (Left Shift)
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
-        float currentSpeed = isSprinting ? sprintSpeed : moveSpeed;
+        float currentSpeed = (isSprinting ? sprintSpeed : moveSpeed) + bonusSpeed;
 
         // 이동 방향 계산 (플레이어 기준 로컬 좌표)
         Vector3 move = transform.right * horizontal + transform.forward * vertical;
@@ -146,6 +147,11 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// 컨트롤러 활성화/비활성화 (사망용)
     /// </summary>
+    public void SetBonusSpeed(float bonus)
+    {
+        bonusSpeed = bonus;
+    }
+
     public void SetEnabled(bool enabled)
     {
         this.enabled = enabled;

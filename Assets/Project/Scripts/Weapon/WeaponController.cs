@@ -14,6 +14,7 @@ public class WeaponController : MonoBehaviour
 {
     [Header("Weapon Stats")]
     [SerializeField] private float damage = 25f;
+    private float bonusDamage = 0f;
     [SerializeField] private float range = 100f;
     [SerializeField] private float fireRate = 0.1f;
 
@@ -210,7 +211,7 @@ public class WeaponController : MonoBehaviour
             {
                 PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
                 if (enemyPv != null)
-                    shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage);
+                    shooterWeaponNet.RequestHitEnemy(enemyPv.ViewID, damage + bonusDamage);
                 return;
             }
 
@@ -220,7 +221,7 @@ public class WeaponController : MonoBehaviour
 
             PhotonView structurePv = spawnCore.GetComponent<PhotonView>();
             if (structurePv != null)
-                shooterWeaponNet.RequestHitStructure(structurePv.ViewID, damage);
+                shooterWeaponNet.RequestHitStructure(structurePv.ViewID, damage + bonusDamage);
         }
     }
 
@@ -288,6 +289,11 @@ public class WeaponController : MonoBehaviour
             return true;
 
         return photonView == null || photonView.IsMine;
+    }
+
+    public void SetBonusDamage(float bonus)
+    {
+        bonusDamage = bonus;
     }
 
     public void SetEnabled(bool enabled)
