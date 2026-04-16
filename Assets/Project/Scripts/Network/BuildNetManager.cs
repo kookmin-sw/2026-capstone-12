@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BuildNetManager : MonoBehaviourPun
@@ -9,6 +10,9 @@ public class BuildNetManager : MonoBehaviourPun
 
     // BuildingTypeSO 배열(모든 클라 동일 순서 보장 필요)
     public BuildingTypeSO[] types;
+
+    private readonly Dictionary<int, SupportPickupItem> supportItems = new(); // 생성된 Support 아이템 조회 테이블
+    private int nextSupportId = 1; // Support 아이템 소비 동기화용 고유 ID 발급값
 
     private void Awake()
     {
@@ -48,6 +52,85 @@ public class BuildNetManager : MonoBehaviourPun
         PhotonNetwork.Instantiate(type.photonPrefabPath, pos, rot, 0, instData);
     }
     
+    // Support 아이템 배치 요청
+    public void RequestPlaceSupport(int supportTypeIndex, Vector3 position)
+    {
+        photonView.RPC(nameof(RpcRequestPlaceSupport), RpcTarget.MasterClient, supportTypeIndex, position);
+    }
+
+    // 마스터 기준 Support 배치 검증과 골드 차감
+    [PunRPC]
+    private void RpcRequestPlaceSupport(int supportTypeIndex, Vector3 position)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        SupportItemDefinition item = SupportItemCatalog.Get(supportTypeIndex);
+        if (item == null) return;
+
+        if (ResourceNet.Instance != null && !ResourceNet.Instance.MasterTrySpendMoney(item.cost))
+            return;
+
+        int supportId = nextSupportId++; // 클라이언트별 소비 대상 매칭용 ID
+        photonView.RPC(nameof(RpcSpawnSupport), RpcTarget.All, supportTypeIndex, position, supportId);
+    }
+
+    // Support 아이템 소비 요청
+    public void RequestConsumeSupport(int supportId)
+    {
+        photonView.RPC(nameof(RpcRequestConsumeSupport), RpcTarget.MasterClient, supportId);
+    }
+
+    // 마스터 기준 Support 소비 승인
+    [PunRPC]
+    private void RpcRequestConsumeSupport(int supportId)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        photonView.RPC(nameof(RpcConsumeSupport), RpcTarget.All, supportId);
+    }
+
+    // 전체 클라이언트 Support 아이템 생성
+    [PunRPC]
+    private void RpcSpawnSupport(int supportTypeIndex, Vector3 position, int supportId)
+    {
+        SupportItemDefinition item = SupportItemCatalog.Get(supportTypeIndex);
+        if (item == null) return;
+
+        GameObject prefab = Resources.Load<GameObject>(item.prefabResourcePath);
+        if (prefab == null) return;
+
+        GameObject supportObject = Instantiate(prefab, position, Quaternion.identity);
+        SupportPickupItem pickupItem = supportObject.GetComponent<SupportPickupItem>();
+        if (pickupItem == null)
+            pickupItem = supportObject.AddComponent<SupportPickupItem>();
+
+        pickupItem.Configure(supportId, item.kind);
+        supportItems[supportId] = pickupItem;
+    }
+
+    // 전체 클라이언트 Support 아이템 소비 처리
+    [PunRPC]
+    private void RpcConsumeSupport(int supportId)
+    {
+        if (!supportItems.TryGetValue(supportId, out SupportPickupItem pickupItem) || pickupItem == null)
+        {
+            SupportPickupItem[] allItems = FindObjectsOfType<SupportPickupItem>(); // 딕셔너리 누락 보정용 씬 검색
+            for (int i = 0; i < allItems.Length; i++)
+            {
+                if (allItems[i].SupportId == supportId)
+                {
+                    pickupItem = allItems[i];
+                    break;
+                }
+            }
+        }
+
+        if (pickupItem == null)
+            return;
+
+        supportItems.Remove(supportId);
+        pickupItem.StartConsuming();
+    }
 
     // 판매 요청
     public void RequestSell(int viewId)

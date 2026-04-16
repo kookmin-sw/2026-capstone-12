@@ -41,6 +41,31 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         }
     }
 
+    // Support 아이템 체력 회복 요청
+    public void RequestHealShooter(float healAmount)
+    {
+        if (healAmount <= 0f)
+            return;
+
+        if (!PhotonNetwork.InRoom)
+        {
+            ApplyHealLocal(healAmount);
+            return;
+        }
+
+        photonView.RPC(nameof(RpcRequestHealShooter), RpcTarget.MasterClient, healAmount);
+    }
+
+    [PunRPC]
+    // 마스터 기준 체력 회복 동기화
+    private void RpcRequestHealShooter(float healAmount)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        shooterHp = Mathf.Min(shooterMaxHp, shooterHp + healAmount);
+        photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, shooterMaxHp);
+    }
+
     [PunRPC]
     private void RpcSetShooterHp(float hp, float maxHp)
     {
@@ -56,6 +81,18 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         var hm = FindShooterHealth();
         if (hm != null)
             hm.ForceDieFromNetwork();
+    }
+
+    // 오프라인 테스트용 로컬 체력 회복
+    private void ApplyHealLocal(float healAmount)
+    {
+        HealthManager healthManager = FindShooterHealth();
+        if (healthManager == null)
+            return;
+
+        float maxHp = healthManager.MaxHp; // 체력 상한 보정 기준
+        float hp = Mathf.Min(maxHp, healthManager.CurrentHp + healAmount); // 회복 후 체력
+        healthManager.SetHpFromNetwork(hp, maxHp);
     }
 
     private HealthManager FindShooterHealth()

@@ -9,20 +9,28 @@ public class SupporterBuildUIController : MonoBehaviour
     [SerializeField] private BuildSystem buildSystem;
     [SerializeField] private GameObject tabPanel;
     [SerializeField] private GameObject buildTab;
+    [SerializeField] private GameObject supportTab; // Support 목록 토글용 탭 버튼
     [SerializeField] private GameObject buildingListPanel;
+    [SerializeField] private GameObject supportListPanel; // Support 아이템 슬롯 목록 패널
     [SerializeField] private GameObject descriptionPanel;
     [SerializeField] private TextMeshProUGUI descriptionNameText;
     [SerializeField] private TextMeshProUGUI descriptionGoldCostText;
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private GameObject activeResourcePanel;
+    [SerializeField] private SupportPlacementSystem supportPlacementSystem; // Support 아이템 월드 배치 시스템
 
     private readonly List<BuildSlotUI> slots = new();
+    private readonly List<SupportSlotUI> supportSlots = new(); // Support 슬롯 이벤트 해제와 상태 관리를 위한 목록
     private BuildSlotUI hoveredSlot;
     private BuildSlotUI selectedSlot;
+    private SupportSlotUI hoveredSupportSlot; // 현재 설명 표시 중인 Support 슬롯
+    private SupportSlotUI selectedSupportSlot; // 클릭으로 고정된 Support 설명 슬롯
     private bool initialized;
     private bool buildSystemBound;
     private bool buildTabBound;
+    private bool supportTabBound; // Support 탭 클릭 이벤트 연결 상태
     private bool buildSlotsBound;
+    private bool supportSlotsBound; // Support 슬롯 이벤트 연결 상태
 
     private void Awake()
     {
@@ -62,13 +70,20 @@ public class SupporterBuildUIController : MonoBehaviour
         BindResourcePanel();
         buildSystemBound = BindBuildSystem() || buildSystemBound;
         buildTabBound = BindBuildTab() || buildTabBound;
+        supportTabBound = BindSupportTab() || supportTabBound;
         buildSlotsBound = BindBuildSlots() || buildSlotsBound;
+        supportSlotsBound = BindSupportSlots() || supportSlotsBound;
 
         if (buildingListPanel != null)
             buildingListPanel.SetActive(false);
 
+        if (supportListPanel != null)
+            supportListPanel.SetActive(false);
+
         if (descriptionPanel != null)
             descriptionPanel.SetActive(false);
+
+        bool supportUiReady = supportTab == null || (supportListPanel != null && supportTabBound && supportSlotsBound); // Support UI 선택 참조 초기화 완료 여부
 
         initialized =
             buildSystem != null &&
@@ -80,7 +95,8 @@ public class SupporterBuildUIController : MonoBehaviour
             descriptionText != null &&
             buildSystemBound &&
             buildTabBound &&
-            buildSlotsBound;
+            buildSlotsBound &&
+            supportUiReady;
     }
 
     // 씬/자식 오브젝트에서 필요한 참조를 찾아 채움
@@ -95,14 +111,26 @@ public class SupporterBuildUIController : MonoBehaviour
         if (buildTab == null)
             buildTab = FindChild(tabPanel != null ? tabPanel.transform : null, "BuildTab");
 
+        if (supportTab == null)
+            supportTab = FindChild(tabPanel != null ? tabPanel.transform : null, "SupportTab");
+
         if (buildingListPanel == null)
             buildingListPanel = FindDescendant("BuildingListPanel");
+
+        if (supportListPanel == null)
+            supportListPanel = FindDescendant("SupportListPanel");
 
         if (descriptionPanel == null)
             descriptionPanel = FindDescendant("DescriptionPanel");
 
         if (activeResourcePanel == null)
             activeResourcePanel = FindDescendant("ResourcePanel");
+
+        if (supportPlacementSystem == null)
+            supportPlacementSystem = GetComponent<SupportPlacementSystem>();
+
+        if (supportPlacementSystem == null)
+            supportPlacementSystem = gameObject.AddComponent<SupportPlacementSystem>();
     }
 
     // 리소스 패널의 골드 텍스트 참조를 연결
@@ -139,6 +167,26 @@ public class SupporterBuildUIController : MonoBehaviour
 
         button.onClick.RemoveListener(ToggleBuildingListPanel);
         button.onClick.AddListener(ToggleBuildingListPanel);
+
+        return true;
+    }
+
+    // Support 탭 이벤트 연결
+    private bool BindSupportTab()
+    {
+        if (supportTab == null)
+            return false;
+
+        Button button = supportTab.GetComponent<Button>();
+        if (button == null)
+            button = supportTab.AddComponent<Button>();
+
+        Graphic graphic = supportTab.GetComponent<Graphic>();
+        if (graphic != null && button.targetGraphic == null)
+            button.targetGraphic = graphic;
+
+        button.onClick.RemoveListener(ToggleSupportListPanel);
+        button.onClick.AddListener(ToggleSupportListPanel);
 
         return true;
     }
@@ -209,7 +257,68 @@ public class SupporterBuildUIController : MonoBehaviour
         return slots.Count > 0;
     }
 
-    // Build 탭 클릭 시 목록 패널을 열고 닫음
+    // Support 슬롯 이벤트 연결
+    private bool BindSupportSlots()
+    {
+        if (supportListPanel == null || supportPlacementSystem == null)
+            return supportTab == null;
+
+        Transform listTransform = supportListPanel.transform.Find("SupportList"); // Support 슬롯 탐색 기준 부모
+        if (listTransform == null)
+            listTransform = supportListPanel.transform;
+
+        supportSlots.Clear();
+        List<Transform> slotTransforms = new(); // UI 순서와 아이템 카탈로그 순서 매칭용 슬롯 목록
+        foreach (Transform child in listTransform)
+        {
+            bool hasSlotRootGraphic = child.GetComponent<Selectable>() != null || child.GetComponent<Graphic>() != null; // 버튼형 슬롯 루트 판정
+            bool hasSupportSlotChildren =
+                child.Find("SupportIcon") != null &&
+                child.Find("NameText") != null &&
+                child.Find("GoldCostText") != null; // Support 슬롯 하위 구조 판정
+
+            if (!hasSlotRootGraphic && !hasSupportSlotChildren)
+                continue;
+
+            slotTransforms.Add(child);
+        }
+
+        for (int i = 0; i < slotTransforms.Count; i++)
+        {
+            Transform slotTransform = slotTransforms[i];
+            SupportSlotUI slot = slotTransform.GetComponent<SupportSlotUI>(); // Support 전용 클릭과 호버 처리 컴포넌트
+            if (slot == null)
+                slot = slotTransform.gameObject.AddComponent<SupportSlotUI>();
+
+            Button button = slotTransform.GetComponent<Button>();
+            if (button == null)
+                button = slotTransform.gameObject.AddComponent<Button>();
+
+            Graphic graphic = slotTransform.GetComponent<Graphic>();
+            if (graphic != null && button.targetGraphic == null)
+                button.targetGraphic = graphic;
+
+            slot.button = button;
+            slot.costText = FindText(slotTransform, "GoldCostText");
+            slot.nameText = FindText(slotTransform, "NameText");
+            slot.descriptionText = FindTextInDescendants(slotTransform, "DescriptionText");
+            slot.iconImage = FindImage(slotTransform, "SupportIcon");
+            slot.Configure(supportPlacementSystem, SupportItemCatalog.Get(i));
+
+            slot.Clicked -= HandleSupportSlotClicked;
+            slot.Hovered -= HandleSupportSlotHovered;
+            slot.HoverExited -= HandleSupportSlotHoverExited;
+            slot.Clicked += HandleSupportSlotClicked;
+            slot.Hovered += HandleSupportSlotHovered;
+            slot.HoverExited += HandleSupportSlotHoverExited;
+
+            supportSlots.Add(slot);
+        }
+
+        return supportSlots.Count > 0;
+    }
+
+    // Build 목록 패널 토글
     private void ToggleBuildingListPanel()
     {
         if (buildingListPanel == null)
@@ -218,11 +327,33 @@ public class SupporterBuildUIController : MonoBehaviour
         bool shouldOpen = !buildingListPanel.activeSelf;
         buildingListPanel.SetActive(shouldOpen);
 
+        if (shouldOpen && supportListPanel != null)
+            supportListPanel.SetActive(false);
+
         if (!shouldOpen)
         {
             hoveredSlot = null;
+            hoveredSupportSlot = null;
             HideDescription();
         }
+    }
+
+    // Support 목록 패널 토글
+    private void ToggleSupportListPanel()
+    {
+        if (supportListPanel == null)
+            return;
+
+        bool shouldOpen = !supportListPanel.activeSelf;
+        supportListPanel.SetActive(shouldOpen);
+
+        if (shouldOpen && buildingListPanel != null)
+            buildingListPanel.SetActive(false);
+
+        hoveredSlot = null;
+        hoveredSupportSlot = null;
+        selectedSupportSlot = null;
+        HideDescription();
     }
 
     // 슬롯 클릭 시 선택 상태를 저장하고 설명을 보여쥼
@@ -230,6 +361,8 @@ public class SupporterBuildUIController : MonoBehaviour
     {
         selectedSlot = slot;
         hoveredSlot = slot;
+        selectedSupportSlot = null;
+        hoveredSupportSlot = null;
         ShowDescription(slot);
     }
 
@@ -237,6 +370,7 @@ public class SupporterBuildUIController : MonoBehaviour
     private void HandleSlotHovered(BuildSlotUI slot)
     {
         hoveredSlot = slot;
+        hoveredSupportSlot = null;
         ShowDescription(slot);
     }
 
@@ -265,11 +399,29 @@ public class SupporterBuildUIController : MonoBehaviour
         string displayName = string.IsNullOrWhiteSpace(type.displayName) ? type.name : type.displayName;
         string description = string.IsNullOrWhiteSpace(type.description) ? displayName : type.description;
 
+        ShowDescription(displayName, type.cost.ToString(), description);
+    }
+
+    // Support 설명 표시
+    private void ShowDescription(SupportSlotUI slot)
+    {
+        if (slot == null || slot.item == null || descriptionPanel == null)
+            return;
+
+        ShowDescription(slot.item.displayName, slot.item.cost.ToString(), slot.item.description);
+    }
+
+    // 설명 텍스트 갱신
+    private void ShowDescription(string displayName, string goldCost, string description)
+    {
+        if (descriptionPanel == null)
+            return;
+
         if (descriptionNameText != null)
             descriptionNameText.text = displayName;
 
         if (descriptionGoldCostText != null)
-            descriptionGoldCostText.text = type.cost.ToString();
+            descriptionGoldCostText.text = goldCost;
 
         if (descriptionText != null)
             descriptionText.text = description;
@@ -289,6 +441,41 @@ public class SupporterBuildUIController : MonoBehaviour
     {
         selectedSlot = null;
         hoveredSlot = null;
+        hoveredSupportSlot = null;
+        selectedSupportSlot = null;
+        HideDescription();
+    }
+
+    // Support 슬롯 선택
+    private void HandleSupportSlotClicked(SupportSlotUI slot)
+    {
+        selectedSupportSlot = slot;
+        hoveredSupportSlot = slot;
+        selectedSlot = null;
+        hoveredSlot = null;
+        ShowDescription(slot);
+    }
+
+    // Support 슬롯 호버
+    private void HandleSupportSlotHovered(SupportSlotUI slot)
+    {
+        hoveredSupportSlot = slot;
+        hoveredSlot = null;
+        ShowDescription(slot);
+    }
+
+    // Support 슬롯 호버 종료
+    private void HandleSupportSlotHoverExited(SupportSlotUI slot)
+    {
+        if (hoveredSupportSlot == slot)
+            hoveredSupportSlot = null;
+
+        if (selectedSupportSlot == slot)
+        {
+            ShowDescription(slot);
+            return;
+        }
+
         HideDescription();
     }
 
@@ -335,7 +522,7 @@ public class SupporterBuildUIController : MonoBehaviour
         return child != null ? child.GetComponent<Image>() : null;
     }
 
-    // 하위 전체에서 이름에 맞는 텍스트를 찾음
+    // 하위 텍스트 조회
     private TextMeshProUGUI FindTextInDescendants(Transform parent, string childName)
     {
         foreach (Transform child in parent.GetComponentsInChildren<Transform>(true))
