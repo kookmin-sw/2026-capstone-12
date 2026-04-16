@@ -18,10 +18,13 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
 
     [Header("Core Spawn Settings")]
     [SerializeField] private bool allowEnemySpawn = true;
+    [SerializeField] private bool startsSpawnActivated = false;
+    [SerializeField] private int requiredActivatedCoreCountToActivate = 0;
     [SerializeField] private float spawnRadiusMin = 4f;
     [SerializeField] private float spawnRadiusMax = 8f;
 
     private StructureSelectable selectable;
+    private bool spawnActivated = false;
     private bool destructionHandled = false;
     private bool gridOccupied = false;
     private bool blockGridOnDestroy = false;
@@ -29,6 +32,9 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     public int CoreOrder => coreOrder;
     public int RequiredDestroyedCoreCountToUnlock => requiredDestroyedCoreCountToUnlock;
     public bool AllowEnemySpawn => allowEnemySpawn;
+    public bool IsSpawnActivated => spawnActivated;
+    public bool CanSpawnEnemies => allowEnemySpawn && spawnActivated;
+    public int RequiredActivatedCoreCountToActivate => Mathf.Max(0, requiredActivatedCoreCountToActivate);
     public float SpawnRadiusMin => Mathf.Max(0f, spawnRadiusMin);
     public float SpawnRadiusMax => Mathf.Max(SpawnRadiusMin, spawnRadiusMax);
     // 현재 코어 피격 가능 상태
@@ -37,6 +43,13 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     private void Awake()
     {
         selectable = GetComponent<StructureSelectable>();
+        spawnActivated = startsSpawnActivated;
+    }
+
+    // 액티베이터 기반 스폰 가능 상태 변경 목적
+    public void SetSpawnActivated(bool active)
+    {
+        spawnActivated = active;
     }
 
     private void Start()
@@ -63,7 +76,7 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     public bool CanTakeDamage(BuildingHealthNet buildingHealth, float incomingDamage)
     {
         // 잠금 상태 기반 피격 허용 판정
-        return SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.CanDamageCore(this);
+        return IsSpawnActivated && (SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.CanDamageCore(this));
     }
 
     // BuildingHealthNet 파괴 전처리 연동 목적

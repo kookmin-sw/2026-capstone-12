@@ -31,13 +31,13 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Continuous Spawn Settings")]
     // 기본 생성 주기
-    [SerializeField] private float baseSpawnInterval = 6f;
+    [SerializeField] private float baseSpawnInterval = 1.2f;
     // 코어 파괴당 주기 감소값
-    [SerializeField] private float spawnIntervalReductionPerDestroyedCore = 0.75f;
+    [SerializeField] private float spawnIntervalReductionPerDestroyedCore = 0.2f;
     // 최소 생성 주기
-    [SerializeField] private float minimumSpawnInterval = 1.5f;
+    [SerializeField] private float minimumSpawnInterval = 0.35f;
     // 최대 활성 적 수
-    [SerializeField] private int maxActiveEnemies = 20;
+    [SerializeField] private int maxActiveEnemies = 80;
 
     [Header("Test Settings")]
     [SerializeField] private bool testMode = false;
@@ -62,15 +62,6 @@ public class EnemyManager : MonoBehaviour
         }
 
         Instance = this;
-    }
-
-    void Start()
-    {
-        // 마스터 클라이언트만 실행
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
-        BeginEnemySystem();
     }
 
     // ============================================================
@@ -220,7 +211,7 @@ public class EnemyManager : MonoBehaviour
         for (int i = 0; i < cores.Length; i++)
         {
             SpawnCore core = cores[i];
-            if (core == null || !core.isActiveAndEnabled || !core.AllowEnemySpawn)
+            if (core == null || !core.isActiveAndEnabled || !core.CanSpawnEnemies)
                 continue;
 
             result.Add(core);
@@ -241,7 +232,7 @@ public class EnemyManager : MonoBehaviour
         while (spawnCoreCursor < spawnCoreSequence.Count)
         {
             SpawnCore core = spawnCoreSequence[spawnCoreCursor++];
-            if (core != null && core.isActiveAndEnabled && core.AllowEnemySpawn)
+            if (core != null && core.isActiveAndEnabled && core.CanSpawnEnemies)
                 return core;
         }
 

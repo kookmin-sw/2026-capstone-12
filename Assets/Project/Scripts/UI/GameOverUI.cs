@@ -18,6 +18,7 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
 
     [Header("Texts")]
+    [SerializeField] private Text titleText;
     [SerializeField] private Text scoreText;
     [SerializeField] private Text killText;
 
@@ -43,6 +44,7 @@ public class GameOverUI : MonoBehaviour
 
         // GameManager 이벤트에 구독
         GameManager.Instance.OnGameOver.AddListener(ShowGameOver);
+        GameManager.Instance.OnVictory.AddListener(ShowVictory);
     }
 
     // ============================================================
@@ -50,10 +52,27 @@ public class GameOverUI : MonoBehaviour
     // ============================================================
     void ShowGameOver()
     {
+        ShowResult("GAME OVER");
+
+        Debug.Log("Game Over UI Shown");
+    }
+
+    void ShowVictory()
+    {
+        ShowResult("VICTORY");
+
+        Debug.Log("Victory UI Shown");
+    }
+
+    void ShowResult(string title)
+    {
         // 패널 활성화
         gameOverPanel.SetActive(true);
 
         // 결과 표시
+        if (titleText != null)
+            titleText.text = title;
+
         scoreText.text = $"점수: {ResourceManager.Instance.Score}";
         killText.text = $"처치: {ResourceManager.Instance.Kills}명";
 
@@ -61,10 +80,19 @@ public class GameOverUI : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        DisablePlayerControls();
+
         // 시간 멈추기
         Time.timeScale = 0f;
+    }
 
-        Debug.Log("Game Over UI Shown");
+    void DisablePlayerControls()
+    {
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        playerController?.SetEnabled(false);
+
+        WeaponController weaponController = FindObjectOfType<WeaponController>();
+        weaponController?.SetEnabled(false);
     }
 
     // ============================================================

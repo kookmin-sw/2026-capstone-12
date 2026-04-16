@@ -194,6 +194,8 @@ MonoBehaviour:
   requiredDestroyedCoreCountToUnlock: 0
   destroyedRemainsPrefabPath: Prefabs/SpawnCore/Remains/SpawnCore
   allowEnemySpawn: 1
+  startsSpawnActivated: 0
+  requiredActivatedCoreCountToActivate: 0
   spawnRadiusMin: 4
   spawnRadiusMax: 8
 --- !u!114 &3910355213880760096

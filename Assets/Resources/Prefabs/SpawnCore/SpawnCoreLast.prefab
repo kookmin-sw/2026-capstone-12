@@ -88,6 +88,8 @@ MonoBehaviour:
   requiredDestroyedCoreCountToUnlock: 2
   destroyedRemainsPrefabPath: Prefabs/SpawnCore/Remains/SpawnCoreLast
   allowEnemySpawn: 1
+  startsSpawnActivated: 0
+  requiredActivatedCoreCountToActivate: 2
   spawnRadiusMin: 4
   spawnRadiusMax: 8
 --- !u!114 &3392698574635001436
