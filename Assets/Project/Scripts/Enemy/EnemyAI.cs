@@ -40,6 +40,11 @@ public class EnemyAI : MonoBehaviour
     private EnemyAnimationNet animationNet;
 
     // State
+    // 난이도 배율 반복 적용 시 누적 방지를 위한 프리팹 원본 스탯 보관
+    private float baseMoveSpeed;
+    private float baseAttackCooldown;
+    private float baseAttackDamage;
+    private float difficultyMultiplier = 1f;
     private float nextAttackTime = 0f;
     private float currentMoveSpeed;
     private float currentAttackCooldown;
@@ -59,8 +64,10 @@ public class EnemyAI : MonoBehaviour
         col = GetComponent<CapsuleCollider>();
         animationNet = GetComponent<EnemyAnimationNet>();
 
-        currentMoveSpeed = moveSpeed;
-        currentAttackCooldown = attackCooldown;
+        baseMoveSpeed = moveSpeed;
+        baseAttackCooldown = attackCooldown;
+        baseAttackDamage = attackDamage;
+        ApplyDifficultyValues();
     }
 
     void Start()
@@ -136,6 +143,35 @@ public class EnemyAI : MonoBehaviour
         };
     }
 
+    public void ApplyDifficultyMultiplier(float multiplier)
+    {
+        multiplier = Mathf.Max(0.01f, multiplier);
+
+        // 네트워크 방에서 Enemy PhotonView를 통한 모든 클라이언트 동일 배율 적용
+        if (PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient && pv != null)
+        {
+            pv.RPC(nameof(RpcApplyDifficultyMultiplier), RpcTarget.AllBuffered, multiplier);
+            return;
+        }
+
+        ApplyDifficultyMultiplierLocal(multiplier);
+    }
+
+    [PunRPC]
+    private void RpcApplyDifficultyMultiplier(float multiplier)
+    {
+        ApplyDifficultyMultiplierLocal(multiplier);
+    }
+
+    private void ApplyDifficultyMultiplierLocal(float multiplier)
+    {
+        difficultyMultiplier = Mathf.Max(0.01f, multiplier);
+        ApplyDifficultyValues();
+
+        EnemyHealth health = GetComponent<EnemyHealth>();
+        health?.ApplyDifficultyMultiplier(difficultyMultiplier);
+    }
+
     public void RemoveSlow(int sourceId)
     {
         if (!PhotonNetwork.IsMasterClient)
@@ -179,6 +215,17 @@ public class EnemyAI : MonoBehaviour
 
         currentMoveSpeed = moveSpeed * moveSpeedMultiplier;
         currentAttackCooldown = attackCooldown / Mathf.Max(0.01f, attackSpeedMultiplier);
+    }
+
+    private void ApplyDifficultyValues()
+    {
+        // 공격속도 증가의 쿨다운 감소 표현
+        moveSpeed = baseMoveSpeed * difficultyMultiplier;
+        attackCooldown = baseAttackCooldown / difficultyMultiplier;
+        attackDamage = baseAttackDamage * difficultyMultiplier;
+
+        currentMoveSpeed = moveSpeed;
+        currentAttackCooldown = attackCooldown;
     }
 
     // ============================================================

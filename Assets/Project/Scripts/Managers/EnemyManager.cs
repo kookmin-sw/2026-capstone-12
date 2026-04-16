@@ -33,10 +33,16 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     [SerializeField] private bool startAutomatically = true; // 씬 시작 시 스폰 루프 자동 시작 여부
 
     [Header("Enemy Tier Settings")]
-    [SerializeField] private float baseFastEnemyChance = 0.15f; // Core 미파괴 상태의 Fast Enemy 생성 확률
-    [SerializeField] private float baseTankEnemyChance = 0.1f; // Core 미파괴 상태의 Tank Enemy 생성 확률
-    [SerializeField] private float fastEnemyChancePerDestroyedCore = 0.1f; // Core 파괴 수에 따른 Fast Enemy 확률 증가값
-    [SerializeField] private float tankEnemyChancePerDestroyedCore = 0.15f; // Core 파괴 수에 따른 Tank Enemy 확률 증가값
+    // Core 파괴 단계별 Basic/Fast/Tank 스폰 가중치
+    [SerializeField] private Vector3 intactCoreEnemyWeights = new Vector3(8f, 1.5f, 0.5f); // Basic, Fast, Tank
+    [SerializeField] private Vector3 oneDestroyedCoreEnemyWeights = new Vector3(6f, 3f, 1f); // Basic, Fast, Tank
+    [SerializeField] private Vector3 twoDestroyedCoreEnemyWeights = new Vector3(4f, 4f, 2f); // Basic, Fast, Tank
+
+    [Header("Enemy Stat Scaling")]
+    // Core 파괴 단계별 신규 스폰 Enemy의 체력/공격/공격속도/이동속도 배율
+    [SerializeField] private float intactCoreStatMultiplier = 1f;
+    [SerializeField] private float oneDestroyedCoreStatMultiplier = 1.5f;
+    [SerializeField] private float twoDestroyedCoreStatMultiplier = 2f;
 
     [Header("Test Settings")]
     [SerializeField] private bool testMode = false;
@@ -182,6 +188,8 @@ public class EnemyManager : MonoBehaviourPunCallbacks
         }
 
         activeEnemies.Add(enemy);
+        // Core 파괴 이후 생성되는 Enemy만 현재 난이도 배율 적용
+        ApplyCurrentDifficultyToEnemy(enemy);
         CombatUIManager.Instance?.SetRemainingEnemyCount(ActiveEnemyCount);
         return enemy;
     }
@@ -191,24 +199,27 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     /// </summary>
     private string GetRandomEnemyPrefabPath()
     {
-        float fastChance = Mathf.Clamp01(baseFastEnemyChance + spawnCoreDifficulty * fastEnemyChancePerDestroyedCore); // Fast Enemy 최종 확률
-        float tankChance = Mathf.Clamp01(baseTankEnemyChance + spawnCoreDifficulty * tankEnemyChancePerDestroyedCore); // Tank Enemy 최종 확률
-        float totalAdvancedChance = Mathf.Min(0.9f, fastChance + tankChance); // Basic Enemy 최소 여지를 남기는 상위 Enemy 확률 합
-        if (fastChance + tankChance > totalAdvancedChance)
-        {
-            float scale = totalAdvancedChance / (fastChance + tankChance); // 상위 Enemy 확률 합 보정 배율
-            fastChance *= scale;
-            tankChance *= scale;
-        }
+        // 기존 확률 증가식 대신 단계별 가중치 사용으로 의도한 비율 유지
+        Vector3 weights = GetCurrentEnemyWeights();
+        float basicWeight = Mathf.Max(0f, weights.x);
+        float fastWeight = Mathf.Max(0f, weights.y);
+        float tankWeight = Mathf.Max(0f, weights.z);
+        float totalWeight = basicWeight + fastWeight + tankWeight;
+
+        if (totalWeight <= 0f)
+            return basicEnemyPrefabPath;
 
         float roll = Random.value; // Enemy 종류 선택 난수
-        if (roll < tankChance)
-            return tankEnemyPrefabPath;
+        roll *= totalWeight;
 
-        if (roll < tankChance + fastChance)
+        if (roll < basicWeight)
+            return basicEnemyPrefabPath;
+
+        roll -= basicWeight;
+        if (roll < fastWeight)
             return fastEnemyPrefabPath;
 
-        return basicEnemyPrefabPath;
+        return tankEnemyPrefabPath;
     }
 
     /// <summary>
@@ -478,6 +489,39 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     {
         float interval = baseGroupSpawnInterval - (spawnCoreDifficulty * groupSpawnIntervalReductionPerDestroyedCore); // 현재 Group 생성 주기
         return Mathf.Max(minimumGroupSpawnInterval, interval);
+    }
+
+    private Vector3 GetCurrentEnemyWeights()
+    {
+        // 2개 이상 파괴된 경우 마지막 테이블 재사용으로 난이도 상한 설정
+        if (spawnCoreDifficulty <= 0)
+            return intactCoreEnemyWeights;
+
+        if (spawnCoreDifficulty == 1)
+            return oneDestroyedCoreEnemyWeights;
+
+        return twoDestroyedCoreEnemyWeights;
+    }
+
+    private float GetCurrentEnemyStatMultiplier()
+    {
+        // 스폰 확률과 같은 단계 기준의 신규 Enemy 스탯 배율 결정
+        if (spawnCoreDifficulty <= 0)
+            return intactCoreStatMultiplier;
+
+        if (spawnCoreDifficulty == 1)
+            return oneDestroyedCoreStatMultiplier;
+
+        return twoDestroyedCoreStatMultiplier;
+    }
+
+    private void ApplyCurrentDifficultyToEnemy(GameObject enemy)
+    {
+        if (enemy == null)
+            return;
+
+        EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+        enemyAI?.ApplyDifficultyMultiplier(GetCurrentEnemyStatMultiplier());
     }
 
     // ============================================================

@@ -27,11 +27,18 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private float damageReduction = 0f;    // 데미지 감소율 (0~1)
 
     // State
+    // 난이도 배율 재적용 시 체력 중복 증가 방지를 위한 프리팹 원본 체력 보관
+    private float baseMaxHp;
     private bool isDead = false;
 
     // ============================================================
     // Unity 생명주기
     // ============================================================
+    private void Awake()
+    {
+        baseMaxHp = maxHp;
+    }
+
     void Start()
     {
         currentHp = maxHp;
@@ -50,6 +57,16 @@ public class EnemyHealth : MonoBehaviour
 
         if (!isDead && currentHp <= 0f)
             DieLocal();
+    }
+
+    public void ApplyDifficultyMultiplier(float multiplier)
+    {
+        if (isDead)
+            return;
+
+        // 신규 스폰 직후 호출 값 기준의 현재 체력 최대치 충전
+        maxHp = baseMaxHp * Mathf.Max(0.01f, multiplier);
+        currentHp = maxHp;
     }
 
     // ============================================================
