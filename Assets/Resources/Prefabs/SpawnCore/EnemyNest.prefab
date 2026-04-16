@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 4265914843653467277}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 0, y: 1.75, z: -0}
-  m_LocalScale: {x: 200, y: 200.00002, z: 200.00002}
+  m_LocalPosition: {x: 0, y: 0.863, z: -0}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7981873945785298075}
@@ -117,10 +117,10 @@ GameObject:
   - component: {fileID: 7981873945785298075}
   - component: {fileID: 1049415957370110992}
   - component: {fileID: 7815501894837041628}
-  - component: {fileID: 3101160720406250699}
+  - component: {fileID: -1711792277131428802}
   - component: {fileID: 3910355213880760096}
   m_Layer: 0
-  m_Name: SpawnCore
+  m_Name: EnemyNest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 0
   currentHp: 0
---- !u!114 &3101160720406250699
+--- !u!114 &-1711792277131428802
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,12 +187,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 8805579323114019885}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1a925cd886449f47b9c941e995f0845, type: 3}
+  m_Script: {fileID: 11500000, guid: 1601fff2277512440ac7e30396a61508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coreOrder: 0
-  requiredDestroyedCoreCountToUnlock: 0
-  destroyedRemainsPrefabPath: Prefabs/SpawnCore/Remains/SpawnCore
+  ownerCore: {fileID: 0}
+  destroyedRemainsPrefabPath: Prefabs/SpawnCore/Remains/EnemyNest
+  allowSpawn: 1
+  spawnRadius: 1.5
+  spawnHeightOffset: 0.5
+  weight: 1
+  fallbackMaxHp: 60
 --- !u!114 &3910355213880760096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: {fileID: 11400000, guid: 6c8dffe40f2e6d340a5b733bd66da969, type: 2}
+  type: {fileID: 11400000, guid: 8e59fc2cb83dd524e9aa746065284e8f, type: 2}
   health: {fileID: 0}
   grid: {fileID: 0}
   anchor: {x: 0, y: 0}
