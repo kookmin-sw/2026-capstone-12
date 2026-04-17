@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class TopDownCameraController : MonoBehaviour
 {
@@ -43,6 +43,11 @@ public class TopDownCameraController : MonoBehaviour
         pitch = NormalizeAngle(e.x);
     }
 
+    private void Start()
+    {
+        TryLookAtLocalPlayer();
+    }
+
     private void Update()
     {
         if (InputLock.IsLocked) return;
@@ -53,6 +58,30 @@ public class TopDownCameraController : MonoBehaviour
         HandlePan();
         HandleZoom();
         HandleRotate();
+    }
+
+    // 게임 시작 시 로컬 플레이어 화면 중앙 정렬 목적
+    private void TryLookAtLocalPlayer()
+    {
+        Transform playerTarget = FindLocalPlayerTarget();
+        if (playerTarget == null || cam == null)
+            return;
+
+        // 화면 중앙에서 레이를 쏴서 닿는 바닥 월드 좌표와 플레이어 위치와의 오프셋 계산
+        Vector3 screenCenter = new Vector3(cam.pixelWidth * 0.5f, cam.pixelHeight * 0.5f, 0f);
+        if (!TryGetMouseWorldOnGround(screenCenter, out Vector3 centerWorld))
+            return;
+
+        Vector3 offset = playerTarget.position - centerWorld;
+        Vector3 planarOffset = Vector3.ProjectOnPlane(offset, Vector3.up);
+        transform.position += planarOffset;
+    }
+
+    // 카메라 초기 정렬용 로컬 플레이어 탐색 목적
+    private Transform FindLocalPlayerTarget()
+    {
+        PlayerBodyController body = FindObjectOfType<PlayerBodyController>();
+        return body != null ? body.transform : null;
     }
 
     private void HandlePan()

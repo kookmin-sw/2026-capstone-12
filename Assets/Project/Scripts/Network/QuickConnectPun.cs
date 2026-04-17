@@ -28,11 +28,6 @@ public class QuickConnectPun : MonoBehaviourPunCallbacks
     {
         Debug.Log($"JoinedRoom: {PhotonNetwork.CurrentRoom.Name}  Players: {PhotonNetwork.CurrentRoom.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}  Actor: {PhotonNetwork.LocalPlayer.ActorNumber}  Master: {PhotonNetwork.IsMasterClient}");
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            if (EnemyManager.Instance != null)
-                EnemyManager.Instance.BeginEnemySystem();
-        }
     }
 
     public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)

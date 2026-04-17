@@ -12,8 +12,12 @@ public class ShooterAmmoNet : MonoBehaviourPun
 
     public void SyncAmmoFromShooter(int currentAmmo, int reserveAmmo, int maxAmmo)
     {
-        if (PhotonNetwork.IsConnected && !PhotonNetwork.InRoom)
+        if (!PhotonNetwork.InRoom)
+        {
+            // 오프라인 테스트용 로컬 탄약 반영
+            RpcSetShooterAmmo(currentAmmo, reserveAmmo, maxAmmo);
             return;
+        }
 
         photonView.RPC(nameof(RpcSetShooterAmmo), RpcTarget.All, currentAmmo, reserveAmmo, maxAmmo);
     }

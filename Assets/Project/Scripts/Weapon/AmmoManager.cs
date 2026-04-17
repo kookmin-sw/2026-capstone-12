@@ -50,6 +50,16 @@ public class AmmoManager : MonoBehaviour
         NotifyAmmoChanged();
     }
 
+    // Support 아이템 예비 탄약 회복
+    public void AddReserveAmmo(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        reserveAmmo += amount;
+        NotifyAmmoChanged();
+    }
+
     public void SetAmmoFromNetwork(int newCurrentAmmo, int newReserveAmmo, int newMaxAmmo)
     {
         maxAmmo = newMaxAmmo;
