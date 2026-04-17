@@ -12,6 +12,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
 
     // 테스트 규칙: 마스터(슈터) HP만 관리
     private float shooterHp;
+    private bool isHpInitialized = false;
 
     private void Awake()
     {
@@ -20,19 +21,19 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        // 마스터가 초기 HP를 정하고 모두에게 동기화
-        if (PhotonNetwork.IsMasterClient)
-        {
-            float effectiveMax = shooterMaxHp + bonusHp;
-            shooterHp = effectiveMax;
-            photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, effectiveMax);
-        }
+        TryInitializeHp();
+    }
+
+    public override void OnJoinedRoom()
+    {
+        TryInitializeHp();
     }
 
     // 마스터에서만 호출: 슈터에게 데미지 적용
     public void MasterApplyDamageToShooter(float damage)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        TryInitializeHp();
 
         shooterHp = Mathf.Max(0, shooterHp - damage);
         float effectiveMax = shooterMaxHp + bonusHp;
@@ -63,6 +64,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     private void RpcRequestHealShooter(float healAmount)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        TryInitializeHp();
 
         float effectiveMax = shooterMaxHp + bonusHp;
         shooterHp = Mathf.Min(effectiveMax, shooterHp + healAmount);
@@ -92,6 +94,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     public void SetBonusHp(float bonus)
     {
         if (!PhotonNetwork.IsMasterClient) return;
+        TryInitializeHp();
 
         float oldMax = shooterMaxHp + bonusHp;
         bonusHp = bonus;
@@ -103,6 +106,20 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
             shooterHp = Mathf.Min(shooterHp + hpGain, newMax);
 
         photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, newMax);
+    }
+
+    private void TryInitializeHp()
+    {
+        if (isHpInitialized)
+            return;
+
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        float effectiveMax = shooterMaxHp + bonusHp;
+        shooterHp = effectiveMax;
+        isHpInitialized = true;
+        photonView.RPC(nameof(RpcSetShooterHp), RpcTarget.All, shooterHp, effectiveMax);
     }
 
     // 오프라인 테스트용 로컬 체력 회복

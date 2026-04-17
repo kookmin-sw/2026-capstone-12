@@ -45,7 +45,16 @@ public class ShooterLevelNet : MonoBehaviourPunCallbacks
     private void Start()
     {
         xpToNextLevel = baseXpToLevel;
+        SyncLevelStateIfMaster();
+    }
 
+    public override void OnJoinedRoom()
+    {
+        SyncLevelStateIfMaster();
+    }
+
+    private void SyncLevelStateIfMaster()
+    {
         if (PhotonNetwork.IsMasterClient)
         {
             photonView.RPC(nameof(RpcSyncLevelState), RpcTarget.All,

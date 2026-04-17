@@ -36,10 +36,15 @@ public class ShooterWeaponNet : MonoBehaviourPun
         PhotonView structurePv = PhotonView.Find(structureViewId);
         if (structurePv == null) return;
 
-        SpawnCore spawnCore = structurePv.GetComponent<SpawnCore>();
-        if (spawnCore == null) return;
-
         BuildingHealthNet buildingHealth = structurePv.GetComponent<BuildingHealthNet>();
-        buildingHealth?.MasterTakeDamage(damage);
+        if (buildingHealth == null) return;
+
+        bool isDamageableStructure =
+            structurePv.GetComponent<SpawnCore>() != null ||
+            structurePv.GetComponent<EnemyNest>() != null;
+
+        if (!isDamageableStructure) return;
+
+        buildingHealth.MasterTakeDamage(damage);
     }
 }

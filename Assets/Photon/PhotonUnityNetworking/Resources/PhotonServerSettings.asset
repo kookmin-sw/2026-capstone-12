@@ -67,6 +67,12 @@ MonoBehaviour:
   - RpcRequestHitStructure
   - RpcLevelUp
   - RpcSyncLevelState
+  - RpcApplyDifficultyMultiplier
+  - RpcConsumeSupport
+  - RpcRequestConsumeSupport
+  - RpcRequestHealShooter
+  - RpcRequestPlaceSupport
+  - RpcSpawnSupport
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
