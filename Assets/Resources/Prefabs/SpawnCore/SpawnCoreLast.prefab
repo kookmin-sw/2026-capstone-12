@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &3534193397617612285
 GameObject:
@@ -116,8 +116,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08dd793db0ad39549a1f56e48d4248fa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   iconType: 2
   iconColor: {r: 0.8, g: 0, b: 1, a: 1}
   iconSize: 5
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 4731130399279931990}
   - component: {fileID: 4291740363481221155}
   - component: {fileID: 4249829050091375450}
-  - component: {fileID: 8448072611158970002}
+  - component: {fileID: 1706551642944705719}
   m_Layer: 0
   m_Name: Mesh_0
   m_TagString: Untagged
@@ -162,7 +162,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8911064111753242765}
-  m_Mesh: {fileID: 5461320835613783329, guid: 57b5cd9ca8bf90042a3f4db46ed1db61, type: 3}
+  m_Mesh: {fileID: -891463103676993357, guid: 7d935d47a59bedb4883e6c1e73338ab9, type: 3}
 --- !u!23 &4249829050091375450
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -205,8 +205,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &8448072611158970002
-MeshCollider:
+--- !u!136 &1706551642944705719
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -223,7 +223,8 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 5461320835613783329, guid: 57b5cd9ca8bf90042a3f4db46ed1db61, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.004818807
+  m_Height: 0.019120649
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
