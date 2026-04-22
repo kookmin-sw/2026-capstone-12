@@ -19,8 +19,8 @@ public class MinimapController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private float minimapHeight = 200f;
     [SerializeField] private float padding = 10f;
 
-    [Header("Ground Objects (맵 바닥)")]
-    [SerializeField] private string[] groundNames = { "ground_1", "ground_1_1", "ground_1_2", "ground_1_3" };
+    [Header("Ground Object (맵 바닥)")]
+    [SerializeField] private string groundObjectPath = "MapGround/Plane";
 
     private RenderTexture renderTexture;
     private RectTransform minimapRect;
@@ -86,34 +86,15 @@ public class MinimapController : MonoBehaviour, IPointerClickHandler
 
     private Bounds CalculateMapBounds()
     {
-        Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
-        bool initialized = false;
-
-        foreach (string groundName in groundNames)
+        GameObject plane = GameObject.Find(groundObjectPath);
+        if (plane != null)
         {
-            GameObject go = GameObject.Find(groundName);
-            if (go == null) continue;
-
-            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
-            foreach (Renderer rend in renderers)
-            {
-                if (rend.gameObject.layer == 10) continue;
-                if (!initialized)
-                {
-                    bounds = rend.bounds;
-                    initialized = true;
-                }
-                else
-                {
-                    bounds.Encapsulate(rend.bounds);
-                }
-            }
+            Renderer rend = plane.GetComponent<Renderer>();
+            if (rend != null)
+                return rend.bounds;
         }
 
-        if (!initialized)
-            bounds = new Bounds(Vector3.zero, new Vector3(200f, 0f, 200f));
-
-        return bounds;
+        return new Bounds(Vector3.zero, new Vector3(200f, 0f, 200f));
     }
 
     /// <summary>
