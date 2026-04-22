@@ -5,7 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 서포터 미니맵 컨트롤러
 /// - RenderTexture 기반 미니맵 표시
-/// - 플레이어/적 아이콘 표시 (MinimapIcon 연동)
+/// - 맵 전체를 고정으로 표시 (ground 오브젝트 바운드 기반)
 /// - 미니맵 클릭 시 서포터 카메라를 해당 월드 위치로 이동
 /// </summary>
 public class MinimapController : MonoBehaviour, IPointerClickHandler
@@ -16,8 +16,11 @@ public class MinimapController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TopDownCameraController topDownCamera;
 
     [Header("Minimap Camera Settings")]
-    [SerializeField] private float minimapHeight = 120f;
-    [SerializeField] private float minimapOrthoSize = 80f;
+    [SerializeField] private float minimapHeight = 200f;
+    [SerializeField] private float padding = 10f;
+
+    [Header("Ground Objects (맵 바닥)")]
+    [SerializeField] private string[] groundNames = { "ground_1", "ground_1_1", "ground_1_2", "ground_1_3" };
 
     private RenderTexture renderTexture;
     private RectTransform minimapRect;
@@ -33,21 +36,14 @@ public class MinimapController : MonoBehaviour, IPointerClickHandler
         SetupMinimapCamera();
     }
 
-    private void LateUpdate()
-    {
-        if (minimapCamera == null || topDownCamera == null) return;
-
-        // 서포터 카메라의 XZ 위치를 미니맵 카메라 중심으로 추적
-        Vector3 supporterPos = topDownCamera.transform.position;
-        minimapCamera.transform.position = new Vector3(supporterPos.x, minimapHeight, supporterPos.z);
-    }
-
     private void SetupRenderTexture()
     {
-        int size = Mathf.RoundToInt(minimapRect.rect.width);
-        if (size <= 0) size = 256;
+        int width = Mathf.RoundToInt(minimapRect.rect.width);
+        int height = Mathf.RoundToInt(minimapRect.rect.height);
+        if (width <= 0) width = 256;
+        if (height <= 0) height = 256;
 
-        renderTexture = new RenderTexture(size, size, 16);
+        renderTexture = new RenderTexture(width, height, 16);
         renderTexture.filterMode = FilterMode.Bilinear;
 
         minimapCamera.targetTexture = renderTexture;
@@ -59,20 +55,65 @@ public class MinimapController : MonoBehaviour, IPointerClickHandler
         if (minimapCamera == null) return;
 
         minimapCamera.orthographic = true;
-        minimapCamera.orthographicSize = minimapOrthoSize;
         minimapCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        minimapCamera.transform.position = new Vector3(0f, minimapHeight, 0f);
         minimapCamera.clearFlags = CameraClearFlags.SolidColor;
         minimapCamera.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
         minimapCamera.depth = -10;
 
-        // 미니맵 카메라: 기본 레이어 + Minimap 레이어(10) 렌더링
         minimapCamera.cullingMask = minimapCamera.cullingMask | (1 << 10);
 
-        // 메인 카메라에서 Minimap 레이어 제외
         Camera mainCam = Camera.main;
         if (mainCam != null && mainCam != minimapCamera)
             mainCam.cullingMask &= ~(1 << 10);
+
+        FitCameraToMap();
+    }
+
+    private void FitCameraToMap()
+    {
+        Bounds mapBounds = CalculateMapBounds();
+        Vector3 center = mapBounds.center;
+        minimapCamera.transform.position = new Vector3(center.x, minimapHeight, center.z);
+
+        float mapWidth = mapBounds.size.x + padding * 2f;
+        float mapDepth = mapBounds.size.z + padding * 2f;
+
+        float aspect = minimapCamera.aspect;
+        float orthoSizeForDepth = mapDepth * 0.5f;
+        float orthoSizeForWidth = mapWidth * 0.5f / aspect;
+        minimapCamera.orthographicSize = Mathf.Max(orthoSizeForDepth, orthoSizeForWidth);
+    }
+
+    private Bounds CalculateMapBounds()
+    {
+        Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
+        bool initialized = false;
+
+        foreach (string groundName in groundNames)
+        {
+            GameObject go = GameObject.Find(groundName);
+            if (go == null) continue;
+
+            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
+            foreach (Renderer rend in renderers)
+            {
+                if (rend.gameObject.layer == 10) continue;
+                if (!initialized)
+                {
+                    bounds = rend.bounds;
+                    initialized = true;
+                }
+                else
+                {
+                    bounds.Encapsulate(rend.bounds);
+                }
+            }
+        }
+
+        if (!initialized)
+            bounds = new Bounds(Vector3.zero, new Vector3(200f, 0f, 200f));
+
+        return bounds;
     }
 
     /// <summary>
