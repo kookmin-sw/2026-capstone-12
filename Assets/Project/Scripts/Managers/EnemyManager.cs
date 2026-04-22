@@ -25,11 +25,11 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     [SerializeField] private string fastEnemyPrefabPath  = "Prefabs/Enemies/FastEnemy";
 
     [Header("Group Spawn Settings")]
-    [SerializeField] private float baseGroupSpawnInterval = 0.7f; // Core가 파괴되지 않았을 때 Group별 기본 생성 주기
-    [SerializeField] private float groupSpawnIntervalReductionPerDestroyedCore = 0.1f; // Core 파괴 수에 따른 Group 생성 주기 감소값
-    [SerializeField] private float minimumGroupSpawnInterval = 0.1f; // 마지막 Group 압박을 위한 최소 생성 주기
+    [SerializeField] private float baseGroupSpawnInterval = 2f; // Core가 파괴되지 않았을 때 Group별 기본 생성 주기
+    [SerializeField] private float groupSpawnIntervalReductionPerDestroyedCore = 0.5f; // Core 파괴 수에 따른 Group 생성 주기 감소값
+    [SerializeField] private float minimumGroupSpawnInterval = 1f; // 마지막 Group 압박을 위한 최소 생성 주기
     // 최대 활성 적 수
-    [SerializeField] private int maxActiveEnemies = 300;
+    [SerializeField] private int maxActiveEnemies = 100;
     [SerializeField] private bool startAutomatically = true; // 씬 시작 시 스폰 루프 자동 시작 여부
 
     [Header("Enemy Tier Settings")]

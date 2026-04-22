@@ -25184,10 +25184,10 @@ MonoBehaviour:
   basicEnemyPrefabPath: Prefabs/Enemies/BasicEnemy
   tankEnemyPrefabPath: Prefabs/Enemies/TankEnemy
   fastEnemyPrefabPath: Prefabs/Enemies/FastEnemy
-  baseGroupSpawnInterval: 0.7
-  groupSpawnIntervalReductionPerDestroyedCore: 0.1
-  minimumGroupSpawnInterval: 0.1
-  maxActiveEnemies: 300
+  baseGroupSpawnInterval: 2
+  groupSpawnIntervalReductionPerDestroyedCore: 0.5
+  minimumGroupSpawnInterval: 1
+  maxActiveEnemies: 100
   startAutomatically: 1
   intactCoreEnemyWeights: {x: 8, y: 1.5, z: 0.5}
   oneDestroyedCoreEnemyWeights: {x: 6, y: 3, z: 1}
