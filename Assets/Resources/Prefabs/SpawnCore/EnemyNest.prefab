@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4473339009339924203}
   - component: {fileID: 8512244882017754227}
   - component: {fileID: 3958564139049887730}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Mesh_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: 7815501894837041628}
   - component: {fileID: -1711792277131428802}
   - component: {fileID: 3910355213880760096}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyNest
   m_TagString: Untagged
   m_Icon: {fileID: 0}

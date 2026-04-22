@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3064009535393065728}
   - component: {fileID: 3392698574635001436}
   - component: {fileID: 3333333333333333333}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpawnCoreLast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 4291740363481221155}
   - component: {fileID: 4249829050091375450}
   - component: {fileID: 1706551642944705719}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Mesh_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

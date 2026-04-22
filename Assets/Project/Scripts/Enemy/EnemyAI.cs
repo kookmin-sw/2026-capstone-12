@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using Photon.Pun;
 using System.Collections.Generic;
 
@@ -23,6 +24,9 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float moveSpeed = 3f;          // 기본 이동 속도
     [SerializeField] private float attackRange = 1.5f;      // 공격 범위
     [SerializeField] private float attackCooldown = 1f;     // 기본 공격 쿨타임
+    [SerializeField] private bool useNavMeshMovement = true; // NavMesh 경로 탐색 사용 여부
+    [SerializeField] private float pathRefreshInterval = 0.2f; // 목적지 갱신 간격
+    [SerializeField] private float navMeshSampleDistance = 2f; // 타겟 주변 NavMesh 검색 반경
 
     [Header("Combat")]
     [SerializeField] private float attackDamage = 5f;       // 공격 데미지
@@ -38,6 +42,7 @@ public class EnemyAI : MonoBehaviour
     private PhotonView pv;
     private CapsuleCollider col;
     private EnemyAnimationNet animationNet;
+    private NavMeshAgent agent;
 
     // State
     // 난이도 배율 반복 적용 시 누적 방지를 위한 프리팹 원본 스탯 보관
@@ -48,6 +53,7 @@ public class EnemyAI : MonoBehaviour
     private float nextAttackTime = 0f;
     private float currentMoveSpeed;
     private float currentAttackCooldown;
+    private float nextPathRefreshTime;
     private readonly Dictionary<int, SlowState> activeSlows = new Dictionary<int, SlowState>();
 
     // 건물 공격 관련 변수
@@ -63,6 +69,10 @@ public class EnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
         animationNet = GetComponent<EnemyAnimationNet>();
+        agent = GetComponent<NavMeshAgent>();
+
+        if (agent == null && useNavMeshMovement)
+            agent = gameObject.AddComponent<NavMeshAgent>();
 
         baseMoveSpeed = moveSpeed;
         baseAttackCooldown = attackCooldown;
@@ -80,8 +90,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         // 마스터 클라이언트만 물리이동, 나머지는 동기화를 위해 kinematic true
-        if (pv != null && rb != null)
-            rb.isKinematic = !pv.IsMine;
+        ConfigureMovementAuthority();
     }
 
     void FixedUpdate()
@@ -123,6 +132,7 @@ public class EnemyAI : MonoBehaviour
         else
         {
             animationNet?.SetMoveState(false, 0);
+            StopMovement();
             TryAttack(target);
         }
     }
@@ -215,6 +225,9 @@ public class EnemyAI : MonoBehaviour
 
         currentMoveSpeed = moveSpeed * moveSpeedMultiplier;
         currentAttackCooldown = attackCooldown / Mathf.Max(0.01f, attackSpeedMultiplier);
+
+        if (agent != null)
+            agent.speed = currentMoveSpeed;
     }
 
     private void ApplyDifficultyValues()
@@ -226,6 +239,27 @@ public class EnemyAI : MonoBehaviour
 
         currentMoveSpeed = moveSpeed;
         currentAttackCooldown = attackCooldown;
+
+        if (agent != null)
+            agent.speed = currentMoveSpeed;
+    }
+
+    private void ConfigureMovementAuthority()
+    {
+        bool masterControlled = PhotonNetwork.IsMasterClient;
+        bool canUseAgent = masterControlled && useNavMeshMovement && agent != null && agent.isOnNavMesh;
+
+        if (agent != null)
+        {
+            agent.enabled = masterControlled && useNavMeshMovement;
+            agent.speed = currentMoveSpeed;
+            agent.stoppingDistance = attackRange * 0.9f;
+            agent.updateRotation = false;
+            agent.autoBraking = false;
+        }
+
+        if (rb != null)
+            rb.isKinematic = !masterControlled || canUseAgent;
     }
 
     // ============================================================
@@ -261,6 +295,9 @@ public class EnemyAI : MonoBehaviour
     // ============================================================
     void MoveTowards(Transform target)
     {
+        if (TryMoveWithNavMesh(target))
+            return;
+
         Vector3 direction = (target.position - transform.position);
         direction.y = 0f;
         direction.Normalize();
@@ -272,6 +309,43 @@ public class EnemyAI : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 5f);
         }
+    }
+
+    // NavMesh가 준비된 맵에서는 장애물을 우회하는 경로로 이동
+    private bool TryMoveWithNavMesh(Transform target)
+    {
+        if (!useNavMeshMovement || agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return false;
+
+        agent.speed = currentMoveSpeed;
+
+        if (Time.time >= nextPathRefreshTime)
+        {
+            nextPathRefreshTime = Time.time + pathRefreshInterval;
+
+            Vector3 destination = target.position;
+            if (NavMesh.SamplePosition(target.position, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
+                destination = hit.position;
+
+            agent.SetDestination(destination);
+        }
+
+        Vector3 velocity = agent.desiredVelocity;
+        velocity.y = 0f;
+
+        if (velocity.sqrMagnitude > 0.0001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 5f);
+        }
+
+        return true;
+    }
+
+    private void StopMovement()
+    {
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.ResetPath();
     }
 
     // ============================================================
