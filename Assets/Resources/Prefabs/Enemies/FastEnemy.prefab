@@ -2495,6 +2495,7 @@ GameObject:
   - component: {fileID: 5026102016369987789}
   - component: {fileID: 4029748653292523382}
   - component: {fileID: 4241267838122362496}
+  - component: {fileID: 1168417969824009304}
   m_Layer: 7
   m_Name: FastEnemy
   m_TagString: Enemy
@@ -2583,6 +2584,9 @@ MonoBehaviour:
   moveSpeed: 6
   attackRange: 1.5
   attackCooldown: 1
+  useNavMeshMovement: 1
+  pathRefreshInterval: 0.2
+  navMeshSampleDistance: 2
   attackDamage: 3
   structureMask:
     serializedVersion: 2
@@ -2689,6 +2693,28 @@ MonoBehaviour:
   iconType: 1
   iconColor: {r: 1, g: 1, b: 0, a: 1}
   iconSize: 2.5
+--- !u!195 &1168417969824009304
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9133630192219561619}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &9149505305122108598
 GameObject:
   m_ObjectHideFlags: 0
