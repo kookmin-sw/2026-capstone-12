@@ -17,6 +17,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
     private bool gridOccupied;
 
     public static CommandTower ActiveTower { get; private set; }
+    // Enemy가 씬 전체 탐색 없이 CommandTower를 주 목표로 참조하기 위한 캐시
     public static Transform ActiveTarget => ActiveTower != null ? ActiveTower.transform : null;
     public static Vector3 ActiveTargetPosition { get; private set; }
 
@@ -58,6 +59,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
 
         destructionHandled = true;
 
+        // 목표 건물 파괴는 모든 클라이언트에서 동일하게 게임오버 처리
         if (PhotonNetwork.InRoom && photonView != null)
         {
             photonView.RPC(nameof(RpcTriggerGameOver), RpcTarget.All);
@@ -90,6 +92,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
 
     private float GetConfiguredMaxHp()
     {
+        // 전용 BuildingTypeSO가 있으면 에셋의 밸런스 값을 우선 사용
         if (selectable != null && selectable.type != null && selectable.type.maxHp > 0f)
             return selectable.type.maxHp;
 
@@ -98,6 +101,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
 
     private Vector2Int GetConfiguredFootprint()
     {
+        // 전용 BuildingTypeSO가 있으면 에셋의 footprint 값을 우선 사용
         if (selectable != null && selectable.type != null && selectable.type.footprint.x > 0 && selectable.type.footprint.y > 0)
             return selectable.type.footprint;
 
@@ -120,6 +124,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
         Vector2Int centerCell = grid.WorldToGrid(transform.position);
         Vector2Int anchor = grid.CenterToAnchor(centerCell, towerFootprint, snappedRotationY);
 
+        // 씬에 미리 배치된 구조물도 설치 시스템과 같은 Grid 점유 정보를 갖게 함
         if (selectable != null)
             selectable.BindGrid(grid, anchor, towerFootprint, snappedRotationY);
 
@@ -153,6 +158,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
             anchor = grid.CenterToAnchor(grid.WorldToGrid(transform.position), towerFootprint, rotationY);
         }
 
+        // 파괴 또는 씬 전환 시 남은 점유 정보가 후속 설치를 막지 않도록 해제
         grid.SetAreaOccupied(anchor.x, anchor.y, towerFootprint, rotationY, false);
         gridOccupied = false;
     }

@@ -36,6 +36,10 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float structureDetectDistance = 1.8f;  // 전방 감지 거리(attackRange보다 약간 크게)
     [SerializeField] private Vector3 boxHalfExtents = new Vector3(0.3f, 1.5f, 0.3f);  // BoxCast 두께
 
+    [Header("Aggro Target")]
+    [SerializeField] private float aggroDetectRadius = 6f; // 슈터와 어그로 대상 구조물을 임시 목표로 인식하는 반경
+    [SerializeField] private float aggroScanInterval = 0.25f; // 주변 대상 탐색 부하를 줄이기 위한 스캔 간격
+
     // Components
     private Transform player;                                // 플레이어 Transform
     private Rigidbody rb;
@@ -59,6 +63,9 @@ public class EnemyAI : MonoBehaviour
     // 건물 공격 관련 변수
     private Transform structureTarget;
     private float structureTargetExpireTime;
+    private Transform aggroTarget; // CommandTower보다 우선하지만 길막 구조물보다는 낮은 우선순위의 임시 목표
+    private float nextAggroScanTime;
+    private readonly Collider[] aggroHits = new Collider[16]; // OverlapSphereNonAlloc 재사용 버퍼
 
     // ============================================================
     // Unity 생명주기
@@ -118,6 +125,7 @@ public class EnemyAI : MonoBehaviour
 
         // 전방 구조물 감지
         UpdateStructureTarget(dir);
+        UpdateAggroTarget();
 
         // 타겟 선택: 구조물 없으면 주 목표
         Transform target = GetCurrentTarget(primaryTarget);
@@ -292,10 +300,95 @@ public class EnemyAI : MonoBehaviour
 
     private Transform GetCurrentTarget(Transform primaryTarget)
     {
+        // 길을 직접 막는 구조물은 펜스 여부와 관계없이 먼저 처리
         if (structureTarget != null)
             return structureTarget;
 
+        // marker가 붙은 구조물과 슈터만 반경 어그로 대상으로 전환
+        if (aggroTarget != null)
+            return aggroTarget;
+
         return primaryTarget;
+    }
+
+    private void UpdateAggroTarget()
+    {
+        if (Time.time < nextAggroScanTime)
+            return;
+
+        nextAggroScanTime = Time.time + Mathf.Max(0.01f, aggroScanInterval);
+
+        float radiusSqr = aggroDetectRadius * aggroDetectRadius;
+        Transform bestTarget = null;
+        float bestDistanceSqr = float.MaxValue;
+
+        // 슈터가 늦게 생성되거나 재참조가 끊긴 경우를 보정
+        TryRefreshPlayerTarget();
+
+        if (IsValidPlayerAggroTarget(player))
+        {
+            float playerDistanceSqr = (player.position - transform.position).sqrMagnitude;
+            if (playerDistanceSqr <= radiusSqr)
+            {
+                bestTarget = player;
+                bestDistanceSqr = playerDistanceSqr;
+            }
+        }
+
+        // EnemyAggroTarget marker가 붙은 구조물만 반경 어그로 후보로 인정
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, aggroDetectRadius, aggroHits, structureMask, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider hit = aggroHits[i];
+            if (hit == null)
+                continue;
+
+            EnemyAggroTarget candidate = hit.GetComponentInParent<EnemyAggroTarget>();
+            if (!IsValidStructureAggroTarget(candidate))
+                continue;
+
+            Transform candidateTransform = candidate.transform;
+            float distanceSqr = (candidateTransform.position - transform.position).sqrMagnitude;
+            if (distanceSqr >= bestDistanceSqr)
+                continue;
+
+            bestTarget = candidateTransform;
+            bestDistanceSqr = distanceSqr;
+        }
+
+        aggroTarget = bestTarget;
+    }
+
+    private void TryRefreshPlayerTarget()
+    {
+        if (player != null)
+            return;
+
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            player = playerObj.transform;
+    }
+
+    private bool IsValidPlayerAggroTarget(Transform target)
+    {
+        if (target == null)
+            return false;
+
+        HealthManager healthManager = target.GetComponent<HealthManager>();
+        return healthManager == null || !healthManager.IsDead;
+    }
+
+    private bool IsValidStructureAggroTarget(EnemyAggroTarget target)
+    {
+        if (target == null || !target.isActiveAndEnabled)
+            return false;
+
+        // 이미 파괴된 구조물에 어그로가 남지 않도록 체력 상태를 확인
+        BuildingHealthNet health = target.GetComponent<BuildingHealthNet>();
+        if (health == null)
+            health = target.GetComponentInParent<BuildingHealthNet>();
+
+        return health == null || health.CurrentHp > 0f;
     }
 
     // ============================================================
