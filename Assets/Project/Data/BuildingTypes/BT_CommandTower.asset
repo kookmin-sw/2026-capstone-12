@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
+  m_Name: BT_CommandTower
+  m_EditorClassIdentifier: 
+  displayName: CommandTower
+  description: Enemy primary objective
+  icon: {fileID: 0}
+  prefab: {fileID: 7189919056927592795, guid: 4acda1e2349aa8443b2a6f075ac12b48, type: 3}
+  typeId: 20
+  photonPrefabPath: Prefabs/CommandTower
+  footprint: {x: 6, y: 6}
+  allowRotate: 0
+  cost: 0
+  maxHp: 1000
+  canRepair: 0
+  canSell: 0

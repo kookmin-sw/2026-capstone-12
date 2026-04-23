@@ -2661,11 +2661,7 @@ MonoBehaviour:
   topDownCamera: {fileID: 7147144714688411390}
   minimapHeight: 120
   padding: 10
-  groundNames:
-  - ground_1
-  - ground_1_1
-  - ground_1_2
-  - ground_1_3
+  groundObjectPath: MapGround/Plane
 --- !u!114 &181178202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28224,6 +28220,79 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1001 &5195230708486223542
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 534819264781392601, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -42.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -46.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6211878045781932637, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7189919056927592795, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+        type: 3}
+      propertyPath: m_Name
+      value: CommandTower
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4acda1e2349aa8443b2a6f075ac12b48, type: 3}
 --- !u!4 &5256809601288261484
 Transform:
   m_ObjectHideFlags: 0
@@ -28842,3 +28911,4 @@ SceneRoots:
   - {fileID: 496977987}
   - {fileID: 709286207}
   - {fileID: 201302312}
+  - {fileID: 5195230708486223542}

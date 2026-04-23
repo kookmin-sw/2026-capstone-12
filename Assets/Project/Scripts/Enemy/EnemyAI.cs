@@ -97,9 +97,6 @@ public class EnemyAI : MonoBehaviour
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
-        if (player == null)
-            return;
-
         // 사망 시 이동/공격 중단
         EnemyHealth health = GetComponent<EnemyHealth>();
         if (health != null && health.IsDead)
@@ -108,17 +105,22 @@ public class EnemyAI : MonoBehaviour
         UpdateSlowState();
         UpdateCurrentStats();
 
-        // 플레이어 방향 계산
-        Vector3 toPlayer = (player.position - transform.position);
-        toPlayer.y = 0f;
-        if (toPlayer.sqrMagnitude < 0.0001f) return;
-        Vector3 dir = toPlayer.normalized;
+        // 주 목표 방향 계산
+        Transform primaryTarget = GetPrimaryTarget();
+        if (primaryTarget == null)
+            return;
+
+        // 주 목표 방향을 기준으로 이동 중간의 구조물을 감지
+        Vector3 toPrimaryTarget = (primaryTarget.position - transform.position);
+        toPrimaryTarget.y = 0f;
+        if (toPrimaryTarget.sqrMagnitude < 0.0001f) return;
+        Vector3 dir = toPrimaryTarget.normalized;
 
         // 전방 구조물 감지
         UpdateStructureTarget(dir);
 
-        // 타겟 선택: 구조물 없으면 플레이어
-        Transform target = GetCurrentTarget();
+        // 타겟 선택: 구조물 없으면 주 목표
+        Transform target = GetCurrentTarget(primaryTarget);
 
         Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
         float distance = Vector3.Distance(origin, target.position);
@@ -282,12 +284,18 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private Transform GetCurrentTarget()
+    private Transform GetPrimaryTarget()
+    {
+        // CommandTower가 없는 상태는 게임 종료 상태로 보고 기본 목표를 대체하지 않음
+        return CommandTower.ActiveTarget;
+    }
+
+    private Transform GetCurrentTarget(Transform primaryTarget)
     {
         if (structureTarget != null)
             return structureTarget;
 
-        return player;
+        return primaryTarget;
     }
 
     // ============================================================
