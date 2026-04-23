@@ -2800,6 +2800,7 @@ GameObject:
   - component: {fileID: 231732025}
   - component: {fileID: 231732024}
   - component: {fileID: 231732026}
+  - component: {fileID: 231732027}
   m_Layer: 0
   m_Name: ShooterHealthNet
   m_TagString: Untagged
@@ -2869,6 +2870,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b9d1820bb64af08c42ed1ff94122f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &231732027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231732022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4643174e4bf7498ba8fbfc4e8cc9d8f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnDelay: 5
+  respawnHpRatio: 1
+  respawnPoint: {fileID: 0}
 --- !u!1 &233371322
 GameObject:
   m_ObjectHideFlags: 0
@@ -28528,6 +28544,10 @@ MonoBehaviour:
   - {fileID: 6917112937863077453}
   - {fileID: 3797320134046962192}
   - {fileID: 8708646526427126036}
+  disableCollidersOnDeath:
+  - {fileID: 63726798318142482}
+  disableObjectsOnDeath:
+  - {fileID: 1036628711}
 --- !u!114 &8708646526427126031
 MonoBehaviour:
   m_ObjectHideFlags: 0

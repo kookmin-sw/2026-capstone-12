@@ -73,6 +73,8 @@ MonoBehaviour:
   - RpcRequestHealShooter
   - RpcRequestPlaceSupport
   - RpcSpawnSupport
+  - RpcTriggerGameOver
+  - RpcRespawnShooter
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
