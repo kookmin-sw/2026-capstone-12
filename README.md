@@ -41,7 +41,11 @@
 
 ### 4. 사용법
 
-소스코드제출시 설치법이나 사용법을 작성하세요.
+사용된 에셋들이 포함되어있지 않습니다. 따라서 아래의 링크에서 다운로드 받은 후, Z_Assets 폴더를 Assets 폴더 하위에 배치하세요.
+https://drive.google.com/drive/folders/1Srj95mDoe_thJmNP6JVgQyLZSnRQ4EBt?usp=drive_link
+
+압축 해제 위치:
+Assets/Z_Assets
 
 ### 5. 기타
 
