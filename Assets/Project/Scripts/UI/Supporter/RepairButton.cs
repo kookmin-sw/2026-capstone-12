@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class RepairButton : MonoBehaviour
+public class RepairButton : MonoBehaviour, IPointerClickHandler
 {
     private Button btn;
     private StructurePopupUI popup;
@@ -10,6 +11,12 @@ public class RepairButton : MonoBehaviour
     {
         btn = GetComponent<Button>();
         popup = GetComponentInParent<StructurePopupUI>();
+        SupporterUISoundEmitter soundEmitter = GetComponent<SupporterUISoundEmitter>();
+        if (soundEmitter == null)
+            soundEmitter = gameObject.AddComponent<SupporterUISoundEmitter>();
+
+        soundEmitter.ConfigureClickSound(SupporterUISoundType.Repair);
+
         btn.onClick.AddListener(OnClick);
     }
 
@@ -39,5 +46,16 @@ public class RepairButton : MonoBehaviour
         popup.Target.RequestRepair();
         
         popup.Close();
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
+
+        if (btn != null && btn.interactable)
+            return;
+
+        if (popup != null && popup.Target != null && popup.Target.CanRepair && !popup.Target.IsFullHp && !popup.Target.CanRepairLocal())
+            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
     }
 }

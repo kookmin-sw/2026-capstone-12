@@ -63,7 +63,7 @@ public class PlayerDeathHandler : MonoBehaviourPun
         if (photonView.IsMine)
         {
             for (int i = 0; i < disableOnDeath.Length; i++)
-                if (disableOnDeath[i] != null) disableOnDeath[i].enabled = !isDead;
+                if (disableOnDeath[i] != null) disableOnDeath[i].enabled = !isDead && ShouldRestoreLocalBehaviours();
         }
 
         SetColliders(!isDead);
@@ -92,5 +92,17 @@ public class PlayerDeathHandler : MonoBehaviourPun
 
         for (int i = 0; i < disableObjectsOnDeath.Length; i++)
             if (disableObjectsOnDeath[i] != null) disableObjectsOnDeath[i].SetActive(active);
+    }
+
+    // 로컬 역할 기준 입력 컴포넌트 복구 가능 여부
+    private bool ShouldRestoreLocalBehaviours()
+    {
+        if (PhotonNetwork.LocalPlayer == null)
+            return true;
+
+        if (!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out object roleValue))
+            return true;
+
+        return roleValue as string != "Supporter";
     }
 }

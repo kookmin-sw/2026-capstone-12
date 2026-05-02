@@ -17619,6 +17619,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3081905404850909575, guid: f08dcf2d981507347981440f606fe77d,
+        type: 3}
+      propertyPath: editorDirectPlayRole
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4382728737386737185, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
       propertyPath: sceneViewId
@@ -18203,6 +18208,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: clickClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 46cfdfa2200951e4d9d2aecf506c0bb1, type: 3}
+    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: hoverClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 6c4b123cba561f34797c7b13f45a2626, type: 3}
+    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: hoverVolume
+      value: 0.303
       objectReference: {fileID: 0}
     - target: {fileID: 7672700308251953671, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}

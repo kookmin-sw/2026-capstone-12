@@ -1742,6 +1742,7 @@ GameObject:
   - component: {fileID: 2573244544442083692}
   - component: {fileID: 7988352045910469811}
   - component: {fileID: 460970683677711885}
+  - component: {fileID: 6729042761123578743}
   m_Layer: 5
   m_Name: SuppoterCanvas
   m_TagString: Untagged
@@ -1862,6 +1863,37 @@ MonoBehaviour:
   descriptionText: {fileID: 1501471352002077585}
   activeResourcePanel: {fileID: 8085211396202561004}
   supportPlacementSystem: {fileID: 0}
+  soundManager: {fileID: 6729042761123578743}
+--- !u!114 &6729042761123578743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3050280620030401897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c5aa2224c245b684dfac6def7beee5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverClip: {fileID: 8300000, guid: 8689d30a0131f6f45b1040d873f9ad84, type: 3}
+  clickClip: {fileID: 8300000, guid: 8ccf8b29d34355e4fbd438eaff2d8a37, type: 3}
+  buildStructureClip: {fileID: 8300000, guid: bb3096abfe26b4f4a87e3e3a14a3d44a, type: 3}
+  resourceLackClip: {fileID: 8300000, guid: c88bf729938d9514f9de7adb4343eeb5, type: 3}
+  repairClip: {fileID: 8300000, guid: 6d08ecd84aaad32418a8ad8afa72f83b, type: 3}
+  sellClip: {fileID: 8300000, guid: 3c5f57d0cf6c7ab4fa16a44624245989, type: 3}
+  shooterDeathClip: {fileID: 8300000, guid: c12c494b1b449e74aa8a39c367104c47, type: 3}
+  supplyItemClip: {fileID: 8300000, guid: b46289372b2b51f4584e942e4381f401, type: 3}
+  masterVolume: 1
+  hoverVolume: 1
+  clickVolume: 1
+  buildStructureVolume: 1
+  resourceLackVolume: 1
+  repairVolume: 1
+  sellVolume: 1
+  shooterDeathVolume: 1
+  supplyItemVolume: 1
+  hoverCooldown: 0.04
 --- !u!1 &3298766286226684885
 GameObject:
   m_ObjectHideFlags: 0

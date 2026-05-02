@@ -87,7 +87,10 @@ public class BuildSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
             return;
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(buildingType.cost))
+        {
+            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
+        }
 
         buildSystem.SelectBuilding(buildingType);
         Clicked?.Invoke(this);
@@ -108,7 +111,7 @@ public class BuildSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
 
-        if (button == null)
+        if (button == null || !button.interactable)
             OnClick();
     }
 

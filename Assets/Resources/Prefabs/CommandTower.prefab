@@ -105,6 +105,9 @@ MonoBehaviour:
   maxHp: 1000
   footprint: {x: 3, y: 3}
   grid: {fileID: 0}
+  commandTowerHitWarningClip: {fileID: 8300000, guid: e77d3002cb1d5274fae84a729f2c22a9, type: 3}
+  commandTowerHitWarningCooldown: 5
+  commandTowerHitWarningVolume: 1
 --- !u!1 &7796523399585228205
 GameObject:
   m_ObjectHideFlags: 0

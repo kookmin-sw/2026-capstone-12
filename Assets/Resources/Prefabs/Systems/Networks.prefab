@@ -46,6 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: DevRoom
   maxPlayers: 2
+  applyEditorDirectPlaySettings: 1
+  editorDirectPlayRole: 1
+  editorDirectPlayStartMoney: 300
 --- !u!1 &1721519217980756915
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,9 +26,15 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button mainMenuButton;
 
+    [Header("Sounds")]
+    [SerializeField] private AudioClip loseClip;
+    [SerializeField] [Range(0f, 1f)] private float loseVolume = 1f;
+
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "TestScene";
     [SerializeField] private string mainMenuSceneName = "MainMenu";
+
+    private AudioSource audioSource;
 
     // ============================================================
     // Unity 생명주기
@@ -50,8 +56,10 @@ public class GameOverUI : MonoBehaviour
     // ============================================================
     // 게임 오버 표시
     // ============================================================
+    // 패배 결과 UI와 패배 사운드 표시
     void ShowGameOver()
     {
+        PlayLoseSound();
         ShowResult("GAME OVER");
 
         Debug.Log("Game Over UI Shown");
@@ -93,6 +101,22 @@ public class GameOverUI : MonoBehaviour
 
         WeaponController weaponController = FindObjectOfType<WeaponController>();
         weaponController?.SetEnabled(false);
+    }
+
+    // 패배 결과 사운드 재생
+    void PlayLoseSound()
+    {
+        if (loseClip == null)
+            return;
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.PlayOneShot(loseClip, loseVolume);
     }
 
     // ============================================================

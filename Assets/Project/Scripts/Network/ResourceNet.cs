@@ -28,6 +28,23 @@ public class ResourceNet : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnJoinedRoom()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            InitResource();
+    }
+
+#if UNITY_EDITOR
+    // MultiPlayScene 직접 실행 테스트용 초기 골드 재설정
+    public void EditorSetStartMoney(int amount)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        startMoney = Mathf.Max(0, amount);
+        InitResource();
+    }
+#endif
+
     // ----------------------------
     // Master APIs (게임 로직에서 호출)
     // ----------------------------

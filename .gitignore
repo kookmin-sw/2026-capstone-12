@@ -101,6 +101,7 @@ Assets/MCPForUnity/
 Assets/MCPForUnity.meta
 Assets/Editor.meta
 .claude/
+.codex-local/
 
 # Large assets that are not needed for version control
 /Assets/Z_Assets/

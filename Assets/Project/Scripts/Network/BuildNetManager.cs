@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ public class BuildNetManager : MonoBehaviourPun
     }
 
     [PunRPC]
+    // MasterClient 기준 구조물 배치 검증 및 생성
     private void RpcRequestPlace(int typeId, int anchorX, int anchorZ, int rotY, int requesterActor)
     {
         if (!PhotonNetwork.IsMasterClient) return;
@@ -50,6 +52,16 @@ public class BuildNetManager : MonoBehaviourPun
         // 오브젝트 생성
         object[] instData = new object[] { typeId, anchorX, anchorZ, rotY };
         PhotonNetwork.Instantiate(type.photonPrefabPath, pos, rot, 0, instData);
+        Player requester = PhotonNetwork.CurrentRoom?.GetPlayer(requesterActor);
+        if (requester != null)
+            photonView.RPC(nameof(RpcPlayBuildStructureSound), requester);
+    }
+
+    [PunRPC]
+    // 건설 성공 요청자에게 구조물 배치 사운드 재생
+    private void RpcPlayBuildStructureSound()
+    {
+        SupporterUISoundManager.Instance?.Play(SupporterUISoundType.BuildStructure);
     }
     
     // Support 아이템 배치 요청
@@ -91,6 +103,7 @@ public class BuildNetManager : MonoBehaviourPun
 
     // 전체 클라이언트 Support 아이템 생성
     [PunRPC]
+    // Support 아이템 생성과 배치 성공 사운드 반영
     private void RpcSpawnSupport(int supportTypeIndex, Vector3 position, int supportId)
     {
         SupportItemDefinition item = SupportItemCatalog.Get(supportTypeIndex);
@@ -106,6 +119,7 @@ public class BuildNetManager : MonoBehaviourPun
 
         pickupItem.Configure(supportId, item.kind);
         supportItems[supportId] = pickupItem;
+        SupporterUISoundManager.Instance?.Play(SupporterUISoundType.SupplyItem);
     }
 
     // 전체 클라이언트 Support 아이템 소비 처리

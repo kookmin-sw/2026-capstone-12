@@ -76,7 +76,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
 
-        if (button == null)
+        if (button == null || !button.interactable)
             OnClick();
     }
 
@@ -99,7 +99,10 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             return;
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
+        {
+            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
+        }
 
         placementSystem.SelectSupportItem(item);
         Clicked?.Invoke(this);

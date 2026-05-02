@@ -109,6 +109,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     /// 모든 클라이언트에서 슈터를 사망 상태로 전환해 입력/어그로 처리 기준을 맞춤
     /// </summary>
     [PunRPC]
+    // 슈터 사망 상태와 Supporter 알림음 반영
     private void RpcShooterDied()
     {
         isShooterDead = true;
@@ -116,6 +117,9 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         var hm = FindShooterHealth();
         if (hm != null)
             hm.ForceDieFromNetwork();
+
+        if (IsLocalSupporter())
+            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ShooterDeath);
     }
 
     /// <summary>
@@ -219,6 +223,18 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     private bool HasMasterAuthority()
     {
         return !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
+    }
+
+    // 로컬 플레이어의 Supporter 역할 여부 확인
+    private bool IsLocalSupporter()
+    {
+        if (PhotonNetwork.LocalPlayer == null)
+            return false;
+
+        if (!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out object roleValue))
+            return false;
+
+        return roleValue as string == "Supporter";
     }
 
     /// <summary>

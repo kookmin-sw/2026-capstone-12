@@ -53,6 +53,8 @@ public class SupportPlacementSystem : MonoBehaviour
 
             if (CanPlaceSelected())
                 PlaceSupportItem(placementPosition);
+            else
+                SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
         }
 
         if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
@@ -66,7 +68,10 @@ public class SupportPlacementSystem : MonoBehaviour
             return;
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
+        {
+            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
+        }
 
         selectedItem = item;
         EnsureGhost();
