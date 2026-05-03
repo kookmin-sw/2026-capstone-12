@@ -136,8 +136,9 @@ public class ShooterPingController : MonoBehaviour
         Vector3 worldPosition = selectedWorldPosition;
 
         ClearSelector();
-        if (PingNet.Instance != null)
-            PingNet.Instance.RequestSpawnPing(pingType, worldPosition);
+        PingNet pingNet = PingNet.Instance;
+        if (pingNet != null)
+            pingNet.RequestSpawnPing(pingType, worldPosition);
     }
 
     /// <summary>

@@ -28145,7 +28145,6 @@ GameObject:
   - component: {fileID: 8708646526427126028}
   - component: {fileID: 8708646526427126033}
   - component: {fileID: 8708646526427126036}
-  - component: {fileID: 8708646526427126037}
   - component: {fileID: 8708646526427126034}
   - component: {fileID: 8708646526427126035}
   - component: {fileID: 8708646526427126038}
@@ -28798,20 +28797,6 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxPingDistance: 200
   fallbackDistance: 30
---- !u!114 &8708646526427126037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3093071822631863941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57d991ce7b7f4f78b16b4444a3f50f8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visibleDuration: 1
-  fadeDuration: 1
 --- !u!114 &8708646526427126038
 MonoBehaviour:
   m_ObjectHideFlags: 0
