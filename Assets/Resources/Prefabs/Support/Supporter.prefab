@@ -1742,6 +1742,7 @@ GameObject:
   - component: {fileID: 2573244544442083692}
   - component: {fileID: 7988352045910469811}
   - component: {fileID: 460970683677711885}
+  - component: {fileID: 460970683677711886}
   m_Layer: 5
   m_Name: SuppoterCanvas
   m_TagString: Untagged
@@ -1863,6 +1864,25 @@ MonoBehaviour:
   activeResourcePanel: {fileID: 8085211396202561004}
   supportPlacementSystem: {fileID: 0}
   soundPlayer: {fileID: 0}
+--- !u!114 &460970683677711886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3050280620030401897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2156ce40f2f58a47b7f437317ea4523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topDownCamera: {fileID: 0}
+  gridManager: {fileID: 0}
+  ghostMaterial: {fileID: 0}
+  supportItems:
+  - {fileID: 11400000, guid: d40b49cb257d475aa933f8f01202d22d, type: 2}
+  - {fileID: 11400000, guid: e20f4b4dd17943be8d8bb3d9be04ecee, type: 2}
+  placementYOffset: 0.6
 --- !u!1 &3298766286226684885
 GameObject:
   m_ObjectHideFlags: 0

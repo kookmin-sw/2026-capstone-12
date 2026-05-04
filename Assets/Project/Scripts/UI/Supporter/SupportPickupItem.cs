@@ -5,6 +5,7 @@ using UnityEngine;
 public class SupportPickupItem : MonoBehaviour
 {
     [SerializeField] private SupportItemKind kind; // 회복 효과 선택용 아이템 종류
+    [SerializeField] private SupporterItemSO item; // 소비 효과 데이터
     [SerializeField] private float floatAmplitude = 0.18f; // 둥실거림 높이
     [SerializeField] private float floatSpeed = 1.6f; // 둥실거림 속도
     [SerializeField] private float rotateSpeed = 45f; // 아이템 회전 속도
@@ -52,11 +53,24 @@ public class SupportPickupItem : MonoBehaviour
         }
     }
 
-    // 네트워크 생성 후 아이템 정보 설정
+    // 네트워크 생성 후 아이템 종류 설정
     public void Configure(int id, SupportItemKind itemKind)
     {
         supportId = id;
         kind = itemKind;
+        item = null;
+        basePosition = transform.position;
+        EnsurePickupPhysics();
+    }
+
+    // 네트워크 생성 후 SO 기반 아이템 정보 설정
+    public void Configure(int id, SupporterItemSO itemDefinition)
+    {
+        supportId = id;
+        item = itemDefinition;
+        if (itemDefinition != null)
+            kind = itemDefinition.kind;
+
         basePosition = transform.position;
         EnsurePickupPhysics();
     }
@@ -78,7 +92,6 @@ public class SupportPickupItem : MonoBehaviour
         foreach (Collider collider in GetComponentsInChildren<Collider>())
             collider.enabled = false;
 
-        SupportItemDefinition item = SupportItemCatalog.Get(kind);
         float duration = item != null ? Mathf.Max(0.1f, item.effectDuration) : 1f;
         int steps = Mathf.Max(1, Mathf.CeilToInt(duration / 0.2f)); // 느린 회복을 위한 분할 횟수
         float stepDelay = duration / steps; // 각 회복 단계 간격
@@ -94,19 +107,19 @@ public class SupportPickupItem : MonoBehaviour
     }
 
     // 회복 단계별 효과 적용
-    private void ApplyStepEffect(SupportItemDefinition item, int steps)
+    private void ApplyStepEffect(SupporterItemSO itemDefinition, int steps)
     {
         if (!IsLocalShooter())
             return;
 
-        if (item == null)
+        if (itemDefinition == null)
             return;
 
-        if (item.healAmount > 0f)
+        if (itemDefinition.healAmount > 0f)
         {
             if (ShooterHealthNet.Instance != null)
             {
-                ShooterHealthNet.Instance.RequestHealShooter(item.healAmount / steps);
+                ShooterHealthNet.Instance.RequestHealShooter(itemDefinition.healAmount / steps);
             }
             else
             {
@@ -114,19 +127,19 @@ public class SupportPickupItem : MonoBehaviour
                 if (healthManager != null)
                 {
                     float maxHp = healthManager.MaxHp; // 체력 상한 보정 기준
-                    float hp = Mathf.Min(maxHp, healthManager.CurrentHp + item.healAmount / steps); // 단계별 회복 후 체력
+                    float hp = Mathf.Min(maxHp, healthManager.CurrentHp + itemDefinition.healAmount / steps); // 단계별 회복 후 체력
                     healthManager.SetHpFromNetwork(hp, maxHp);
                 }
             }
         }
 
-        if (item.ammoAmount > 0)
+        if (itemDefinition.ammoAmount > 0)
         {
             AmmoManager ammoManager = FindShooterAmmoManager();
             if (ammoManager == null)
                 return;
 
-            int amount = Mathf.CeilToInt((float)item.ammoAmount / steps); // 단계별 탄약 회복량
+            int amount = Mathf.CeilToInt((float)itemDefinition.ammoAmount / steps); // 단계별 탄약 회복량
             ammoManager.AddReserveAmmo(amount);
             ShooterAmmoNet.Instance?.SyncAmmoFromShooter(ammoManager.CurrentAmmo, ammoManager.ReserveAmmo, ammoManager.MaxAmmo);
         }

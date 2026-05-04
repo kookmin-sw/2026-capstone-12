@@ -314,7 +314,7 @@ public class SupporterBuildUIController : MonoBehaviour
             slot.nameText = FindText(slotTransform, "NameText");
             slot.descriptionText = FindTextInDescendants(slotTransform, "DescriptionText");
             slot.iconImage = FindImage(slotTransform, "SupportIcon");
-            slot.Configure(supportPlacementSystem, SupportItemCatalog.Get(i));
+            slot.Configure(supportPlacementSystem, supportPlacementSystem.GetSupportItem(i));
 
             slot.Clicked -= HandleSupportSlotClicked;
             slot.Hovered -= HandleSupportSlotHovered;
@@ -419,7 +419,10 @@ public class SupporterBuildUIController : MonoBehaviour
         if (slot == null || slot.item == null || descriptionPanel == null)
             return;
 
-        ShowDescription(slot.item.displayName, slot.item.cost.ToString(), slot.item.description);
+        string displayName = string.IsNullOrWhiteSpace(slot.item.displayName) ? slot.item.name : slot.item.displayName;
+        string description = string.IsNullOrWhiteSpace(slot.item.description) ? displayName : slot.item.description;
+
+        ShowDescription(displayName, slot.item.cost.ToString(), description);
     }
 
     // 설명 텍스트 갱신
