@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 
 public class ShooterHealthNet : MonoBehaviourPunCallbacks
@@ -117,9 +116,6 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         var hm = FindShooterHealth();
         if (hm != null)
             hm.ForceDieFromNetwork();
-
-        if (IsLocalSupporter())
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ShooterDeath);
     }
 
     /// <summary>
@@ -191,6 +187,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
             return;
 
         isShooterDead = true;
+        SoundNet.Instance?.RequestPlay(GameSoundType.ShooterDeath);
         BroadcastShooterDied();
         respawnNet?.BeginRespawn(this);
     }
@@ -223,18 +220,6 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     private bool HasMasterAuthority()
     {
         return !PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient;
-    }
-
-    // 로컬 플레이어의 Supporter 역할 여부 확인
-    private bool IsLocalSupporter()
-    {
-        if (PhotonNetwork.LocalPlayer == null)
-            return false;
-
-        if (!PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("Role", out object roleValue))
-            return false;
-
-        return roleValue as string == "Supporter";
     }
 
     /// <summary>

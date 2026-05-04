@@ -17778,6 +17778,26 @@ PrefabInstance:
       propertyPath: ObservedComponents.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8120000000000001002, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 8120000000000001002, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: Synchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8120000000000001002, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: observableSearch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8120000000000001002, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -18228,21 +18248,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
-        type: 3}
-      propertyPath: clickClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 46cfdfa2200951e4d9d2aecf506c0bb1, type: 3}
-    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
-        type: 3}
-      propertyPath: hoverClip
-      value: 
-      objectReference: {fileID: 8300000, guid: 6c4b123cba561f34797c7b13f45a2626, type: 3}
-    - target: {fileID: 6729042761123578743, guid: 559533cf94704f44aa28043d37d9064c,
-        type: 3}
-      propertyPath: hoverVolume
-      value: 0.303
       objectReference: {fileID: 0}
     - target: {fileID: 7672700308251953671, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}

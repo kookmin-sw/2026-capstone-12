@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SupporterUISoundEmitter : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
@@ -9,15 +10,16 @@ public class SupporterUISoundEmitter : MonoBehaviour, IPointerEnterHandler, IPoi
     [SerializeField] private SupporterUISoundType clickSoundType = SupporterUISoundType.Click;
     [SerializeField] private bool ignoreIfNotInteractable = true;
     [SerializeField] private Selectable selectable;
-    [SerializeField] private SupporterUISoundManager manager;
+    [FormerlySerializedAs("manager")]
+    [SerializeField] private SupporterUISoundPlayer player;
 
     private void Awake()
     {
         if (selectable == null)
             selectable = GetComponent<Selectable>();
 
-        if (manager == null)
-            manager = GetComponentInParent<SupporterUISoundManager>(true);
+        if (player == null)
+            player = GetComponentInParent<SupporterUISoundPlayer>(true);
     }
 
     // 포인터 진입 시 hover 사운드 재생
@@ -26,7 +28,7 @@ public class SupporterUISoundEmitter : MonoBehaviour, IPointerEnterHandler, IPoi
         if (!playHover)
             return;
 
-        GetManager()?.Play(SupporterUISoundType.Hover);
+        GetPlayer()?.Play(SupporterUISoundType.Hover);
     }
 
     // 활성 클릭 가능 상태의 click 사운드 재생
@@ -35,7 +37,7 @@ public class SupporterUISoundEmitter : MonoBehaviour, IPointerEnterHandler, IPoi
         if (!playClick || eventData.button != PointerEventData.InputButton.Left || !CanPlayClick())
             return;
 
-        GetManager()?.Play(clickSoundType);
+        GetPlayer()?.Play(clickSoundType);
     }
 
     // 버튼별 click 사운드 타입 설정
@@ -51,15 +53,15 @@ public class SupporterUISoundEmitter : MonoBehaviour, IPointerEnterHandler, IPoi
     }
 
     // 계층 또는 전역 Supporter 사운드 매니저 조회
-    private SupporterUISoundManager GetManager()
+    private SupporterUISoundPlayer GetPlayer()
     {
-        if (manager != null)
-            return manager;
+        if (player != null)
+            return player;
 
-        manager = SupporterUISoundManager.Instance;
-        if (manager != null)
-            return manager;
+        player = SupporterUISoundPlayer.Instance;
+        if (player != null)
+            return player;
 
-        return GetComponentInParent<SupporterUISoundManager>(true);
+        return GetComponentInParent<SupporterUISoundPlayer>(true);
     }
 }

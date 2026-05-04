@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SupporterBuildUIController : MonoBehaviour
@@ -18,7 +19,8 @@ public class SupporterBuildUIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private GameObject activeResourcePanel;
     [SerializeField] private SupportPlacementSystem supportPlacementSystem; // Support 아이템 월드 배치 시스템
-    [SerializeField] private SupporterUISoundManager soundManager; // Supporter UI 공통 사운드 재생 관리자
+    [FormerlySerializedAs("soundManager")]
+    [SerializeField] private SupporterUISoundPlayer soundPlayer; // Supporter UI 공통 사운드 재생기
 
     private readonly List<BuildSlotUI> slots = new();
     private readonly List<SupportSlotUI> supportSlots = new(); // Support 슬롯 이벤트 해제와 상태 관리를 위한 목록
@@ -133,7 +135,7 @@ public class SupporterBuildUIController : MonoBehaviour
         if (supportPlacementSystem == null)
             supportPlacementSystem = gameObject.AddComponent<SupportPlacementSystem>();
 
-        EnsureSoundManager();
+        EnsureSoundPlayer();
     }
 
     // 리소스 패널의 골드 텍스트 참조를 연결
@@ -558,17 +560,17 @@ public class SupporterBuildUIController : MonoBehaviour
     }
 
     // Supporter Canvas 범위에서 UI 사운드 관리자를 보장
-    private void EnsureSoundManager()
+    private void EnsureSoundPlayer()
     {
-        if (soundManager != null)
+        if (soundPlayer != null)
             return;
 
-        soundManager = GetComponentInParent<SupporterUISoundManager>(true);
-        if (soundManager == null)
-            soundManager = SupporterUISoundManager.Instance;
+        soundPlayer = GetComponentInParent<SupporterUISoundPlayer>(true);
+        if (soundPlayer == null)
+            soundPlayer = SupporterUISoundPlayer.Instance;
 
-        if (soundManager == null)
-            soundManager = gameObject.AddComponent<SupporterUISoundManager>();
+        if (soundPlayer == null)
+            soundPlayer = FindObjectOfType<SupporterUISoundPlayer>(true);
     }
 
     // 클릭 가능한 Supporter UI 요소에 hover/click 사운드 감지기를 보장

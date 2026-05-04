@@ -88,7 +88,7 @@ public class BuildSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHan
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(buildingType.cost))
         {
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
         }
 

@@ -100,7 +100,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
         {
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
         }
 

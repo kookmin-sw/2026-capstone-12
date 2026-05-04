@@ -142,6 +142,7 @@ Transform:
   - {fileID: 93700058122188530}
   - {fileID: 8984290348777880788}
   - {fileID: 7116930574088471001}
+  - {fileID: 8120000000000001001}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7116930574088471000
@@ -155,7 +156,6 @@ GameObject:
   - component: {fileID: 7116930574088471001}
   - component: {fileID: 7116930574088471002}
   - component: {fileID: 7116930574088471003}
-  - component: {fileID: 7116930574088471004}
   m_Layer: 0
   m_Name: PingSystem
   m_TagString: Untagged
@@ -216,13 +216,71 @@ MonoBehaviour:
   fadeDuration: 1
   maxPingCount: 5
   pingLimitSeconds: 5
+--- !u!1 &8120000000000001000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8120000000000001001}
+  - component: {fileID: 8120000000000001002}
+  - component: {fileID: 7116930574088471004}
+  - component: {fileID: 8120000000000001004}
+  - component: {fileID: 8120000000000001006}
+  - component: {fileID: 7116930574088471005}
+  m_Layer: 0
+  m_Name: SoundSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8120000000000001001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120000000000001000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1194669751415058609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8120000000000001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120000000000001000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 0
+  OwnershipTransfer: 0
+  observableSearch: 0
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &7116930574088471004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7116930574088471000}
+  m_GameObject: {fileID: 8120000000000001000}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bbd2f4f38d24b9aaf9f3b5b4aab55c6, type: 3}
@@ -232,6 +290,63 @@ MonoBehaviour:
   dangerPingClip: {fileID: 8300000, guid: cd4a2a79e28a7024e9ccfc037ec8f3ce, type: 3}
   helpPingClip: {fileID: 8300000, guid: 82e32d8264459ab4a9dc6b9a6ef83051, type: 3}
   pingSoundVolume: 1
+--- !u!114 &8120000000000001004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120000000000001000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c5aa2224c245b684dfac6def7beee5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverClip: {fileID: 8300000, guid: 6c4b123cba561f34797c7b13f45a2626, type: 3}
+  clickClip: {fileID: 8300000, guid: 46cfdfa2200951e4d9d2aecf506c0bb1, type: 3}
+  resourceLackClip: {fileID: 8300000, guid: c88bf729938d9514f9de7adb4343eeb5, type: 3}
+  repairClip: {fileID: 8300000, guid: 6d08ecd84aaad32418a8ad8afa72f83b, type: 3}
+  sellClip: {fileID: 8300000, guid: 3c5f57d0cf6c7ab4fa16a44624245989, type: 3}
+  masterVolume: 1
+  hoverVolume: 0.303
+  clickVolume: 1
+  resourceLackVolume: 1
+  repairVolume: 1
+  sellVolume: 1
+  hoverCooldown: 0.04
+--- !u!114 &8120000000000001006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120000000000001000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9264f739cf7f41f3b5e25887d4e99bd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildStructureClip: {fileID: 8300000, guid: bb3096abfe26b4f4a87e3e3a14a3d44a, type: 3}
+  supplyItemClip: {fileID: 8300000, guid: b46289372b2b51f4584e942e4381f401, type: 3}
+  shooterDeathClip: {fileID: 8300000, guid: c12c494b1b449e74aa8a39c367104c47, type: 3}
+  masterVolume: 1
+  buildStructureVolume: 1
+  supplyItemVolume: 1
+  shooterDeathVolume: 1
+--- !u!114 &7116930574088471005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8120000000000001000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5f52da6a79d4a0c977f90e8b522c9b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pingSoundPlayer: {fileID: 7116930574088471004}
+  gameEventSoundPlayer: {fileID: 8120000000000001006}
 --- !u!1 &2818934920950814404
 GameObject:
   m_ObjectHideFlags: 0

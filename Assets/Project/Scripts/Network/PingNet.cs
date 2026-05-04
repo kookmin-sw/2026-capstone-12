@@ -24,6 +24,7 @@ public class PingNet : MonoBehaviourPun
 
     private readonly Queue<float> localPingTimes = new Queue<float>();
     private PingSoundPlayer soundPlayer;
+    private SoundNet soundNet;
 
     /// <summary>
     /// 싱글턴 인스턴스와 핑 사운드 재생기 초기화
@@ -38,6 +39,7 @@ public class PingNet : MonoBehaviourPun
 
         Instance = this;
         soundPlayer = GetComponent<PingSoundPlayer>();
+        soundNet = SoundNet.Instance;
     }
 
     /// <summary>
@@ -48,14 +50,16 @@ public class PingNet : MonoBehaviourPun
         if (!TryConsumeLocalPing())
             return;
 
+        RequestPingSound(pingType);
+
         if (PhotonNetwork.InRoom && photonView.ViewID != 0)
         {
-            // PingSystem의 PhotonView를 통해 모든 클라이언트가 같은 핑 이벤트를 처리한다.
+            // PingSystem의 PhotonView를 통해 모든 클라이언트가 같은 핑 이벤트를 처리
             photonView.RPC(nameof(RpcSpawnPing), RpcTarget.All, (int)pingType, worldPosition);
             return;
         }
 
-        SpawnPingLocal(pingType, worldPosition);
+        SpawnPingVisualLocal(pingType, worldPosition);
     }
 
     /// <summary>
@@ -64,16 +68,14 @@ public class PingNet : MonoBehaviourPun
     [PunRPC]
     private void RpcSpawnPing(int pingTypeValue, Vector3 worldPosition)
     {
-        SpawnPingLocal((ShooterPingType)pingTypeValue, worldPosition);
+        SpawnPingVisualLocal((ShooterPingType)pingTypeValue, worldPosition);
     }
 
     /// <summary>
-    /// 현재 클라이언트 화면에 실제 핑 UI와 타입별 핑 사운드 생성
+    /// 현재 클라이언트 화면에 실제 핑 UI 생성
     /// </summary>
-    private void SpawnPingLocal(ShooterPingType pingType, Vector3 worldPosition)
+    private void SpawnPingVisualLocal(ShooterPingType pingType, Vector3 worldPosition)
     {
-        soundPlayer?.Play(pingType);
-
         Canvas canvas = FindTargetCanvas();
         Camera cam = ResolveCamera();
         GameObject pingPrefab = Resources.Load<GameObject>(GetPingPrefabPath(pingType));
@@ -81,8 +83,25 @@ public class PingNet : MonoBehaviourPun
             return;
 
         GameObject ping = Instantiate(pingPrefab, canvas.transform);
-        // 각 클라이언트는 공유된 월드 좌표를 자기 활성 카메라 기준으로 화면에 투영한다.
+        // 각 클라이언트는 공유된 월드 좌표를 자기 활성 카메라 기준으로 화면에 투영
         ping.AddComponent<ScreenSpaceWorldPing>().Initialize(worldPosition, cam, visibleDuration, fadeDuration);
+    }
+
+    /// <summary>
+    /// 핑 사운드 동기화는 SoundNet에 위임하고, 필요 시 기존 로컬 재생기로 대체
+    /// </summary>
+    private void RequestPingSound(ShooterPingType pingType)
+    {
+        if (soundNet == null)
+            soundNet = SoundNet.Instance;
+
+        if (soundNet != null)
+        {
+            soundNet.RequestPlay(GetPingSoundType(pingType));
+            return;
+        }
+
+        soundPlayer?.Play(pingType);
     }
 
     /// <summary>
@@ -117,6 +136,22 @@ public class PingNet : MonoBehaviourPun
                 return HelpPingPrefabPath;
             default:
                 return NormalPingPrefabPath;
+        }
+    }
+
+    /// <summary>
+    /// 핑 타입에 대응하는 공용 게임 사운드 타입 반환
+    /// </summary>
+    private static GameSoundType GetPingSoundType(ShooterPingType pingType)
+    {
+        switch (pingType)
+        {
+            case ShooterPingType.Danger:
+                return GameSoundType.PingDanger;
+            case ShooterPingType.Help:
+                return GameSoundType.PingHelp;
+            default:
+                return GameSoundType.PingNormal;
         }
     }
 

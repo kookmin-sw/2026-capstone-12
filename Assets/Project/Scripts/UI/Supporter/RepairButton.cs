@@ -56,6 +56,6 @@ public class RepairButton : MonoBehaviour, IPointerClickHandler
             return;
 
         if (popup != null && popup.Target != null && popup.Target.CanRepair && !popup.Target.IsFullHp && !popup.Target.CanRepairLocal())
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
     }
 }

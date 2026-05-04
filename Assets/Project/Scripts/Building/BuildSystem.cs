@@ -76,7 +76,7 @@ public class BuildSystem : MonoBehaviour
                 if (canPlace)
                     PlaceBuilding(anchor);
                 else if (!hasMoney)
-                    SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+                    SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             }
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
@@ -160,7 +160,7 @@ public class BuildSystem : MonoBehaviour
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(selectedType.cost))
         {
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
         }
 
@@ -261,7 +261,7 @@ public class BuildSystem : MonoBehaviour
         // 비용 부족이면 선택 자체를 차단
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(type.cost))
         {
-            SupporterUISoundManager.Instance?.Play(SupporterUISoundType.ResourceLack);
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
         }
 
