@@ -12,6 +12,7 @@ public class SupportPickupItem : MonoBehaviour
 
     private int supportId = -1; // 네트워크 소비 동기화용 고유 ID
     private bool consuming; // 중복 소비 방지 상태
+    private bool applySoundPlayed; // 단계별 회복 중 효과음 반복 방지
     private Vector3 basePosition; // 부유 애니메이션 기준 위치
 
     public int SupportId => supportId; // 네트워크 조회용 고유 ID
@@ -88,6 +89,8 @@ public class SupportPickupItem : MonoBehaviour
     private IEnumerator ConsumeRoutine()
     {
         consuming = true;
+        PlayGetItemSound();
+        PlayApplySoundOnce();
 
         foreach (Collider collider in GetComponentsInChildren<Collider>())
             collider.enabled = false;
@@ -143,6 +146,47 @@ public class SupportPickupItem : MonoBehaviour
             ammoManager.AddReserveAmmo(amount);
             ShooterAmmoNet.Instance?.SyncAmmoFromShooter(ammoManager.CurrentAmmo, ammoManager.ReserveAmmo, ammoManager.MaxAmmo);
         }
+    }
+
+    // Support 아이템 획득음 로컬 재생
+    private void PlayGetItemSound()
+    {
+        if (SoundNet.Instance != null)
+        {
+            SoundNet.Instance.PlayLocal(GameSoundType.GetItem);
+            return;
+        }
+
+        GameEventSoundPlayer.Instance?.Play(GameEventSoundType.GetItem);
+    }
+
+    // 로컬 슈터에게만 Support 아이템 효과음 1회 재생
+    private void PlayApplySoundOnce()
+    {
+        if (applySoundPlayed || !IsLocalShooter() || item == null)
+            return;
+
+        applySoundPlayed = true;
+        if (item.healAmount > 0f)
+        {
+            PlayLocalGameSound(GameSoundType.ApplyHealthPack, GameEventSoundType.ApplyHealthPack);
+            return;
+        }
+
+        if (item.ammoAmount > 0)
+            PlayLocalGameSound(GameSoundType.ApplyAmmoPack, GameEventSoundType.ApplyAmmoPack);
+    }
+
+    // SoundNet이 없는 단독 실행 경로를 포함한 로컬 게임 사운드 재생
+    private void PlayLocalGameSound(GameSoundType soundType, GameEventSoundType fallbackType)
+    {
+        if (SoundNet.Instance != null)
+        {
+            SoundNet.Instance.PlayLocal(soundType);
+            return;
+        }
+
+        GameEventSoundPlayer.Instance?.Play(fallbackType);
     }
 
     // 로컬 슈터 권한 판정

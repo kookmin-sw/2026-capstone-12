@@ -69,6 +69,15 @@ public class SoundNet : MonoBehaviourPun
             case GameSoundType.ShooterDeath:
                 gameEventSoundPlayer?.Play(GameEventSoundType.ShooterDeath);
                 break;
+            case GameSoundType.GetItem:
+                gameEventSoundPlayer?.Play(GameEventSoundType.GetItem);
+                break;
+            case GameSoundType.ApplyHealthPack:
+                gameEventSoundPlayer?.Play(GameEventSoundType.ApplyHealthPack);
+                break;
+            case GameSoundType.ApplyAmmoPack:
+                gameEventSoundPlayer?.Play(GameEventSoundType.ApplyAmmoPack);
+                break;
         }
     }
 

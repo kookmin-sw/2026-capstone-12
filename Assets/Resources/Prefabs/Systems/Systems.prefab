@@ -329,10 +329,16 @@ MonoBehaviour:
   buildStructureClip: {fileID: 8300000, guid: bb3096abfe26b4f4a87e3e3a14a3d44a, type: 3}
   supplyItemClip: {fileID: 8300000, guid: b46289372b2b51f4584e942e4381f401, type: 3}
   shooterDeathClip: {fileID: 8300000, guid: c12c494b1b449e74aa8a39c367104c47, type: 3}
+  getItemClip: {fileID: 8300000, guid: 6e53eac8982a4744d96baa88db0ca717, type: 3}
+  applyHealthPackClip: {fileID: 8300000, guid: 3943348e30bdd0d4daa9c187ca1490a4, type: 3}
+  applyAmmoPackClip: {fileID: 8300000, guid: 49571624df1db714bb469f74f2b8d895, type: 3}
   masterVolume: 1
   buildStructureVolume: 1
   supplyItemVolume: 1
   shooterDeathVolume: 1
+  getItemVolume: 1
+  applyHealthPackVolume: 1
+  applyAmmoPackVolume: 1
 --- !u!114 &7116930574088471005
 MonoBehaviour:
   m_ObjectHideFlags: 0

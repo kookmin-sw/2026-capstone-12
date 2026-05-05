@@ -2,5 +2,8 @@ public enum GameEventSoundType
 {
     BuildStructure,
     SupplyItem,
-    ShooterDeath
+    ShooterDeath,
+    GetItem,
+    ApplyHealthPack,
+    ApplyAmmoPack
 }

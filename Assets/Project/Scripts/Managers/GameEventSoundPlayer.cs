@@ -8,12 +8,18 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip buildStructureClip;
     [SerializeField] private AudioClip supplyItemClip;
     [SerializeField] private AudioClip shooterDeathClip;
+    [SerializeField] private AudioClip getItemClip;
+    [SerializeField] private AudioClip applyHealthPackClip;
+    [SerializeField] private AudioClip applyAmmoPackClip;
 
     [Header("Playback")]
     [SerializeField] [Range(0f, 1f)] private float masterVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float buildStructureVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float supplyItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float applyHealthPackVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float applyAmmoPackVolume = 1f;
 
     private AudioSource audioSource;
 
@@ -49,6 +55,9 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameEventSoundType.BuildStructure => buildStructureClip,
             GameEventSoundType.SupplyItem => supplyItemClip,
             GameEventSoundType.ShooterDeath => shooterDeathClip,
+            GameEventSoundType.GetItem => getItemClip,
+            GameEventSoundType.ApplyHealthPack => applyHealthPackClip,
+            GameEventSoundType.ApplyAmmoPack => applyAmmoPackClip,
             _ => null
         };
     }
@@ -61,6 +70,9 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameEventSoundType.BuildStructure => buildStructureVolume,
             GameEventSoundType.SupplyItem => supplyItemVolume,
             GameEventSoundType.ShooterDeath => shooterDeathVolume,
+            GameEventSoundType.GetItem => getItemVolume,
+            GameEventSoundType.ApplyHealthPack => applyHealthPackVolume,
+            GameEventSoundType.ApplyAmmoPack => applyAmmoPackVolume,
             _ => 1f
         };
     }

@@ -6,4 +6,7 @@ public enum GameSoundType
     BuildStructure = 10,
     SupplyItem = 11,
     ShooterDeath = 12,
+    GetItem = 13,
+    ApplyHealthPack = 14,
+    ApplyAmmoPack = 15,
 }
