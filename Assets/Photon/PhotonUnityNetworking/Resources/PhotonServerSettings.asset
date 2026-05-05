@@ -78,6 +78,7 @@ MonoBehaviour:
   - RpcPlayBuildStructureSound
   - RpcPlayCommandTowerHitWarning
   - RpcPlay
+  - RpcPlayAt
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

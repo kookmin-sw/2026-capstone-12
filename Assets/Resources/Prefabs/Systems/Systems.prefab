@@ -339,6 +339,10 @@ MonoBehaviour:
   getItemVolume: 1
   applyHealthPackVolume: 1
   applyAmmoPackVolume: 1
+  spatialMinDistance: 2
+  spatialMaxDistance: 10
+  supporterViewportEdgeVolume: 0.4
+  supporterViewportFalloffPower: 1.25
 --- !u!114 &7116930574088471005
 MonoBehaviour:
   m_ObjectHideFlags: 0

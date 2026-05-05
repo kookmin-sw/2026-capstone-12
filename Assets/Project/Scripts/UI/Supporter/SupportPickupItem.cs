@@ -153,11 +153,11 @@ public class SupportPickupItem : MonoBehaviour
     {
         if (SoundNet.Instance != null)
         {
-            SoundNet.Instance.PlayLocal(GameSoundType.GetItem);
+            SoundNet.Instance.PlayLocalAt(GameSoundType.GetItem, transform.position);
             return;
         }
 
-        GameEventSoundPlayer.Instance?.Play(GameEventSoundType.GetItem);
+        GameEventSoundPlayer.Instance?.PlayAt(GameSoundType.GetItem, transform.position);
     }
 
     // 로컬 슈터에게만 Support 아이템 효과음 1회 재생
@@ -169,16 +169,16 @@ public class SupportPickupItem : MonoBehaviour
         applySoundPlayed = true;
         if (item.healAmount > 0f)
         {
-            PlayLocalGameSound(GameSoundType.ApplyHealthPack, GameEventSoundType.ApplyHealthPack);
+            PlayLocalGameSound(GameSoundType.ApplyHealthPack);
             return;
         }
 
         if (item.ammoAmount > 0)
-            PlayLocalGameSound(GameSoundType.ApplyAmmoPack, GameEventSoundType.ApplyAmmoPack);
+            PlayLocalGameSound(GameSoundType.ApplyAmmoPack);
     }
 
     // SoundNet이 없는 단독 실행 경로를 포함한 로컬 게임 사운드 재생
-    private void PlayLocalGameSound(GameSoundType soundType, GameEventSoundType fallbackType)
+    private void PlayLocalGameSound(GameSoundType soundType)
     {
         if (SoundNet.Instance != null)
         {
@@ -186,7 +186,7 @@ public class SupportPickupItem : MonoBehaviour
             return;
         }
 
-        GameEventSoundPlayer.Instance?.Play(fallbackType);
+        GameEventSoundPlayer.Instance?.Play(soundType);
     }
 
     // 로컬 슈터 권한 판정

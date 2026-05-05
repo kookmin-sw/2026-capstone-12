@@ -53,7 +53,7 @@ public class BuildNetManager : MonoBehaviourPun
         // 오브젝트 생성
         object[] instData = new object[] { typeId, anchorX, anchorZ, rotY };
         PhotonNetwork.Instantiate(type.photonPrefabPath, pos, rot, 0, instData);
-        SoundNet.Instance?.RequestPlay(GameSoundType.BuildStructure);
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.BuildStructure, pos);
     }
 
     // Support 아이템 배치 요청
@@ -76,7 +76,7 @@ public class BuildNetManager : MonoBehaviourPun
 
         int supportId = nextSupportId++; // 클라이언트별 소비 대상 매칭용 ID
         photonView.RPC(nameof(RpcSpawnSupport), RpcTarget.All, supportTypeIndex, position, supportId);
-        SoundNet.Instance?.RequestPlay(GameSoundType.SupplyItem);
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.SupplyItem, position);
     }
 
     // Support 아이템 소비 요청
