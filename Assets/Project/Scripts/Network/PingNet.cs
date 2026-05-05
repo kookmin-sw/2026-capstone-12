@@ -23,7 +23,6 @@ public class PingNet : MonoBehaviourPun
     private const string HelpPingPrefabPath = "Prefabs/UI/HelpPing";
 
     private readonly Queue<float> localPingTimes = new Queue<float>();
-    private PingSoundPlayer soundPlayer;
     private SoundNet soundNet;
 
     /// <summary>
@@ -38,7 +37,6 @@ public class PingNet : MonoBehaviourPun
         }
 
         Instance = this;
-        soundPlayer = GetComponent<PingSoundPlayer>();
         soundNet = SoundNet.Instance;
     }
 
@@ -88,7 +86,7 @@ public class PingNet : MonoBehaviourPun
     }
 
     /// <summary>
-    /// 핑 사운드 동기화는 SoundNet에 위임하고, 필요 시 기존 로컬 재생기로 대체
+    /// 핑 사운드 동기화는 SoundNet에 위임하고, 필요 시 공용 사운드 재생기로 대체
     /// </summary>
     private void RequestPingSound(ShooterPingType pingType)
     {
@@ -101,7 +99,7 @@ public class PingNet : MonoBehaviourPun
             return;
         }
 
-        soundPlayer?.Play(pingType);
+        GameEventSoundPlayer.Instance?.Play(GetPingSoundType(pingType));
     }
 
     /// <summary>

@@ -6,6 +6,9 @@ public class GameEventSoundPlayer : MonoBehaviour
     public static GameEventSoundPlayer Instance { get; private set; }
 
     [Header("Clips")]
+    [SerializeField] private AudioClip normalPingClip;
+    [SerializeField] private AudioClip dangerPingClip;
+    [SerializeField] private AudioClip helpPingClip;
     [SerializeField] private AudioClip buildStructureClip;
     [SerializeField] private AudioClip supplyItemClip;
     [SerializeField] private AudioClip shooterDeathClip;
@@ -15,6 +18,9 @@ public class GameEventSoundPlayer : MonoBehaviour
 
     [Header("Playback")]
     [SerializeField] [Range(0f, 1f)] private float masterVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float normalPingVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float dangerPingVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float helpPingVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float buildStructureVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float supplyItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
@@ -158,6 +164,9 @@ public class GameEventSoundPlayer : MonoBehaviour
     {
         return soundType switch
         {
+            GameSoundType.PingNormal => normalPingClip,
+            GameSoundType.PingDanger => dangerPingClip,
+            GameSoundType.PingHelp => helpPingClip,
             GameSoundType.BuildStructure => buildStructureClip,
             GameSoundType.SupplyItem => supplyItemClip,
             GameSoundType.ShooterDeath => shooterDeathClip,
@@ -173,6 +182,9 @@ public class GameEventSoundPlayer : MonoBehaviour
     {
         return soundType switch
         {
+            GameSoundType.PingNormal => normalPingVolume,
+            GameSoundType.PingDanger => dangerPingVolume,
+            GameSoundType.PingHelp => helpPingVolume,
             GameSoundType.BuildStructure => buildStructureVolume,
             GameSoundType.SupplyItem => supplyItemVolume,
             GameSoundType.ShooterDeath => shooterDeathVolume,

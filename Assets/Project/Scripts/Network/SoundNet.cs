@@ -14,7 +14,6 @@ public class SoundNet : MonoBehaviourPun
         Local3D
     }
 
-    [SerializeField] private PingSoundPlayer pingSoundPlayer;
     [SerializeField] private GameEventSoundPlayer gameEventSoundPlayer;
 
     private void Awake()
@@ -26,9 +25,6 @@ public class SoundNet : MonoBehaviourPun
         }
 
         Instance = this;
-        if (pingSoundPlayer == null)
-            pingSoundPlayer = GetComponent<PingSoundPlayer>();
-
         if (gameEventSoundPlayer == null)
             gameEventSoundPlayer = FindObjectOfType<GameEventSoundPlayer>(true);
     }
@@ -118,19 +114,6 @@ public class SoundNet : MonoBehaviourPun
     // 네트워크 동기화 없이 현재 클라이언트에서 게임 사운드 재생
     public void PlayLocal(GameSoundType soundType)
     {
-        switch (soundType)
-        {
-            case GameSoundType.PingDanger:
-                pingSoundPlayer?.Play(ShooterPingType.Danger);
-                return;
-            case GameSoundType.PingHelp:
-                pingSoundPlayer?.Play(ShooterPingType.Help);
-                return;
-            case GameSoundType.PingNormal:
-                pingSoundPlayer?.Play(ShooterPingType.Normal);
-                return;
-        }
-
         EnsureGameEventSoundPlayer();
         gameEventSoundPlayer?.Play(soundType);
     }
