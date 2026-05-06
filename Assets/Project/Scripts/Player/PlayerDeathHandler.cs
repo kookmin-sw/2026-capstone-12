@@ -10,13 +10,16 @@ public class PlayerDeathHandler : MonoBehaviourPun
     [SerializeField] private Collider[] disableCollidersOnDeath; // 사망 중 피격/픽업 충돌을 막고 싶을 때 끌 콜라이더
     [Tooltip("사망 중 모델, 이펙트 등 통째로 숨기거나 멈출 하위 오브젝트")]
     [SerializeField] private GameObject[] disableObjectsOnDeath; // 사망 중 통째로 끌 하위 오브젝트
+    [SerializeField] private GameObject deathEffectPrefab; // 사망 시 생성할 폭발 이펙트
+    [SerializeField] private float deathEffectLifetime = 3f; // 폭발 이펙트 자동 제거 시간
 
     /// <summary>
     /// 인스펙터 참조가 비어 있어도 같은 Player 오브젝트의 HealthManager를 사용
     /// </summary>
     private void Awake()
     {
-        if (healthManager == null) healthManager = GetComponent<HealthManager>();
+        if (healthManager == null)
+            healthManager = GetComponent<HealthManager>();
     }
 
     /// <summary>
@@ -24,8 +27,11 @@ public class PlayerDeathHandler : MonoBehaviourPun
     /// </summary>
     private void OnEnable()
     {
-        if (healthManager != null) healthManager.OnDied += HandleDied;
-        if (healthManager != null) healthManager.OnRevived += HandleRevived;
+        if (healthManager != null)
+            healthManager.OnDied += HandleDied;
+
+        if (healthManager != null)
+            healthManager.OnRevived += HandleRevived;
     }
 
     /// <summary>
@@ -33,8 +39,11 @@ public class PlayerDeathHandler : MonoBehaviourPun
     /// </summary>
     private void OnDisable()
     {
-        if (healthManager != null) healthManager.OnDied -= HandleDied;
-        if (healthManager != null) healthManager.OnRevived -= HandleRevived;
+        if (healthManager != null)
+            healthManager.OnDied -= HandleDied;
+
+        if (healthManager != null)
+            healthManager.OnRevived -= HandleRevived;
     }
 
     /// <summary>
@@ -42,6 +51,7 @@ public class PlayerDeathHandler : MonoBehaviourPun
     /// </summary>
     private void HandleDied()
     {
+        PlayDeathEffect();
         SetDeathState(true);
         Debug.Log("Player Died. Waiting for respawn...");
     }
@@ -63,11 +73,28 @@ public class PlayerDeathHandler : MonoBehaviourPun
         if (photonView.IsMine)
         {
             for (int i = 0; i < disableOnDeath.Length; i++)
-                if (disableOnDeath[i] != null) disableOnDeath[i].enabled = !isDead && ShouldRestoreLocalBehaviours();
+                SetLocalBehaviourDeathState(disableOnDeath[i], isDead);
         }
 
         SetColliders(!isDead);
         SetObjects(!isDead);
+    }
+
+    // PlayerController는 사망 중에도 회전만 가능해야 하므로 비활성화 대신 이동만 잠금
+    private void SetLocalBehaviourDeathState(Behaviour behaviour, bool isDead)
+    {
+        if (behaviour == null)
+            return;
+
+        bool shouldRestore = ShouldRestoreLocalBehaviours();
+        if (behaviour is PlayerController playerController)
+        {
+            playerController.enabled = shouldRestore;
+            playerController.SetMovementLocked(isDead && shouldRestore);
+            return;
+        }
+
+        behaviour.enabled = !isDead && shouldRestore;
     }
 
     /// <summary>
@@ -79,7 +106,10 @@ public class PlayerDeathHandler : MonoBehaviourPun
             return;
 
         for (int i = 0; i < disableCollidersOnDeath.Length; i++)
-            if (disableCollidersOnDeath[i] != null) disableCollidersOnDeath[i].enabled = enabled;
+        {
+            if (disableCollidersOnDeath[i] != null)
+                disableCollidersOnDeath[i].enabled = enabled;
+        }
     }
 
     /// <summary>
@@ -91,7 +121,21 @@ public class PlayerDeathHandler : MonoBehaviourPun
             return;
 
         for (int i = 0; i < disableObjectsOnDeath.Length; i++)
-            if (disableObjectsOnDeath[i] != null) disableObjectsOnDeath[i].SetActive(active);
+        {
+            if (disableObjectsOnDeath[i] != null)
+                disableObjectsOnDeath[i].SetActive(active);
+        }
+    }
+
+    // 사망 순간에만 재생되는 로컬 폭발 이펙트 생성
+    private void PlayDeathEffect()
+    {
+        if (deathEffectPrefab == null)
+            return;
+
+        GameObject effect = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+        if (deathEffectLifetime > 0f)
+            Destroy(effect, deathEffectLifetime);
     }
 
     // 로컬 역할 기준 입력 컴포넌트 복구 가능 여부

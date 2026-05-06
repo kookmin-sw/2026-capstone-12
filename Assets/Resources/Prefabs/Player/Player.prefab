@@ -562,6 +562,7 @@ GameObject:
   - component: {fileID: 5984466981965385952}
   - component: {fileID: 2156347880815379698}
   - component: {fileID: 3698583346483452335}
+  - component: {fileID: 5284639102673418670}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -585,8 +586,40 @@ Transform:
   - {fileID: 2037928473245155361}
   - {fileID: 9027010717649026947}
   - {fileID: 9036926302587792736}
+  - {fileID: 7552136189048865112}
   - {fileID: 2800512206994798623}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7552136189048865111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7552136189048865112}
+  m_Layer: 0
+  m_Name: ShooterEffectPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7552136189048865112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7552136189048865111}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.006, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8612326168950316132}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &312812221802004132
 MonoBehaviour:
@@ -630,6 +663,24 @@ MonoBehaviour:
   - {fileID: 8891980492007486835}
   disableObjectsOnDeath:
   - {fileID: 2795134137914553431}
+  deathEffectPrefab: {fileID: 2318280449741704957, guid: cf82839c411151342a7b2337bda9fb34, type: 3}
+  deathEffectLifetime: 3
+--- !u!114 &5284639102673418670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237616672321747217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0e557f12884e4b9b45df75bd8e43ac, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  healthManager: {fileID: 0}
+  reviveEffectPrefab: {fileID: 100012, guid: 856ddc11c4d1bd54885aa67f69f72cdf, type: 3}
+  reviveEffectLifetime: 1
+  reviveEffectPoint: {fileID: 7552136189048865112}
 --- !u!143 &8891980492007486835
 CharacterController:
   m_ObjectHideFlags: 0

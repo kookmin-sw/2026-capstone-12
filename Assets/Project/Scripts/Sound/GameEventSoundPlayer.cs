@@ -12,6 +12,7 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip buildStructureClip;
     [SerializeField] private AudioClip supplyItemClip;
     [SerializeField] private AudioClip shooterDeathClip;
+    [SerializeField] private AudioClip shooterRespawnClip;
     [SerializeField] private AudioClip getItemClip;
     [SerializeField] private AudioClip applyHealthPackClip;
     [SerializeField] private AudioClip applyAmmoPackClip;
@@ -24,6 +25,7 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float buildStructureVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float supplyItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float shooterRespawnVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyHealthPackVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyAmmoPackVolume = 1f;
@@ -170,6 +172,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.BuildStructure => buildStructureClip,
             GameSoundType.SupplyItem => supplyItemClip,
             GameSoundType.ShooterDeath => shooterDeathClip,
+            GameSoundType.ShooterRespawn => shooterRespawnClip,
             GameSoundType.GetItem => getItemClip,
             GameSoundType.ApplyHealthPack => applyHealthPackClip,
             GameSoundType.ApplyAmmoPack => applyAmmoPackClip,
@@ -188,6 +191,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.BuildStructure => buildStructureVolume,
             GameSoundType.SupplyItem => supplyItemVolume,
             GameSoundType.ShooterDeath => shooterDeathVolume,
+            GameSoundType.ShooterRespawn => shooterRespawnVolume,
             GameSoundType.GetItem => getItemVolume,
             GameSoundType.ApplyHealthPack => applyHealthPackVolume,
             GameSoundType.ApplyAmmoPack => applyAmmoPackVolume,

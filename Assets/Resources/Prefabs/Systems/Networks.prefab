@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4643174e4bf7498ba8fbfc4e8cc9d8f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  respawnDelay: 10
+  respawnDelay: 5
   respawnHpRatio: 1
   respawnPoint: {fileID: 0}
 --- !u!1 &8262143970831203127

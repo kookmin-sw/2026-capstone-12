@@ -6,6 +6,8 @@ public class SupportPickupItem : MonoBehaviour
 {
     [SerializeField] private SupportItemKind kind; // 회복 효과 선택용 아이템 종류
     [SerializeField] private SupporterItemSO item; // 소비 효과 데이터
+    [SerializeField] private GameObject healEffectPrefab; // HealthPack 적용 중 슈터에게 표시할 이펙트
+    [SerializeField] private GameObject ammoEffectPrefab; // AmmoPack 적용 중 슈터에게 표시할 이펙트
     [SerializeField] private float floatAmplitude = 0.18f; // 둥실거림 높이
     [SerializeField] private float floatSpeed = 1.6f; // 둥실거림 속도
     [SerializeField] private float rotateSpeed = 45f; // 아이템 회전 속도
@@ -96,6 +98,7 @@ public class SupportPickupItem : MonoBehaviour
             collider.enabled = false;
 
         float duration = item != null ? Mathf.Max(0.1f, item.effectDuration) : 1f;
+        GameObject shooterEffect = CreateShooterEffect();
         int steps = Mathf.Max(1, Mathf.CeilToInt(duration / 0.2f)); // 느린 회복을 위한 분할 횟수
         float stepDelay = duration / steps; // 각 회복 단계 간격
 
@@ -105,6 +108,9 @@ public class SupportPickupItem : MonoBehaviour
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.zero, 1f / (steps - i));
             yield return new WaitForSeconds(stepDelay);
         }
+
+        if (shooterEffect != null)
+            Destroy(shooterEffect);
 
         Destroy(gameObject);
     }
@@ -187,6 +193,44 @@ public class SupportPickupItem : MonoBehaviour
         }
 
         GameEventSoundPlayer.Instance?.Play(soundType);
+    }
+
+    // 소비 지속 시간 동안 슈터에게 표시할 아이템 이펙트 생성
+    private GameObject CreateShooterEffect()
+    {
+        bool isAmmoEffect = IsAmmoEffect();
+        GameObject effectPrefab = isAmmoEffect ? ammoEffectPrefab : healEffectPrefab;
+        if (effectPrefab == null)
+            return null;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+            return null;
+
+        Transform pivot = player.transform;
+        if (isAmmoEffect)
+        {
+            Transform effectPoint = player.transform.Find("ShooterEffectPoint");
+            if (effectPoint != null)
+                pivot = effectPoint;
+        }
+
+        return Instantiate(effectPrefab, pivot.position, Quaternion.identity, pivot);
+    }
+
+    // SO 설정과 fallback kind를 함께 고려한 AmmoPack 효과 판정
+    private bool IsAmmoEffect()
+    {
+        if (item != null)
+        {
+            if (item.ammoAmount > 0)
+                return true;
+
+            if (item.healAmount > 0f)
+                return false;
+        }
+
+        return kind == SupportItemKind.AmmoPack;
     }
 
     // 로컬 슈터 권한 판정

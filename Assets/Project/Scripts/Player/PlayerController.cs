@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     // Movement
     private Vector3 velocity;
     private bool isGrounded;
+    private bool movementLocked; // 사망 중 제자리 시점 회전만 허용하기 위한 이동 잠금
 
     void Start()
     {
@@ -57,7 +58,11 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
     {
-        HandleMovement();
+        if (!movementLocked)
+        {
+            HandleMovement();
+        }
+
         HandleLook();
 
         // ESC로 커서 해제
@@ -155,5 +160,13 @@ public class PlayerController : MonoBehaviour
     public void SetEnabled(bool enabled)
     {
         this.enabled = enabled;
+    }
+
+    // 사망 상태 전환에서 이동만 잠그기 위한 외부 제어
+    public void SetMovementLocked(bool locked)
+    {
+        movementLocked = locked;
+        if (locked)
+            velocity = Vector3.zero;
     }
 }
