@@ -91,23 +91,6 @@ public class PlayerDeathHandler : MonoBehaviourPun
         SetObjects(!isDead);
     }
 
-    // PlayerController는 사망 중에도 회전만 가능해야 하므로 비활성화 대신 이동만 잠금
-    private void SetLocalBehaviourDeathState(Behaviour behaviour, bool isDead)
-    {
-        if (behaviour == null)
-            return;
-
-        bool shouldRestore = ShouldRestoreLocalBehaviours();
-        if (behaviour is PlayerController playerController)
-        {
-            playerController.enabled = shouldRestore;
-            playerController.SetMovementLocked(isDead && shouldRestore);
-            return;
-        }
-
-        behaviour.enabled = !isDead && shouldRestore;
-    }
-
     /// <summary>
     /// 사망 중 불필요한 충돌을 막고 부활 시 다시 켬
     /// </summary>
