@@ -562,6 +562,8 @@ MonoBehaviour:
   killText: {fileID: 2206481332106371518}
   restartButton: {fileID: 6501555862669637546}
   mainMenuButton: {fileID: 8523699888137658059}
+  loseClip: {fileID: 8300000, guid: 569d856f9d6917a42b3dfe3188bd4030, type: 3}
+  loseVolume: 1
   gameSceneName: TestScene
   mainMenuSceneName: MainMenu
 --- !u!114 &7183140201679405009

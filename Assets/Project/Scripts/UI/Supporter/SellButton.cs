@@ -11,6 +11,12 @@ public class SellButton : MonoBehaviour
     {
         btn = GetComponent<Button>();
         popup = GetComponentInParent<StructurePopupUI>();
+        SupporterUISoundEmitter soundEmitter = GetComponent<SupporterUISoundEmitter>();
+        if (soundEmitter == null)
+            soundEmitter = gameObject.AddComponent<SupporterUISoundEmitter>();
+
+        soundEmitter.ConfigureClickSound(SupporterUISoundType.Sell);
+
         btn.onClick.AddListener(OnClick);
     }
 

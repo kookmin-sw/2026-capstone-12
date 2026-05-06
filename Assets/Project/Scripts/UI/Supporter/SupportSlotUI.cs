@@ -12,7 +12,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     public TextMeshProUGUI descriptionText; // 슬롯 내부 설명 표시 텍스트
     public Image iconImage; // 아이템 아이콘 표시 이미지
 
-    public SupportItemDefinition item; // 슬롯에 연결된 Support 아이템 데이터
+    public SupporterItemSO item; // 슬롯에 연결된 Support 아이템 데이터
     public SupportPlacementSystem placementSystem; // 클릭 후 배치 모드 진입 대상 시스템
 
     public event Action<SupportSlotUI> Clicked; // 설명 선택 상태 갱신용 클릭 이벤트
@@ -62,7 +62,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     }
 
     // Support 아이템 데이터 주입
-    public void Configure(SupportPlacementSystem targetPlacementSystem, SupportItemDefinition targetItem)
+    public void Configure(SupportPlacementSystem targetPlacementSystem, SupporterItemSO targetItem)
     {
         placementSystem = targetPlacementSystem;
         item = targetItem;
@@ -76,7 +76,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         if (eventData.button != PointerEventData.InputButton.Left)
             return;
 
-        if (button == null)
+        if (button == null || !button.interactable)
             OnClick();
     }
 
@@ -99,7 +99,10 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             return;
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
+        {
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
+        }
 
         placementSystem.SelectSupportItem(item);
         Clicked?.Invoke(this);
@@ -113,13 +116,15 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             if (costText != null) costText.text = "";
             if (nameText != null) nameText.text = "";
             if (descriptionText != null) descriptionText.text = "";
+            if (iconImage != null) iconImage.sprite = null;
             if (button != null) button.interactable = false;
             return;
         }
 
         if (costText != null) costText.text = item.cost.ToString();
-        if (nameText != null) nameText.text = item.displayName;
+        if (nameText != null) nameText.text = string.IsNullOrWhiteSpace(item.displayName) ? item.name : item.displayName;
         if (descriptionText != null) descriptionText.text = item.description;
+        if (iconImage != null) iconImage.sprite = item.icon;
 
         bool canAfford = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(item.cost); // 골드 기반 클릭 가능 여부
         if (button != null) button.interactable = canAfford;

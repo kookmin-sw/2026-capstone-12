@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SupporterBuildUIController : MonoBehaviour
@@ -18,6 +19,8 @@ public class SupporterBuildUIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private GameObject activeResourcePanel;
     [SerializeField] private SupportPlacementSystem supportPlacementSystem; // Support 아이템 월드 배치 시스템
+    [FormerlySerializedAs("soundManager")]
+    [SerializeField] private SupporterUISoundPlayer soundPlayer; // Supporter UI 공통 사운드 재생기
 
     private readonly List<BuildSlotUI> slots = new();
     private readonly List<SupportSlotUI> supportSlots = new(); // Support 슬롯 이벤트 해제와 상태 관리를 위한 목록
@@ -131,6 +134,8 @@ public class SupporterBuildUIController : MonoBehaviour
 
         if (supportPlacementSystem == null)
             supportPlacementSystem = gameObject.AddComponent<SupportPlacementSystem>();
+
+        EnsureSoundPlayer();
     }
 
     // 리소스 패널의 골드 텍스트 참조를 연결
@@ -167,6 +172,7 @@ public class SupporterBuildUIController : MonoBehaviour
 
         button.onClick.RemoveListener(ToggleBuildingListPanel);
         button.onClick.AddListener(ToggleBuildingListPanel);
+        EnsureSoundEmitter(buildTab);
 
         return true;
     }
@@ -187,6 +193,7 @@ public class SupporterBuildUIController : MonoBehaviour
 
         button.onClick.RemoveListener(ToggleSupportListPanel);
         button.onClick.AddListener(ToggleSupportListPanel);
+        EnsureSoundEmitter(supportTab);
 
         return true;
     }
@@ -235,6 +242,8 @@ public class SupporterBuildUIController : MonoBehaviour
             Graphic graphic = slotTransform.GetComponent<Graphic>();
             if (graphic != null && button.targetGraphic == null)
                 button.targetGraphic = graphic;
+
+            EnsureSoundEmitter(slotTransform.gameObject);
 
             slot.button = button;
             slot.costText = FindText(slotTransform, "GoldCostText");
@@ -298,12 +307,14 @@ public class SupporterBuildUIController : MonoBehaviour
             if (graphic != null && button.targetGraphic == null)
                 button.targetGraphic = graphic;
 
+            EnsureSoundEmitter(slotTransform.gameObject);
+
             slot.button = button;
             slot.costText = FindText(slotTransform, "GoldCostText");
             slot.nameText = FindText(slotTransform, "NameText");
             slot.descriptionText = FindTextInDescendants(slotTransform, "DescriptionText");
             slot.iconImage = FindImage(slotTransform, "SupportIcon");
-            slot.Configure(supportPlacementSystem, SupportItemCatalog.Get(i));
+            slot.Configure(supportPlacementSystem, supportPlacementSystem.GetSupportItem(i));
 
             slot.Clicked -= HandleSupportSlotClicked;
             slot.Hovered -= HandleSupportSlotHovered;
@@ -408,7 +419,10 @@ public class SupporterBuildUIController : MonoBehaviour
         if (slot == null || slot.item == null || descriptionPanel == null)
             return;
 
-        ShowDescription(slot.item.displayName, slot.item.cost.ToString(), slot.item.description);
+        string displayName = string.IsNullOrWhiteSpace(slot.item.displayName) ? slot.item.name : slot.item.displayName;
+        string description = string.IsNullOrWhiteSpace(slot.item.description) ? displayName : slot.item.description;
+
+        ShowDescription(displayName, slot.item.cost.ToString(), description);
     }
 
     // 설명 텍스트 갱신
@@ -546,5 +560,29 @@ public class SupporterBuildUIController : MonoBehaviour
             return text;
 
         return FindTextInDescendants(parent, "NameText (1)");
+    }
+
+    // Supporter Canvas 범위에서 UI 사운드 관리자를 보장
+    private void EnsureSoundPlayer()
+    {
+        if (soundPlayer != null)
+            return;
+
+        soundPlayer = GetComponentInParent<SupporterUISoundPlayer>(true);
+        if (soundPlayer == null)
+            soundPlayer = SupporterUISoundPlayer.Instance;
+
+        if (soundPlayer == null)
+            soundPlayer = FindObjectOfType<SupporterUISoundPlayer>(true);
+    }
+
+    // 클릭 가능한 Supporter UI 요소에 hover/click 사운드 감지기를 보장
+    private void EnsureSoundEmitter(GameObject target)
+    {
+        if (target == null)
+            return;
+
+        if (target.GetComponent<SupporterUISoundEmitter>() == null)
+            target.AddComponent<SupporterUISoundEmitter>();
     }
 }

@@ -74,7 +74,12 @@ MonoBehaviour:
   - RpcRequestPlaceSupport
   - RpcSpawnSupport
   - RpcTriggerGameOver
+  - RpcBeginRespawnCountdown
   - RpcRespawnShooter
+  - RpcPlayBuildStructureSound
+  - RpcPlayCommandTowerHitWarning
+  - RpcPlay
+  - RpcPlayAt
   - RpcShooterHit
   DisableAutoOpenWizard: 1
   ShowSettings: 1

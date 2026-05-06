@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ public class BuildNetManager : MonoBehaviourPun
 
     // BuildingTypeSO 배열(모든 클라 동일 순서 보장 필요)
     public BuildingTypeSO[] types;
+    public SupporterItemSO[] supportItemTypes; // SupporterItemSO 배열(모든 클라 동일 순서 보장 필요)
 
     private readonly Dictionary<int, SupportPickupItem> supportItems = new(); // 생성된 Support 아이템 조회 테이블
     private int nextSupportId = 1; // Support 아이템 소비 동기화용 고유 ID 발급값
@@ -27,6 +29,7 @@ public class BuildNetManager : MonoBehaviourPun
         photonView.RPC(nameof(RpcRequestPlace), RpcTarget.MasterClient, typeId, anchorX, anchorZ, rotY, PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
+    // MasterClient 기준 구조물 배치 검증 및 생성
     [PunRPC]
     private void RpcRequestPlace(int typeId, int anchorX, int anchorZ, int rotY, int requesterActor)
     {
@@ -50,8 +53,9 @@ public class BuildNetManager : MonoBehaviourPun
         // 오브젝트 생성
         object[] instData = new object[] { typeId, anchorX, anchorZ, rotY };
         PhotonNetwork.Instantiate(type.photonPrefabPath, pos, rot, 0, instData);
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.BuildStructure, pos);
     }
-    
+
     // Support 아이템 배치 요청
     public void RequestPlaceSupport(int supportTypeIndex, Vector3 position)
     {
@@ -64,7 +68,7 @@ public class BuildNetManager : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        SupportItemDefinition item = SupportItemCatalog.Get(supportTypeIndex);
+        SupporterItemSO item = GetSupportItem(supportTypeIndex);
         if (item == null) return;
 
         if (ResourceNet.Instance != null && !ResourceNet.Instance.MasterTrySpendMoney(item.cost))
@@ -72,6 +76,7 @@ public class BuildNetManager : MonoBehaviourPun
 
         int supportId = nextSupportId++; // 클라이언트별 소비 대상 매칭용 ID
         photonView.RPC(nameof(RpcSpawnSupport), RpcTarget.All, supportTypeIndex, position, supportId);
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.SupplyItem, position);
     }
 
     // Support 아이템 소비 요청
@@ -91,12 +96,13 @@ public class BuildNetManager : MonoBehaviourPun
 
     // 전체 클라이언트 Support 아이템 생성
     [PunRPC]
+    // Support 아이템 생성과 배치 성공 사운드 반영
     private void RpcSpawnSupport(int supportTypeIndex, Vector3 position, int supportId)
     {
-        SupportItemDefinition item = SupportItemCatalog.Get(supportTypeIndex);
+        SupporterItemSO item = GetSupportItem(supportTypeIndex);
         if (item == null) return;
 
-        GameObject prefab = Resources.Load<GameObject>(item.prefabResourcePath);
+        GameObject prefab = item.prefab != null ? item.prefab : Resources.Load<GameObject>(item.prefabResourcePath);
         if (prefab == null) return;
 
         GameObject supportObject = Instantiate(prefab, position, Quaternion.identity);
@@ -104,7 +110,7 @@ public class BuildNetManager : MonoBehaviourPun
         if (pickupItem == null)
             pickupItem = supportObject.AddComponent<SupportPickupItem>();
 
-        pickupItem.Configure(supportId, item.kind);
+        pickupItem.Configure(supportId, item);
         supportItems[supportId] = pickupItem;
     }
 
@@ -191,5 +197,14 @@ public class BuildNetManager : MonoBehaviourPun
         if (!ResourceNet.Instance.MasterTrySpendMoney(repairCost)) return;
 
         health.MasterRepair(healAmount);
+    }
+
+    // 네트워크 인덱스로 Support 아이템 조회
+    private SupporterItemSO GetSupportItem(int supportTypeIndex)
+    {
+        if (supportItemTypes == null || supportTypeIndex < 0 || supportTypeIndex >= supportItemTypes.Length)
+            return null;
+
+        return supportItemTypes[supportTypeIndex];
     }
 }

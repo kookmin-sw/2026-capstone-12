@@ -7,12 +7,15 @@ public class SupportPlacementSystem : MonoBehaviour
     [SerializeField] private Camera topDownCamera; // Support 배치용 탑다운 카메라
     [SerializeField] private GridManager gridManager; // 지형 레이캐스트 레이어 조회용 Grid 참조
     [SerializeField] private Material ghostMaterial; // 배치 미리보기 표시용 고스트 재질
+    [SerializeField] private SupporterItemSO[] supportItems; // Support 슬롯 순서와 네트워크 인덱스 기준 목록
     [SerializeField] private float placementYOffset = 0.6f; // 지면과 아이템 사이 높이 보정값
 
-    private SupportItemDefinition selectedItem; // 현재 배치 선택된 Support 아이템
+    private SupporterItemSO selectedItem; // 현재 배치 선택된 Support 아이템
     private GameObject ghostObj; // 마우스 위치 미리보기 오브젝트
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor"); // URP 고스트 색상 변경용 셰이더 속성
+
+    public int SupportItemCount => supportItems != null ? supportItems.Length : 0; // Support 슬롯 생성 기준 개수
 
     // 배치 참조 초기화
     private void Awake()
@@ -53,6 +56,8 @@ public class SupportPlacementSystem : MonoBehaviour
 
             if (CanPlaceSelected())
                 PlaceSupportItem(placementPosition);
+            else
+                SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
         }
 
         if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
@@ -60,16 +65,28 @@ public class SupportPlacementSystem : MonoBehaviour
     }
 
     // Support 슬롯 클릭 후 배치 대상 선택
-    public void SelectSupportItem(SupportItemDefinition item)
+    public void SelectSupportItem(SupporterItemSO item)
     {
         if (item == null)
             return;
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
+        {
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
             return;
+        }
 
         selectedItem = item;
         EnsureGhost();
+    }
+
+    // Support 슬롯 순서 기반 아이템 조회
+    public SupporterItemSO GetSupportItem(int index)
+    {
+        if (supportItems == null || index < 0 || index >= supportItems.Length)
+            return null;
+
+        return supportItems[index];
     }
 
     // BuildSystem 기준 참조 재사용
@@ -131,7 +148,7 @@ public class SupportPlacementSystem : MonoBehaviour
         if (selectedItem == null)
             return;
 
-        int typeIndex = SupportItemCatalog.GetIndex(selectedItem.kind); // 네트워크 RPC용 아이템 인덱스
+        int typeIndex = GetSupportItemIndex(selectedItem); // 네트워크 RPC용 아이템 인덱스
         if (typeIndex < 0)
             return;
 
@@ -141,7 +158,10 @@ public class SupportPlacementSystem : MonoBehaviour
         }
         else
         {
-            GameObject prefab = Resources.Load<GameObject>(selectedItem.prefabResourcePath);
+            GameObject prefab = selectedItem.prefab != null
+                ? selectedItem.prefab
+                : Resources.Load<GameObject>(selectedItem.prefabResourcePath);
+
             if (prefab != null)
             {
                 GameObject supportObject = Instantiate(prefab, position, Quaternion.identity); // 오프라인 테스트용 로컬 생성 오브젝트
@@ -149,7 +169,7 @@ public class SupportPlacementSystem : MonoBehaviour
                 if (pickupItem == null)
                     pickupItem = supportObject.AddComponent<SupportPickupItem>();
 
-                pickupItem.Configure(-1, selectedItem.kind);
+                pickupItem.Configure(-1, selectedItem);
             }
         }
 
@@ -162,7 +182,10 @@ public class SupportPlacementSystem : MonoBehaviour
         if (ghostObj != null || selectedItem == null)
             return;
 
-        GameObject prefab = Resources.Load<GameObject>(selectedItem.prefabResourcePath);
+        GameObject prefab = selectedItem.prefab != null
+            ? selectedItem.prefab
+            : Resources.Load<GameObject>(selectedItem.prefabResourcePath);
+
         if (prefab == null)
             return;
 
@@ -236,5 +259,20 @@ public class SupportPlacementSystem : MonoBehaviour
             return false;
 
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    // Support SO 배열에서 네트워크 전송용 인덱스 조회
+    private int GetSupportItemIndex(SupporterItemSO item)
+    {
+        if (supportItems == null || item == null)
+            return -1;
+
+        for (int i = 0; i < supportItems.Length; i++)
+        {
+            if (supportItems[i] == item || (supportItems[i] != null && supportItems[i].kind == item.kind))
+                return i;
+        }
+
+        return -1;
     }
 }

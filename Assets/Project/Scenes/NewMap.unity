@@ -234,8 +234,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -309,8 +309,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -2453,11 +2453,7 @@ MonoBehaviour:
   topDownCamera: {fileID: 7147144714688411390}
   minimapHeight: 120
   padding: 10
-  groundNames:
-  - ground_1
-  - ground_1_1
-  - ground_1_2
-  - ground_1_3
+  groundObjectPath: MapGround/Plane
 --- !u!114 &181178202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6081,6 +6077,7 @@ GameObject:
   - component: {fileID: 471808686}
   - component: {fileID: 471808685}
   - component: {fileID: 471808684}
+  - component: {fileID: 471808688}
   m_Layer: 5
   m_Name: SuppoterCanvas
   m_TagString: Untagged
@@ -6138,6 +6135,26 @@ MonoBehaviour:
   descriptionText: {fileID: 682039651}
   activeResourcePanel: {fileID: 1411665847}
   supportPlacementSystem: {fileID: 0}
+  soundPlayer: {fileID: 0}
+--- !u!114 &471808688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471808682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2156ce40f2f58a47b7f437317ea4523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topDownCamera: {fileID: 0}
+  gridManager: {fileID: 0}
+  ghostMaterial: {fileID: 0}
+  supportItems:
+  - {fileID: 11400000, guid: d40b49cb257d475aa933f8f01202d22d, type: 2}
+  - {fileID: 11400000, guid: e20f4b4dd17943be8d8bb3d9be04ecee, type: 2}
+  placementYOffset: 0.6
 --- !u!114 &471808685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11892,6 +11909,7 @@ GameObject:
   - component: {fileID: 848375090}
   - component: {fileID: 848375092}
   - component: {fileID: 848375093}
+  - component: {fileID: 848375094}
   m_Layer: 5
   m_Name: PlayerStatus
   m_TagString: Untagged
@@ -11988,6 +12006,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammoText: {fileID: 585075424}
   shooterWeaponController: {fileID: 3797320134046962192}
+--- !u!114 &848375094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848375088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16fb746593384a2f898cf347e248be8a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  respawnCooldown: {fileID: 0}
+  cooldownText: {fileID: 0}
 --- !u!1 &855142108
 GameObject:
   m_ObjectHideFlags: 0
@@ -20157,6 +20189,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: DevRoom
   maxPlayers: 2
+  applyEditorDirectPlaySettings: 1
+  editorDirectPlayRole: 1
+  editorDirectPlayStartMoney: 300
 --- !u!4 &1540864649 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7981873945785298075, guid: 0cc2e7154d7893c449c675c97b8e86ff,
@@ -22706,6 +22741,8 @@ MonoBehaviour:
   killText: {fileID: 960753707}
   restartButton: {fileID: 336667297}
   mainMenuButton: {fileID: 661336606}
+  loseClip: {fileID: 0}
+  loseVolume: 1
   gameSceneName: TestScene
   mainMenuSceneName: MainMenu
 --- !u!114 &1750815919
@@ -25017,6 +25054,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 345476f1061d59e46b5d452815b5383b, type: 2}
   - {fileID: 11400000, guid: 7017437aa4e7a084c8421b26d08a17ea, type: 2}
   - {fileID: 11400000, guid: eaf1739f373770940943530aceb51ae0, type: 2}
+  supportItemTypes:
+  - {fileID: 11400000, guid: d40b49cb257d475aa933f8f01202d22d, type: 2}
+  - {fileID: 11400000, guid: e20f4b4dd17943be8d8bb3d9be04ecee, type: 2}
 --- !u!114 &1898816824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28114,15 +28154,47 @@ Transform:
   m_GameObject: {fileID: 3093071822631863941}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -40.6, y: 0, z: -44.7}
+  m_LocalPosition: {x: -39.649, y: 1.23, z: -44.015}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5256809601288261484}
   - {fileID: 5660591666718262142}
   - {fileID: 672004865}
+  - {fileID: 2193048341}
   - {fileID: 1214279311}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2193048340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2193048341}
+  m_Layer: 0
+  m_Name: ShooterEffectPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2193048341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2193048340}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.006, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2365943239939002744}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3093071822631863941
 GameObject:
@@ -28145,11 +28217,11 @@ GameObject:
   - component: {fileID: 8708646526427126028}
   - component: {fileID: 8708646526427126033}
   - component: {fileID: 8708646526427126036}
-  - component: {fileID: 8708646526427126037}
   - component: {fileID: 8708646526427126034}
   - component: {fileID: 8708646526427126035}
   - component: {fileID: 8708646526427126038}
   - component: {fileID: 8708646526427126039}
+  - component: {fileID: 8708646526427126041}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -28548,6 +28620,8 @@ MonoBehaviour:
   - {fileID: 63726798318142482}
   disableObjectsOnDeath:
   - {fileID: 1036628711}
+  deathEffectPrefab: {fileID: 2318280449741704957, guid: cf82839c411151342a7b2337bda9fb34, type: 3}
+  deathEffectLifetime: 3
 --- !u!114 &8708646526427126031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28560,6 +28634,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5730484dbf3629b48ae0e4015ac5757c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8708646526427126041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093071822631863941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0e557f12884e4b9b45df75bd8e43ac, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  healthManager: {fileID: 0}
+  reviveEffectPrefab: {fileID: 100012, guid: 856ddc11c4d1bd54885aa67f69f72cdf, type: 3}
+  reviveEffectLifetime: 1
+  reviveEffectPoint: {fileID: 2193048341}
 --- !u!114 &8708646526427126032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28798,20 +28888,6 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxPingDistance: 200
   fallbackDistance: 30
---- !u!114 &8708646526427126037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3093071822631863941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57d991ce7b7f4f78b16b4444a3f50f8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visibleDuration: 1
-  fadeDuration: 1
 --- !u!114 &8708646526427126038
 MonoBehaviour:
   m_ObjectHideFlags: 0

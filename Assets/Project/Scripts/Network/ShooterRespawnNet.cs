@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(PhotonView))]
 public class ShooterRespawnNet : MonoBehaviourPun
 {
+    public static ShooterRespawnNet Instance { get; private set; }
+
     [Header("Respawn")]
     [SerializeField] private float respawnDelay = 5f; // 사망 후 부활까지 대기 시간
     [SerializeField, Range(0.01f, 1f)] private float respawnHpRatio = 1f; // 부활 시 최대 체력 대비 회복 비율
@@ -14,13 +16,24 @@ public class ShooterRespawnNet : MonoBehaviourPun
     private Coroutine respawnCoroutine; // 중복 리스폰 타이머 실행 방지용
     private Vector3 fallbackRespawnPosition; // respawnPoint가 없을 때 사용할 시작 위치
     private bool hasFallbackRespawnPosition; // fallbackRespawnPosition이 유효한지 표시
+    private double respawnEndTime = -1d; // 모든 클라이언트가 공유하는 리스폰 종료 시각
+
+    public bool IsRespawning => respawnCoroutine != null || RemainingRespawnTime > 0f; // UI에서 참조하는 리스폰 진행 상태
+    public float RemainingRespawnTime => GetRemainingRespawnTime(); // UI에서 참조하는 공유 기준 남은 시간
 
     /// <summary>
     /// 같은 오브젝트의 ShooterHealthNet을 캐시해 리스폰 완료 시 HP 복구에 사용
     /// </summary>
     private void Awake()
     {
+        Instance = this;
         healthNet = GetComponent<ShooterHealthNet>();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     /// <summary>
@@ -43,6 +56,7 @@ public class ShooterRespawnNet : MonoBehaviourPun
         if (healthNet == null || respawnCoroutine != null)
             return;
 
+        BroadcastRespawnCountdown(Mathf.Max(0f, respawnDelay));
         respawnCoroutine = StartCoroutine(RespawnShooterAfterDelay());
     }
 
@@ -51,7 +65,8 @@ public class ShooterRespawnNet : MonoBehaviourPun
     /// </summary>
     private IEnumerator RespawnShooterAfterDelay()
     {
-        yield return new WaitForSeconds(Mathf.Max(0f, respawnDelay));
+        while (RemainingRespawnTime > 0f)
+            yield return null;
 
         float effectiveMax = healthNet.EffectiveMaxHp;
         float respawnHp = Mathf.Clamp(effectiveMax * respawnHpRatio, 1f, effectiveMax);
@@ -59,7 +74,15 @@ public class ShooterRespawnNet : MonoBehaviourPun
 
         healthNet.MasterCompleteRespawn(respawnHp);
         BroadcastShooterRespawn(position, respawnHp, effectiveMax);
+        respawnEndTime = -1d;
         respawnCoroutine = null;
+    }
+
+    // 리스폰 카운트다운 시작 시각 동기화 수신
+    [PunRPC]
+    private void RpcBeginRespawnCountdown(float delay)
+    {
+        respawnEndTime = GetSharedTime() + Mathf.Max(0f, delay);
     }
 
     /// <summary>
@@ -96,6 +119,7 @@ public class ShooterRespawnNet : MonoBehaviourPun
     [PunRPC]
     private void RpcRespawnShooter(Vector3 position, float hp, float maxHp)
     {
+        respawnEndTime = -1d;
         MoveShooterToRespawn(position);
 
         if (healthNet == null)
@@ -133,6 +157,30 @@ public class ShooterRespawnNet : MonoBehaviourPun
             photonView.RPC(nameof(RpcRespawnShooter), RpcTarget.All, position, hp, maxHp);
         else
             RpcRespawnShooter(position, hp, maxHp);
+    }
+
+    // 마스터와 다른 클라이언트의 리스폰 카운트다운 동시 시작
+    private void BroadcastRespawnCountdown(float delay)
+    {
+        RpcBeginRespawnCountdown(delay);
+
+        if (PhotonNetwork.InRoom)
+            photonView.RPC(nameof(RpcBeginRespawnCountdown), RpcTarget.Others, delay);
+    }
+
+    // 공유 종료 시각 기준 남은 리스폰 시간 계산
+    private float GetRemainingRespawnTime()
+    {
+        if (respawnEndTime < 0d)
+            return 0f;
+
+        return Mathf.Max(0f, (float)(respawnEndTime - GetSharedTime()));
+    }
+
+    // 멀티플레이와 단독 실행을 모두 지원하는 시간 기준 조회
+    private double GetSharedTime()
+    {
+        return PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
     }
 
     /// <summary>

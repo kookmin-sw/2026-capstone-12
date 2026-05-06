@@ -59,6 +59,7 @@ public class BuildingHealthNet : MonoBehaviourPun
         currentHp = Mathf.Clamp(newHp, 0f, maxHp);
 
         photonView.RPC(nameof(RpcSetHp), RpcTarget.All, currentHp);
+        NotifyDamagedByMaster(damage);
 
         if (currentHp <= 0f)
             MasterKill();
@@ -109,6 +110,18 @@ public class BuildingHealthNet : MonoBehaviourPun
             listener.OnBuildingDestroyedByMaster(this);
         }
     }
+
+    private void NotifyDamagedByMaster(float damage)
+    {
+        foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
+        {
+            IBuildingDamagedListener listener = behaviour as IBuildingDamagedListener;
+            if (listener == null)
+                continue;
+
+            listener.OnBuildingDamagedByMaster(this, damage);
+        }
+    }
 }
 
 public interface IBuildingDamageGate
@@ -121,4 +134,9 @@ public interface IBuildingDestroyedListener
 {
     // 파괴 직전 후처리 알림 계약
     void OnBuildingDestroyedByMaster(BuildingHealthNet buildingHealth);
+}
+
+public interface IBuildingDamagedListener
+{
+    void OnBuildingDamagedByMaster(BuildingHealthNet buildingHealth, float damage);
 }

@@ -5,12 +5,16 @@ using UnityEngine;
 public class SupportPickupItem : MonoBehaviour
 {
     [SerializeField] private SupportItemKind kind; // 회복 효과 선택용 아이템 종류
+    [SerializeField] private SupporterItemSO item; // 소비 효과 데이터
+    [SerializeField] private GameObject healEffectPrefab; // HealthPack 적용 중 슈터에게 표시할 이펙트
+    [SerializeField] private GameObject ammoEffectPrefab; // AmmoPack 적용 중 슈터에게 표시할 이펙트
     [SerializeField] private float floatAmplitude = 0.18f; // 둥실거림 높이
     [SerializeField] private float floatSpeed = 1.6f; // 둥실거림 속도
     [SerializeField] private float rotateSpeed = 45f; // 아이템 회전 속도
 
     private int supportId = -1; // 네트워크 소비 동기화용 고유 ID
     private bool consuming; // 중복 소비 방지 상태
+    private bool applySoundPlayed; // 단계별 회복 중 효과음 반복 방지
     private Vector3 basePosition; // 부유 애니메이션 기준 위치
 
     public int SupportId => supportId; // 네트워크 조회용 고유 ID
@@ -52,11 +56,24 @@ public class SupportPickupItem : MonoBehaviour
         }
     }
 
-    // 네트워크 생성 후 아이템 정보 설정
+    // 네트워크 생성 후 아이템 종류 설정
     public void Configure(int id, SupportItemKind itemKind)
     {
         supportId = id;
         kind = itemKind;
+        item = null;
+        basePosition = transform.position;
+        EnsurePickupPhysics();
+    }
+
+    // 네트워크 생성 후 SO 기반 아이템 정보 설정
+    public void Configure(int id, SupporterItemSO itemDefinition)
+    {
+        supportId = id;
+        item = itemDefinition;
+        if (itemDefinition != null)
+            kind = itemDefinition.kind;
+
         basePosition = transform.position;
         EnsurePickupPhysics();
     }
@@ -74,12 +91,14 @@ public class SupportPickupItem : MonoBehaviour
     private IEnumerator ConsumeRoutine()
     {
         consuming = true;
+        PlayGetItemSound();
+        PlayApplySoundOnce();
 
         foreach (Collider collider in GetComponentsInChildren<Collider>())
             collider.enabled = false;
 
-        SupportItemDefinition item = SupportItemCatalog.Get(kind);
         float duration = item != null ? Mathf.Max(0.1f, item.effectDuration) : 1f;
+        GameObject shooterEffect = CreateShooterEffect();
         int steps = Mathf.Max(1, Mathf.CeilToInt(duration / 0.2f)); // 느린 회복을 위한 분할 횟수
         float stepDelay = duration / steps; // 각 회복 단계 간격
 
@@ -90,23 +109,26 @@ public class SupportPickupItem : MonoBehaviour
             yield return new WaitForSeconds(stepDelay);
         }
 
+        if (shooterEffect != null)
+            Destroy(shooterEffect);
+
         Destroy(gameObject);
     }
 
     // 회복 단계별 효과 적용
-    private void ApplyStepEffect(SupportItemDefinition item, int steps)
+    private void ApplyStepEffect(SupporterItemSO itemDefinition, int steps)
     {
         if (!IsLocalShooter())
             return;
 
-        if (item == null)
+        if (itemDefinition == null)
             return;
 
-        if (item.healAmount > 0f)
+        if (itemDefinition.healAmount > 0f)
         {
             if (ShooterHealthNet.Instance != null)
             {
-                ShooterHealthNet.Instance.RequestHealShooter(item.healAmount / steps);
+                ShooterHealthNet.Instance.RequestHealShooter(itemDefinition.healAmount / steps);
             }
             else
             {
@@ -114,22 +136,101 @@ public class SupportPickupItem : MonoBehaviour
                 if (healthManager != null)
                 {
                     float maxHp = healthManager.MaxHp; // 체력 상한 보정 기준
-                    float hp = Mathf.Min(maxHp, healthManager.CurrentHp + item.healAmount / steps); // 단계별 회복 후 체력
+                    float hp = Mathf.Min(maxHp, healthManager.CurrentHp + itemDefinition.healAmount / steps); // 단계별 회복 후 체력
                     healthManager.SetHpFromNetwork(hp, maxHp);
                 }
             }
         }
 
-        if (item.ammoAmount > 0)
+        if (itemDefinition.ammoAmount > 0)
         {
             AmmoManager ammoManager = FindShooterAmmoManager();
             if (ammoManager == null)
                 return;
 
-            int amount = Mathf.CeilToInt((float)item.ammoAmount / steps); // 단계별 탄약 회복량
+            int amount = Mathf.CeilToInt((float)itemDefinition.ammoAmount / steps); // 단계별 탄약 회복량
             ammoManager.AddReserveAmmo(amount);
             ShooterAmmoNet.Instance?.SyncAmmoFromShooter(ammoManager.CurrentAmmo, ammoManager.ReserveAmmo, ammoManager.MaxAmmo);
         }
+    }
+
+    // Support 아이템 획득음 로컬 재생
+    private void PlayGetItemSound()
+    {
+        if (SoundNet.Instance != null)
+        {
+            SoundNet.Instance.PlayLocalAt(GameSoundType.GetItem, transform.position);
+            return;
+        }
+
+        GameEventSoundPlayer.Instance?.PlayAt(GameSoundType.GetItem, transform.position);
+    }
+
+    // 로컬 슈터에게만 Support 아이템 효과음 1회 재생
+    private void PlayApplySoundOnce()
+    {
+        if (applySoundPlayed || !IsLocalShooter() || item == null)
+            return;
+
+        applySoundPlayed = true;
+        if (item.healAmount > 0f)
+        {
+            PlayLocalGameSound(GameSoundType.ApplyHealthPack);
+            return;
+        }
+
+        if (item.ammoAmount > 0)
+            PlayLocalGameSound(GameSoundType.ApplyAmmoPack);
+    }
+
+    // SoundNet이 없는 단독 실행 경로를 포함한 로컬 게임 사운드 재생
+    private void PlayLocalGameSound(GameSoundType soundType)
+    {
+        if (SoundNet.Instance != null)
+        {
+            SoundNet.Instance.PlayLocal(soundType);
+            return;
+        }
+
+        GameEventSoundPlayer.Instance?.Play(soundType);
+    }
+
+    // 소비 지속 시간 동안 슈터에게 표시할 아이템 이펙트 생성
+    private GameObject CreateShooterEffect()
+    {
+        bool isAmmoEffect = IsAmmoEffect();
+        GameObject effectPrefab = isAmmoEffect ? ammoEffectPrefab : healEffectPrefab;
+        if (effectPrefab == null)
+            return null;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+            return null;
+
+        Transform pivot = player.transform;
+        if (isAmmoEffect)
+        {
+            Transform effectPoint = player.transform.Find("ShooterEffectPoint");
+            if (effectPoint != null)
+                pivot = effectPoint;
+        }
+
+        return Instantiate(effectPrefab, pivot.position, Quaternion.identity, pivot);
+    }
+
+    // SO 설정과 fallback kind를 함께 고려한 AmmoPack 효과 판정
+    private bool IsAmmoEffect()
+    {
+        if (item != null)
+        {
+            if (item.ammoAmount > 0)
+                return true;
+
+            if (item.healAmount > 0f)
+                return false;
+        }
+
+        return kind == SupportItemKind.AmmoPack;
     }
 
     // 로컬 슈터 권한 판정

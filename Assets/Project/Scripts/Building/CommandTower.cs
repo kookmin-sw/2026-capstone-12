@@ -4,17 +4,22 @@ using UnityEngine;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(BuildingHealthNet))]
-public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
+public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuildingDamagedListener
 {
     [Header("Command Tower")]
     [SerializeField] private float maxHp = 1000f;
     [SerializeField] private Vector2Int footprint = new Vector2Int(3, 3);
     [SerializeField] private GridManager grid;
+    [SerializeField] private AudioClip commandTowerHitWarningClip;
+    [SerializeField] private float commandTowerHitWarningCooldown = 5f;
+    [SerializeField] [Range(0f, 1f)] private float commandTowerHitWarningVolume = 1f;
 
     private BuildingHealthNet health;
     private StructureSelectable selectable;
+    private AudioSource audioSource;
     private bool destructionHandled;
     private bool gridOccupied;
+    private float nextCommandTowerHitWarningTime;
 
     public static CommandTower ActiveTower { get; private set; }
     // Enemy가 씬 전체 탐색 없이 CommandTower를 주 목표로 참조하기 위한 캐시
@@ -25,6 +30,12 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
     {
         health = GetComponent<BuildingHealthNet>();
         selectable = GetComponent<StructureSelectable>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
 
         if (health != null)
             health.Init(GetConfiguredMaxHp());
@@ -67,6 +78,36 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener
         }
 
         TriggerGameOverLocal();
+    }
+
+    public void OnBuildingDamagedByMaster(BuildingHealthNet buildingHealth, float damage)
+    {
+        if (Time.time < nextCommandTowerHitWarningTime)
+            return;
+
+        nextCommandTowerHitWarningTime = Time.time + Mathf.Max(0f, commandTowerHitWarningCooldown);
+
+        if (PhotonNetwork.InRoom && photonView != null)
+        {
+            photonView.RPC(nameof(RpcPlayCommandTowerHitWarning), RpcTarget.All);
+            return;
+        }
+
+        PlayCommandTowerHitWarning();
+    }
+
+    [PunRPC]
+    private void RpcPlayCommandTowerHitWarning()
+    {
+        PlayCommandTowerHitWarning();
+    }
+
+    private void PlayCommandTowerHitWarning()
+    {
+        if (commandTowerHitWarningClip == null || audioSource == null)
+            return;
+
+        audioSource.PlayOneShot(commandTowerHitWarningClip, commandTowerHitWarningVolume);
     }
 
     [PunRPC]

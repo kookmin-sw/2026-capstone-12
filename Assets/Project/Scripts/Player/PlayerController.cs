@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     // Movement
     private Vector3 velocity;
     private bool isGrounded;
+    private bool movementLocked; // 사망 중 제자리 시점 회전만 허용하기 위한 이동 잠금
 
     // 사망 중 이동 차단, 마우스 룩만 허용
     private bool lookOnlyMode = false;
@@ -61,7 +62,11 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
     {
-        HandleMovement();
+        if (!movementLocked)
+        {
+            HandleMovement();
+        }
+
         HandleLook();
 
         // ESC로 커서 해제

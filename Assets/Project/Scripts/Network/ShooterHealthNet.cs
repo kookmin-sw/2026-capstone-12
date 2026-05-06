@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 
 public class ShooterHealthNet : MonoBehaviourPunCallbacks
@@ -120,6 +119,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     /// 모든 클라이언트에서 슈터를 사망 상태로 전환해 입력/어그로 처리 기준을 맞춤
     /// </summary>
     [PunRPC]
+    // 슈터 사망 상태와 Supporter 알림음 반영
     private void RpcShooterDied()
     {
         isShooterDead = true;
@@ -198,6 +198,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
             return;
 
         isShooterDead = true;
+        SoundNet.Instance?.RequestPlay(GameSoundType.ShooterDeath);
         BroadcastShooterDied();
         respawnNet?.BeginRespawn(this);
     }
