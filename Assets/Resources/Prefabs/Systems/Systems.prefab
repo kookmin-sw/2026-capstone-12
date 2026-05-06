@@ -141,6 +141,7 @@ Transform:
   - {fileID: 424226301693061765}
   - {fileID: 93700058122188530}
   - {fileID: 8984290348777880788}
+  - {fileID: 2093847561029384756}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2818934920950814404
@@ -448,6 +449,53 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!1 &4821763059284710234
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2093847561029384756}
+  - component: {fileID: 8374651029384756012}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2093847561029384756
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4821763059284710234}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1194669751415058609}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8374651029384756012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4821763059284710234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f2c347a1b05d6978c2e41f93d7b820, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  levelUpClip: {fileID: 8300000, guid: ca6737c846cbca4428f39c8469093a73, type: 3}
+  enemyBuffClip: {fileID: 8300000, guid: 0e05fd3a8e474874e87da12292eb439d, type: 3}
+  shooterHitClip: {fileID: 8300000, guid: 8b1bf5610d1d5644dac6f2d99dec3463, type: 3}
 --- !u!1 &6750713233500143784
 GameObject:
   m_ObjectHideFlags: 0

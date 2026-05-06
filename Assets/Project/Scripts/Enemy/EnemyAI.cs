@@ -88,16 +88,35 @@ public class EnemyAI : MonoBehaviour
     }
 
     void Start()
-    {       
-        // 플레이어 찾기
+    {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
-        {
             player = playerObj.transform;
-        }
 
-        // 마스터 클라이언트만 물리이동, 나머지는 동기화를 위해 kinematic true
         ConfigureMovementAuthority();
+
+        EnemyHealth health = GetComponent<EnemyHealth>();
+        if (health != null)
+            health.OnDied += HandleDied;
+    }
+
+    private void OnDestroy()
+    {
+        EnemyHealth health = GetComponent<EnemyHealth>();
+        if (health != null)
+            health.OnDied -= HandleDied;
+    }
+
+    private void HandleDied()
+    {
+        if (agent != null)
+            agent.enabled = false;
+
+        if (rb != null && !rb.isKinematic)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     void FixedUpdate()

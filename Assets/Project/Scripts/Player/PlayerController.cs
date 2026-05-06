@@ -35,11 +35,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     private bool isGrounded;
 
+    // 사망 중 이동 차단, 마우스 룩만 허용
+    private bool lookOnlyMode = false;
+
     void Start()
     {
         // 컴포넌트 참조 가져오기
         controller = GetComponent<CharacterController>();
-        cameraTransform = Camera.main.transform;
+        // Camera.main 대신 자식 카메라를 직접 참조 (Supporter Camera와 태그 충돌 방지)
+        cameraTransform = GetComponentInChildren<Camera>().transform;
     }
 
 	void OnEnable()
@@ -80,6 +84,15 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void HandleMovement()
     {
+        if (lookOnlyMode)
+        {
+            // 사망 중: 이동/점프 입력 차단, 중력만 적용
+            if (controller.isGrounded && velocity.y < 0) velocity.y = -0.5f;
+            velocity.y += gravity * Time.deltaTime;
+            controller.Move(velocity * Time.deltaTime);
+            return;
+        }
+
         // 입력 받기
         float horizontal = Input.GetAxis("Horizontal"); // A/D
         float vertical = Input.GetAxis("Vertical");     // W/S
@@ -155,5 +168,11 @@ public class PlayerController : MonoBehaviour
     public void SetEnabled(bool enabled)
     {
         this.enabled = enabled;
+    }
+
+    // 사망 시 이동/점프 차단, 마우스 룩은 유지 (커서 잠금 상태 그대로)
+    public void SetLookOnly(bool value)
+    {
+        lookOnlyMode = value;
     }
 }

@@ -17,12 +17,18 @@ public class PlayerBodyController : MonoBehaviourPun
 
     private Animator bodyAnimator;
     private Vector3 lastPosition;
+    private Transform fpsArmsTransform;
 
     void Start()
     {
         if (thirdPersonBody == null) return;
         bodyAnimator = thirdPersonBody.GetComponentInChildren<Animator>();
         lastPosition = transform.position;
+
+        // Camera.main 대신 자식 카메라 직접 참조 (Supporter Camera 태그 충돌 방지)
+        Camera mainCam = GetComponentInChildren<Camera>();
+        if (mainCam != null)
+            fpsArmsTransform = mainCam.transform.Find("FPS_Arms");
 
         ApplyRoleVisibility();
     }
@@ -48,14 +54,15 @@ public class PlayerBodyController : MonoBehaviourPun
         foreach (var r in thirdPersonBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             r.enabled = !isLocalShooter;
 
-        // FPS_Arms: 슈터일 때만 활성화 (서포터 탑뷰 카메라에 팔이 떠다니지 않도록)
-        Camera mainCam = Camera.main;
-        if (mainCam != null)
-        {
-            Transform fpsArms = mainCam.transform.Find("FPS_Arms");
-            if (fpsArms != null)
-                fpsArms.gameObject.SetActive(isLocalShooter);
-        }
+        if (fpsArmsTransform != null)
+            fpsArmsTransform.gameObject.SetActive(isLocalShooter);
+    }
+
+    // 사망 시 FPS_Arms를 숨기고 부활 시 역할 기준으로 복원
+    public void SetArmsVisible(bool visible)
+    {
+        if (fpsArmsTransform != null)
+            fpsArmsTransform.gameObject.SetActive(visible);
     }
 
     void Update()

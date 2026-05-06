@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
+        transform.SetParent(null);
         DontDestroyOnLoad(gameObject);
 
         // 씬 로드 이벤트에 구독 ← 추가!

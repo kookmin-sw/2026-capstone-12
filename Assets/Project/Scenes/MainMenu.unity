@@ -4182,7 +4182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   muteOnStart: 0
-  voiceVolume: 1
+  micVolume: 1
 --- !u!4 &1846307629
 Transform:
   m_ObjectHideFlags: 0

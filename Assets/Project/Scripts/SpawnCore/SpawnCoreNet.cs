@@ -32,5 +32,6 @@ public class SpawnCoreNet : MonoBehaviourPun
     private void RPC_NotifyCoreDestroyed(int coreOrder, int destroyedCount, int coreId)
     {
         SpawnCoreManager.Instance?.ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId);
+        AudioManager.Instance?.PlayEnemyBuff();
     }
 }
