@@ -4,14 +4,20 @@ using UnityEngine;
 public class PlayerDeathHandler : MonoBehaviourPun
 {
     [SerializeField] private HealthManager healthManager;
-    [Tooltip("사망 중 로컬 슈터의 입력/전투 기능을 멈추기 위해 비활성화할 컴포넌트")]
-    [SerializeField] private Behaviour[] disableOnDeath; // 죽을 때 비활성화할 로컬 입력/전투 컴포넌트
+    [Tooltip("사망 중 로컬 슈터의 입력/전투 기능을 멈추기 위해 비활성화할 컴포넌트 (PlayerController는 여기서 제외하고 아래 필드에 따로 연결)")]
+    [SerializeField] private Behaviour[] disableOnDeath;
     [Tooltip("사망 중 피격, 이동, 아이템 획득 같은 충돌 처리를 막기 위해 비활성화할 콜라이더")]
-    [SerializeField] private Collider[] disableCollidersOnDeath; // 사망 중 피격/픽업 충돌을 막고 싶을 때 끌 콜라이더
+    [SerializeField] private Collider[] disableCollidersOnDeath;
     [Tooltip("사망 중 모델, 이펙트 등 통째로 숨기거나 멈출 하위 오브젝트")]
     [SerializeField] private GameObject[] disableObjectsOnDeath; // 사망 중 통째로 끌 하위 오브젝트
     [SerializeField] private GameObject deathEffectPrefab; // 사망 시 생성할 폭발 이펙트
     [SerializeField] private float deathEffectLifetime = 3f; // 폭발 이펙트 자동 제거 시간
+
+    [Header("Death Look / Body")]
+    [Tooltip("사망 중 이동은 차단하되 마우스 룩은 유지하기 위해 따로 연결 (disableOnDeath 배열에서 제거할 것)")]
+    [SerializeField] private PlayerController playerController;
+    [Tooltip("사망 중 FPS_Arms를 숨기기 위해 연결")]
+    [SerializeField] private PlayerBodyController bodyController;
 
     /// <summary>
     /// 인스펙터 참조가 비어 있어도 같은 Player 오브젝트의 HealthManager를 사용
@@ -73,7 +79,12 @@ public class PlayerDeathHandler : MonoBehaviourPun
         if (photonView.IsMine)
         {
             for (int i = 0; i < disableOnDeath.Length; i++)
-                SetLocalBehaviourDeathState(disableOnDeath[i], isDead);
+                if (disableOnDeath[i] != null) disableOnDeath[i].enabled = !isDead;
+
+            // 이동 차단 + 마우스 룩 유지 (PlayerController를 disableOnDeath 배열에서 제거하고 여기서 처리)
+            playerController?.SetLookOnly(isDead);
+            // 사망 중 FPS_Arms 숨김
+            bodyController?.SetArmsVisible(!isDead);
         }
 
         SetColliders(!isDead);

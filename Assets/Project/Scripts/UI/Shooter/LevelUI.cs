@@ -198,6 +198,8 @@ public class LevelUI : MonoBehaviour
     {
         if (!uiReady) return;
 
+        AudioManager.Instance?.PlayLevelUp();
+
         string statName = stat switch
         {
             ShooterLevelNet.StatType.Damage => "공격력",

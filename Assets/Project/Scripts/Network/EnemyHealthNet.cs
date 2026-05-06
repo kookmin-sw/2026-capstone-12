@@ -6,6 +6,8 @@ public class EnemyHealthNet : MonoBehaviourPun
 {
     public static EnemyHealthNet Instance { get; private set; }
 
+    [SerializeField] private GameObject hitEffectPrefab;
+
     private void Awake()
     {
         Instance = this;
@@ -73,6 +75,15 @@ public class EnemyHealthNet : MonoBehaviourPun
         EnemyHealth eh = enemyPv.GetComponent<EnemyHealth>();
         if (eh == null) return;
 
+        bool tookDamage = hp < eh.CurrentHp && !eh.IsDead;
+        Vector3 hitPos = enemyPv.transform.position + Vector3.up * 0.8f;
+
         eh.SetHealthFromNet(hp, maxHp);
+
+        if (tookDamage && hitEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(hitEffectPrefab, hitPos, Quaternion.Euler(-90f, 0f, 0f));
+            Destroy(effect, 1.5f);
+        }
     }
 }

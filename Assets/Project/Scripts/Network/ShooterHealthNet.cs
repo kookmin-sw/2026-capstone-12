@@ -56,6 +56,11 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         shooterHp = Mathf.Max(0, shooterHp - damage);
         BroadcastShooterHp(shooterHp, EffectiveMaxHp);
 
+        if (PhotonNetwork.InRoom)
+            photonView.RPC(nameof(RpcShooterHit), RpcTarget.All);
+        else
+            RpcShooterHit();
+
         if (shooterHp <= 0)
             HandleShooterDeathByMaster();
     }
@@ -102,6 +107,12 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
         var hm = FindShooterHealth();
         if (hm != null)
             hm.SetHpFromNetwork(hp, maxHp);
+    }
+
+    [PunRPC]
+    private void RpcShooterHit()
+    {
+        AudioManager.Instance?.PlayShooterHit();
     }
 
     /// <summary>

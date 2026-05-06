@@ -63,7 +63,8 @@ public class WeaponController : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        playerCamera = Camera.main;
+        // Camera.main 대신 자식 카메라 직접 참조 (Supporter Camera 태그 충돌 방지)
+        playerCamera = GetComponentInChildren<Camera>();
         if (playerCamera != null)
             normalFOV = playerCamera.fieldOfView;
 

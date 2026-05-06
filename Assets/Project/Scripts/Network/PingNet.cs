@@ -83,6 +83,49 @@ public class PingNet : MonoBehaviourPun
         GameObject ping = Instantiate(pingPrefab, canvas.transform);
         // 각 클라이언트는 공유된 월드 좌표를 자기 활성 카메라 기준으로 화면에 투영
         ping.AddComponent<ScreenSpaceWorldPing>().Initialize(worldPosition, cam, visibleDuration, fadeDuration);
+
+        SpawnMinimapPingMarker(pingType, worldPosition);
+    }
+
+    /// <summary>
+    /// 미니맵 카메라가 있는 클라이언트(서포터)에서만 기존 핑 이미지를 미니맵 UI에 표시
+    /// </summary>
+    private void SpawnMinimapPingMarker(ShooterPingType pingType, Vector3 worldPosition)
+    {
+        Camera minimapCam = FindMinimapCamera();
+        if (minimapCam == null) return;
+
+        RectTransform minimapRect = FindMinimapRect();
+        if (minimapRect == null) return;
+
+        GameObject pingPrefab = Resources.Load<GameObject>(GetPingPrefabPath(pingType));
+        if (pingPrefab == null) return;
+
+        GameObject marker = Instantiate(pingPrefab, minimapRect);
+        marker.GetComponent<RectTransform>().localScale = Vector3.one * 0.4f;
+        marker.AddComponent<MinimapSpaceWorldPing>().Initialize(worldPosition, minimapCam, minimapRect, visibleDuration, fadeDuration);
+    }
+
+    private static Camera FindMinimapCamera()
+    {
+        Camera[] cameras = Camera.allCameras;
+        for (int i = 0; i < cameras.Length; i++)
+        {
+            if (cameras[i] != null && cameras[i].name == "MinimapCamera")
+                return cameras[i];
+        }
+        return null;
+    }
+
+    private static RectTransform FindMinimapRect()
+    {
+        UnityEngine.UI.RawImage[] rawImages = FindObjectsOfType<UnityEngine.UI.RawImage>();
+        for (int i = 0; i < rawImages.Length; i++)
+        {
+            if (rawImages[i].name == "MinimapRawImage")
+                return rawImages[i].GetComponent<RectTransform>();
+        }
+        return null;
     }
 
     /// <summary>
@@ -194,6 +237,10 @@ public class PingNet : MonoBehaviourPun
     /// </summary>
     private static Camera ResolveCamera()
     {
+        if (Camera.main != null && Camera.main.isActiveAndEnabled)
+            return Camera.main;
+
+        // 서포터 카메라처럼 MainCamera 태그가 없는 경우 미니맵 전용 카메라를 제외한 첫 번째 활성 카메라 사용
         Camera[] cameras = Camera.allCameras;
         for (int i = 0; i < cameras.Length; i++)
         {
@@ -201,10 +248,12 @@ public class PingNet : MonoBehaviourPun
             if (cam == null || !cam.isActiveAndEnabled)
                 continue;
 
-            if (cam.CompareTag("MainCamera"))
-                return cam;
+            if (cam.name == "MinimapCamera")
+                continue;
+
+            return cam;
         }
 
-        return Camera.main;
+        return null;
     }
 }
