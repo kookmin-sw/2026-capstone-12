@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 534819264781392602}
   - component: {fileID: 534819264781392603}
   - component: {fileID: 534819264781392604}
+  - component: {fileID: 6846900975192842109}
   - component: {fileID: 6846900975192842110}
   m_Layer: 8
   m_Name: CommandTower
@@ -110,6 +111,23 @@ MonoBehaviour:
   commandTowerHitWarningClip: {fileID: 8300000, guid: e77d3002cb1d5274fae84a729f2c22a9, type: 3}
   commandTowerHitWarningCooldown: 5
   commandTowerHitWarningVolume: 1
+--- !u!114 &6846900975192842109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7189919056927592795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f5e8b53a8c4c4fb0d7b5f19d0c2a61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sourceType: 0
+  radius: 25
+  strength: 1
+  preventsDarknessExposure: 1
+  isPermanent: 1
 --- !u!114 &6846900975192842110
 MonoBehaviour:
   m_ObjectHideFlags: 0
