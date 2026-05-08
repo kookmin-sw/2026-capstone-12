@@ -42,7 +42,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             iconImage = FindImage("SupportIcon");
 
         SubscribePlacementEvents();
-        EnsureCooldownObject();
+        BindCooldownObject();
         BindButton();
     }
 
@@ -81,7 +81,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
     {
         placementSystem = targetPlacementSystem;
         item = targetItem;
-        EnsureCooldownObject();
+        BindCooldownObject();
         BindButton();
         Refresh();
     }
@@ -224,17 +224,14 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             cooldownObject.SetActive(visible);
     }
 
-    private void EnsureCooldownObject()
+    private void BindCooldownObject()
     {
         if (cooldownObject == null)
         {
-            Transform existing = transform.Find("Cooldown");
+            Transform existing = transform.Find("ItemCooldown");
             if (existing != null)
                 cooldownObject = existing.gameObject;
         }
-
-        if (cooldownObject == null)
-            cooldownObject = CreateCooldownObject();
 
         if (cooldownText == null && cooldownObject != null)
             cooldownText = cooldownObject.GetComponentInChildren<TextMeshProUGUI>(true);
@@ -242,63 +239,9 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         if (cooldownObject == null)
             return;
 
-        cooldownObject.name = "Cooldown";
-        FitCooldownRect(cooldownObject.GetComponent<RectTransform>());
+        // Cooldown UI는 Support 슬롯 프리팹에 배치된 오브젝트만 사용한다.
         DisableCooldownRaycasts(cooldownObject);
         SetCooldownVisible(false);
-    }
-
-    private GameObject CreateCooldownObject()
-    {
-        Transform template = FindRespawnCooldownTemplate();
-        if (template != null)
-            return Instantiate(template.gameObject, transform);
-
-        GameObject overlay = new("Cooldown", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        overlay.transform.SetParent(transform, false);
-
-        Image image = overlay.GetComponent<Image>();
-        image.color = new Color(0f, 0f, 0f, 0.55f);
-
-        GameObject textObject = new("CooldownText", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-        textObject.transform.SetParent(overlay.transform, false);
-        FitCooldownRect(textObject.GetComponent<RectTransform>());
-
-        cooldownText = textObject.GetComponent<TextMeshProUGUI>();
-        cooldownText.alignment = TextAlignmentOptions.Center;
-        cooldownText.fontSize = 34f;
-        cooldownText.color = Color.white;
-
-        return overlay;
-    }
-
-    private Transform FindRespawnCooldownTemplate()
-    {
-        Canvas canvas = GetComponentInParent<Canvas>(true);
-        if (canvas == null)
-            return null;
-
-        foreach (Transform candidate in canvas.GetComponentsInChildren<Transform>(true))
-        {
-            if (candidate.name == "RespawnCooldown")
-                return candidate;
-        }
-
-        return null;
-    }
-
-    private void FitCooldownRect(RectTransform rect)
-    {
-        if (rect == null)
-            return;
-
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.localScale = Vector3.one;
-        rect.SetAsLastSibling();
     }
 
     private void DisableCooldownRaycasts(GameObject target)

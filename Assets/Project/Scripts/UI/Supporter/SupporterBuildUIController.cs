@@ -292,15 +292,6 @@ public class SupporterBuildUIController : MonoBehaviour
             slotTransforms.Add(child);
         }
 
-        int supportItemCount = supportPlacementSystem.SupportItemCount;
-        while (slotTransforms.Count > 0 && slotTransforms.Count < supportItemCount)
-        {
-            Transform template = slotTransforms[slotTransforms.Count - 1];
-            Transform clone = Instantiate(template, template.parent);
-            clone.name = $"SupportSlot_{slotTransforms.Count + 1}";
-            slotTransforms.Add(clone);
-        }
-
         for (int i = 0; i < slotTransforms.Count; i++)
         {
             Transform slotTransform = slotTransforms[i];

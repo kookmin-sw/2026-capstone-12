@@ -61,18 +61,21 @@ public class SpawnCoreManager : MonoBehaviour
 
         if (!PhotonNetwork.IsConnected)
         {
-            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId);
+            // 오프라인 테스트에서도 Core 위치 기반 영구 정화 구역을 생성
+            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
             return;
         }
 
         if (SpawnCoreNet.Instance == null)
         {
             Debug.LogWarning($"{nameof(SpawnCoreManager)}: SpawnCoreNet is missing. Core destruction will not be synchronized.", this);
-            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId);
+            // 중계자가 없어도 Master 로컬 상태에는 Core 위치 기반 영구 정화 구역을 반영
+            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
             return;
         }
 
-        SpawnCoreNet.Instance.NotifyCoreDestroyed(core.CoreOrder, DestroyedCoreCount, coreId);
+        // 영구 정화 구역은 각 클라이언트에서 로컬 생성하므로 Core 위치를 함께 전파
+        SpawnCoreNet.Instance.NotifyCoreDestroyed(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
     }
 
     /// <summary>
@@ -92,7 +95,21 @@ public class SpawnCoreManager : MonoBehaviour
     /// </summary>
     public void ApplyCoreDestroyedNotification(int coreOrder, int destroyedCount, int coreId)
     {
+        ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId, Vector3.zero, false);
+    }
+
+    public void ApplyCoreDestroyedNotification(int coreOrder, int destroyedCount, int coreId, Vector3 corePosition)
+    {
+        ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId, corePosition, true);
+    }
+
+    // 기존 난이도/승리 알림과 영구 정화 구역 생성을 같은 파괴 확정 이벤트에서 처리
+    private void ApplyCoreDestroyedNotification(int coreOrder, int destroyedCount, int coreId, Vector3 corePosition, bool createPurifiedZone)
+    {
         destroyedCoreIds.Add(coreId);
+
+        if (createPurifiedZone)
+            PermanentPurifiedZoneNet.SpawnOrUpdate(coreId, corePosition);
 
         OnSpawnCoreDestroyed.Invoke(coreOrder);
         OnSpawnCoreDifficultyChanged.Invoke(destroyedCount);
