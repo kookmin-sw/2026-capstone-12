@@ -14,19 +14,19 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 0
-  m_FogColor: {r: 0.025, g: 0.025, b: 0.028, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0.01, g: 0.012, b: 0.018, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.035
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.065, g: 0.065, b: 0.07, a: 1}
-  m_AmbientEquatorColor: {r: 0.04, g: 0.04, b: 0.044, a: 1}
-  m_AmbientGroundColor: {r: 0.02, g: 0.02, b: 0.024, a: 1}
-  m_AmbientIntensity: 0.75
+  m_AmbientSkyColor: {r: 0.018, g: 0.02, b: 0.028, a: 1}
+  m_AmbientEquatorColor: {r: 0.012, g: 0.013, b: 0.018, a: 1}
+  m_AmbientGroundColor: {r: 0.006, g: 0.006, b: 0.008, a: 1}
+  m_AmbientIntensity: 0.25
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -35,7 +35,7 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0.05
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_UseRadianceAmbientProbe: 0
@@ -6109,8 +6109,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.5, g: 0.48, b: 0.44, a: 1}
-  m_Intensity: 0.22
+  m_Color: {r: 0.12, g: 0.13, b: 0.16, a: 1}
+  m_Intensity: 0.03
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -19710,6 +19710,36 @@ PrefabInstance:
     - target: {fileID: 6107978981031926029, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7081026033200047802, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7672700308251953671, guid: 559533cf94704f44aa28043d37d9064c,

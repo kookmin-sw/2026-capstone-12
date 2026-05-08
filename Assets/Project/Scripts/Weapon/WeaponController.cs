@@ -9,7 +9,8 @@ public class WeaponController : MonoBehaviour
     [Header("Weapon Stats")]
     [SerializeField] private float damage = 25f; // 발사 1회당 적용할 데미지
     private float bonusDamage = 0f;
-    [SerializeField] private float range = 100f; // Raycast 최대 사거리
+    [SerializeField] private float maxShootDistance = 25f; // Raycast 최대 사격 거리
+    [SerializeField] private bool requirePurifiedTargetForDamage = true; // 정화 영역 안 대상에게만 피해 적용
     [SerializeField] private float fireRate = 0.1f; // 연사 간격
 
     [Header("Ammo")]
@@ -185,7 +186,7 @@ public class WeaponController : MonoBehaviour
         shootSoundSource?.Play();
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); // 화면 중앙 조준 Ray
-        if (!Physics.Raycast(ray, out RaycastHit hit, range))
+        if (!Physics.Raycast(ray, out RaycastHit hit, maxShootDistance))
             return;
 
         if (TryRequestEnemyHit(hit))
@@ -206,6 +207,9 @@ public class WeaponController : MonoBehaviour
         if (enemyPhotonView == null)
             return true;
 
+        if (!CanApplyDamageAtHit(hit))
+            return true;
+
         shooterWeaponNet.RequestHitEnemy(enemyPhotonView.ViewID, damage + bonusDamage);
         return true;
     }
@@ -219,7 +223,22 @@ public class WeaponController : MonoBehaviour
         if (structurePhotonView == null)
             return;
 
+        if (!CanApplyDamageAtHit(hit))
+            return;
+
         shooterWeaponNet.RequestHitStructure(structurePhotonView.ViewID, damage + bonusDamage);
+    }
+
+    /// <summary>
+    /// 피격 지점의 정화 영역 포함 여부 기준 피해 적용 가능 상태 확인
+    /// </summary>
+    private bool CanApplyDamageAtHit(RaycastHit hit)
+    {
+        if (!requirePurifiedTargetForDamage)
+            return true;
+
+        PurificationZoneRegistry registry = PurificationZoneRegistry.Instance; // 현재 씬 정화 영역 조회 대상
+        return registry == null || registry.IsPositionPurified(hit.point);
     }
 
     /// <summary>
