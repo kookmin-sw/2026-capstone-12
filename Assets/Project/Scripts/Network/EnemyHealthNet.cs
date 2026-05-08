@@ -49,6 +49,11 @@ public class EnemyHealthNet : MonoBehaviourPun
             // 경험치 지급
             if (ShooterLevelNet.Instance != null)
                 ShooterLevelNet.Instance.MasterAddXp(eh.XpReward);
+
+            // 정화 게이지 지급
+            if (ShooterPurificationNet.Instance != null)
+                ShooterPurificationNet.Instance.MasterAddPurificationEnergyForEnemy(eh);
+
             // EnemyManager/CombatUIManager 연동도 마스터에서만
             if (EnemyManager.Instance != null)
                 EnemyManager.Instance.RemoveEnemy(enemyPv.gameObject);

@@ -18953,7 +18953,7 @@ PrefabInstance:
     - target: {fileID: 3081905404850909575, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
       propertyPath: editorDirectPlayRole
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4382728737386737185, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
@@ -19282,6 +19282,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 2026050841, guid: 99b17c7b5e7fa1642be84b10c708f56a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2797269626166664165, guid: 99b17c7b5e7fa1642be84b10c708f56a,
         type: 3}
       propertyPath: sceneViewId
