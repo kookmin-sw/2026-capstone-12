@@ -24,8 +24,10 @@ public class ShooterPurification : MonoBehaviour
     public event Action<float, float> OnGaugeChanged; // UI 표시용 게이지 변경 이벤트
 
     private PurificationLightSource fieldSource;
+    private HealthManager healthManager;
     private float currentGauge;
     private float lastGainTime = -999f;
+    private bool isSuppressedByDeath;
 
     public float CurrentGauge => currentGauge;
     public float MaxGauge => maxGauge;
@@ -34,7 +36,31 @@ public class ShooterPurification : MonoBehaviour
     private void Awake()
     {
         fieldSource = GetComponent<PurificationLightSource>();
+        healthManager = GetComponent<HealthManager>();
         ApplyGaugeState();
+    }
+
+    private void OnEnable()
+    {
+        if (healthManager == null)
+            healthManager = GetComponent<HealthManager>();
+
+        if (healthManager == null)
+            return;
+
+        healthManager.OnDied += HandleDied;
+        healthManager.OnRevived += HandleRevived;
+        isSuppressedByDeath = healthManager.IsDead;
+        ApplyGaugeState();
+    }
+
+    private void OnDisable()
+    {
+        if (healthManager == null)
+            return;
+
+        healthManager.OnDied -= HandleDied;
+        healthManager.OnRevived -= HandleRevived;
     }
 
     // 적 처치 시 Purification Gauge 보상 지급
@@ -121,7 +147,7 @@ public class ShooterPurification : MonoBehaviour
     // Purification Gauge 기반 Shooter Field 반경 계산
     private float CalculateFieldRadius()
     {
-        if (maxGauge <= 0f || currentGauge <= 0f)
+        if (isSuppressedByDeath || maxGauge <= 0f || currentGauge <= 0f)
             return 0f;
 
         float t = Mathf.Clamp01(currentGauge / maxGauge);
@@ -129,6 +155,18 @@ public class ShooterPurification : MonoBehaviour
     }
 
     // 적 종류별 Purification Gauge 보상값 선택
+    private void HandleDied()
+    {
+        isSuppressedByDeath = true;
+        ApplyGaugeState();
+    }
+
+    private void HandleRevived()
+    {
+        isSuppressedByDeath = false;
+        ApplyGaugeState();
+    }
+
     private float GetEnemyPurificationGain(EnemyHealth enemyHealth)
     {
         string enemyName = enemyHealth.gameObject.name;
