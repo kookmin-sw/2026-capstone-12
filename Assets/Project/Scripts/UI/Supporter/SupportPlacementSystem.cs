@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Photon.Pun;
 
 public class SupportPlacementSystem : MonoBehaviour
 {
+    public static event Action<SupporterItemSO> LocalSupportPlaced;
+
     [SerializeField] private Camera topDownCamera; // Support 배치용 탑다운 카메라
     [SerializeField] private GridManager gridManager; // 지형 레이캐스트 레이어 조회용 Grid 참조
     [SerializeField] private Material ghostMaterial; // 배치 미리보기 표시용 고스트 재질
@@ -139,7 +142,25 @@ public class SupportPlacementSystem : MonoBehaviour
     // 현재 선택 아이템 배치 가능 여부 판정
     private bool CanPlaceSelected()
     {
-        return selectedItem != null && (ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(selectedItem.cost));
+        if (selectedItem == null)
+            return false;
+
+        if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(selectedItem.cost))
+            return false;
+
+        if (selectedItem.kind != SupportItemKind.PurificationBeacon || ghostObj == null)
+            return true;
+
+        PurificationBeaconSupportEffectSO beaconEffect = GetPurificationBeaconEffect(selectedItem);
+        if (beaconEffect == null)
+            return false;
+
+        GameObject shooter = GameObject.FindGameObjectWithTag("Player");
+        if (shooter == null)
+            return false;
+
+        float range = Mathf.Max(0f, beaconEffect.placementRangeFromShooter);
+        return Vector3.Distance(shooter.transform.position, ghostObj.transform.position) <= range;
     }
 
     // Support 아이템 월드 배치 요청
@@ -164,12 +185,34 @@ public class SupportPlacementSystem : MonoBehaviour
 
             if (prefab != null)
             {
-                GameObject supportObject = Instantiate(prefab, position, Quaternion.identity); // 오프라인 테스트용 로컬 생성 오브젝트
-                SupportPickupItem pickupItem = supportObject.GetComponent<SupportPickupItem>();
-                if (pickupItem == null)
-                    pickupItem = supportObject.AddComponent<SupportPickupItem>();
+                PurificationBeaconSupportEffectSO beaconEffect = selectedItem.kind == SupportItemKind.PurificationBeacon
+                    ? GetPurificationBeaconEffect(selectedItem)
+                    : null;
+                if (selectedItem.kind == SupportItemKind.PurificationBeacon && beaconEffect == null)
+                    return;
 
-                pickupItem.Configure(-1, selectedItem);
+                GameObject supportObject = Instantiate(prefab, position, Quaternion.identity); // 오프라인 테스트용 로컬 생성 오브젝트
+                if (selectedItem.kind == SupportItemKind.PurificationBeacon)
+                {
+                    foreach (SupportPickupItem supportPickupItem in supportObject.GetComponentsInChildren<SupportPickupItem>(true))
+                        Destroy(supportPickupItem);
+
+                    PurificationBeaconNet beacon = supportObject.GetComponent<PurificationBeaconNet>();
+                    if (beacon == null)
+                        beacon = supportObject.AddComponent<PurificationBeaconNet>();
+
+                    beacon.Configure(beaconEffect.radius, beaconEffect.activeDuration);
+                }
+                else
+                {
+                    SupportPickupItem pickupItem = supportObject.GetComponent<SupportPickupItem>();
+                    if (pickupItem == null)
+                        pickupItem = supportObject.AddComponent<SupportPickupItem>();
+
+                    pickupItem.Configure(-1, selectedItem);
+                }
+
+                LocalSupportPlaced?.Invoke(selectedItem);
             }
         }
 
@@ -220,6 +263,12 @@ public class SupportPlacementSystem : MonoBehaviour
 
         foreach (SupportPickupItem pickupItem in go.GetComponentsInChildren<SupportPickupItem>(true))
             pickupItem.enabled = false;
+
+        foreach (PurificationBeaconNet beacon in go.GetComponentsInChildren<PurificationBeaconNet>(true))
+            beacon.enabled = false;
+
+        foreach (PurificationLightSource lightSource in go.GetComponentsInChildren<PurificationLightSource>(true))
+            lightSource.enabled = false;
 
         if (ghostMaterial == null)
             return;
@@ -274,5 +323,10 @@ public class SupportPlacementSystem : MonoBehaviour
         }
 
         return -1;
+    }
+
+    private PurificationBeaconSupportEffectSO GetPurificationBeaconEffect(SupporterItemSO item)
+    {
+        return item != null ? item.effect as PurificationBeaconSupportEffectSO : null;
     }
 }

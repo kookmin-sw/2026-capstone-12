@@ -8,6 +8,7 @@ public class SupporterUISoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip hoverClip;
     [SerializeField] private AudioClip clickClip;
     [SerializeField] private AudioClip resourceLackClip;
+    [SerializeField] private AudioClip cooldownDeniedClip;
     [SerializeField] private AudioClip repairClip;
     [SerializeField] private AudioClip sellClip;
 
@@ -16,6 +17,7 @@ public class SupporterUISoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float hoverVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float clickVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float resourceLackVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float cooldownDeniedVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float repairVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float sellVolume = 1f;
     [SerializeField] private float hoverCooldown = 0.04f; // 겹친 UI 요소의 호버음 중복 방지
@@ -63,6 +65,7 @@ public class SupporterUISoundPlayer : MonoBehaviour
             SupporterUISoundType.Hover => hoverClip,
             SupporterUISoundType.Click => clickClip,
             SupporterUISoundType.ResourceLack => resourceLackClip,
+            SupporterUISoundType.CooldownDenied => cooldownDeniedClip,
             SupporterUISoundType.Repair => repairClip,
             SupporterUISoundType.Sell => sellClip,
             _ => null
@@ -77,6 +80,7 @@ public class SupporterUISoundPlayer : MonoBehaviour
             SupporterUISoundType.Hover => hoverVolume,
             SupporterUISoundType.Click => clickVolume,
             SupporterUISoundType.ResourceLack => resourceLackVolume,
+            SupporterUISoundType.CooldownDenied => cooldownDeniedVolume,
             SupporterUISoundType.Repair => repairVolume,
             SupporterUISoundType.Sell => sellVolume,
             _ => 1f

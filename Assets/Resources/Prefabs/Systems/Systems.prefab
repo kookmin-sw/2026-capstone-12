@@ -736,12 +736,14 @@ MonoBehaviour:
   hoverClip: {fileID: 8300000, guid: 6c4b123cba561f34797c7b13f45a2626, type: 3}
   clickClip: {fileID: 8300000, guid: 46cfdfa2200951e4d9d2aecf506c0bb1, type: 3}
   resourceLackClip: {fileID: 8300000, guid: c88bf729938d9514f9de7adb4343eeb5, type: 3}
+  cooldownDeniedClip: {fileID: 8300000, guid: 97df607d0b98b0e49bb2ad7f50249263, type: 3}
   repairClip: {fileID: 8300000, guid: 6d08ecd84aaad32418a8ad8afa72f83b, type: 3}
   sellClip: {fileID: 8300000, guid: 3c5f57d0cf6c7ab4fa16a44624245989, type: 3}
   masterVolume: 1
   hoverVolume: 0.303
   clickVolume: 1
   resourceLackVolume: 1
+  cooldownDeniedVolume: 1
   repairVolume: 1
   sellVolume: 1
   hoverCooldown: 0.04

@@ -20,6 +20,6 @@ MonoBehaviour:
   cost: 25
   prefab: {fileID: 1707627497400051785, guid: c6f258c24629335438055604fdeb0859, type: 3}
   prefabResourcePath: Prefabs/Support/HealthPack
-  ammoAmount: 0
-  healAmount: 35
-  effectDuration: 2.5
+  cooldown: 0
+  maxActiveCount: 0
+  effect: {fileID: 11400000, guid: b1b3358c8c944fc19dca2c455e849911, type: 2}

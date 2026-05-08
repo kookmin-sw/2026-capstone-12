@@ -393,6 +393,7 @@ MonoBehaviour:
   supportItemTypes:
   - {fileID: 11400000, guid: d40b49cb257d475aa933f8f01202d22d, type: 2}
   - {fileID: 11400000, guid: e20f4b4dd17943be8d8bb3d9be04ecee, type: 2}
+  - {fileID: 11400000, guid: 7689bb81484e41f6867397367a11bafe, type: 2}
 --- !u!1 &9062966865486569762
 GameObject:
   m_ObjectHideFlags: 0

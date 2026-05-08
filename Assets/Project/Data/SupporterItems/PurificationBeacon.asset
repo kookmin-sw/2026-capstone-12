@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 066b9975c06874b42b823e34fd0ff538, type: 3}
-  m_Name: AmmoPack
+  m_Name: PurificationBeacon
   m_EditorClassIdentifier: 
-  kind: 0
-  displayName: Ammo Pack
-  description: Slowly restores shooter ammo.
+  kind: 2
+  displayName: Purification Beacon
+  description: Creates a temporary purified area near the shooter.
   icon: {fileID: 21300000, guid: 3efa7a0b0d4a9f84f98d3e8db9833d74, type: 3}
-  typeId: 0
-  cost: 20
+  typeId: 2
+  cost: 35
   prefab: {fileID: 414991334970881068, guid: 4796f084f4b66c948bfb72cdc8483ae4, type: 3}
   prefabResourcePath: Prefabs/Support/AmmoPack
-  cooldown: 0
-  maxActiveCount: 0
-  effect: {fileID: 11400000, guid: 1d7cab65f94346fa9cfaa548bf174c12, type: 2}
+  cooldown: 12
+  maxActiveCount: 1
+  effect: {fileID: 11400000, guid: 92e168f6fa7c44dbb9269b032d934afb, type: 2}
