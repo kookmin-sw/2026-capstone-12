@@ -23,6 +23,9 @@ Shader "Hidden/Project/ShooterVisibilityFog"
             float _ShooterVisibilitySoftEdge;
             float4 _ShooterVisibilityFogColor;
             float _ShooterVisibilityFogOpacity;
+            float _ShooterVisibilityZoneCount;
+            float4 _ShooterVisibilityZoneCenters[32];
+            float _ShooterVisibilityZoneRadii[32];
 
             half4 Frag(Varyings input) : SV_Target
             {
@@ -34,10 +37,21 @@ Shader "Hidden/Project/ShooterVisibilityFog"
 
                 float depth = SampleSceneDepth(uv);
                 float3 worldPosition = ComputeWorldSpacePosition(uv, depth, UNITY_MATRIX_I_VP);
-                float distanceFromCenter = distance(worldPosition.xz, _ShooterVisibilityCenter.xz);
-                float fadeStart = _ShooterVisibilityRadius;
-                float fadeEnd = _ShooterVisibilityRadius + max(_ShooterVisibilitySoftEdge, 0.001);
-                float hiddenFactor = smoothstep(fadeStart, fadeEnd, distanceFromCenter);
+                float hiddenFactor = 1.0;
+                int zoneCount = min((int)_ShooterVisibilityZoneCount, 32);
+
+                UNITY_LOOP
+                for (int i = 0; i < 32; i++)
+                {
+                    if (i >= zoneCount)
+                        break;
+
+                    float distanceFromZone = distance(worldPosition.xz, _ShooterVisibilityZoneCenters[i].xz);
+                    float fadeStart = _ShooterVisibilityZoneRadii[i];
+                    float fadeEnd = fadeStart + max(_ShooterVisibilitySoftEdge, 0.001);
+                    hiddenFactor = min(hiddenFactor, smoothstep(fadeStart, fadeEnd, distanceFromZone));
+                }
+
                 float fogAmount = saturate(hiddenFactor * _ShooterVisibilityFogOpacity);
 
                 color.rgb = lerp(color.rgb, _ShooterVisibilityFogColor.rgb, fogAmount);
