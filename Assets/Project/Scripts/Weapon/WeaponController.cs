@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Photon.Pun;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Shooter 무기 입력, 발사, 재장전, 조준, 탄약 동기화 처리
@@ -9,7 +10,10 @@ public class WeaponController : MonoBehaviour
     [Header("Weapon Stats")]
     [SerializeField] private float damage = 25f; // 발사 1회당 적용할 데미지
     private float bonusDamage = 0f;
-    [SerializeField] private float range = 100f; // Raycast 최대 사거리
+    [FormerlySerializedAs("maxShootDistance")]
+    [SerializeField] private float minEffectiveShootDistance = 25f; // 최소 유효 사거리
+    [SerializeField] private float raycastDistance = 1000f; // Raycast 검사 거리
+    [SerializeField] private float unpurifiedMinRangeDamageMultiplier = 0.1f; // 비가시 최소 사거리 피해 배율
     [SerializeField] private float fireRate = 0.1f; // 연사 간격
 
     [Header("Ammo")]
@@ -41,6 +45,7 @@ public class WeaponController : MonoBehaviour
     private Camera playerCamera; // 로컬 Shooter가 사용하는 카메라
     private ShooterWeaponNet shooterWeaponNet; // 무기 피격 요청 네트워크 컴포넌트
     private ShooterAmmoNet shooterAmmoNet; // 탄약 UI 동기화 네트워크 컴포넌트
+    private ShooterVisibilityFogController visibilityFogController; // 시야 판정 컨트롤러
     private PhotonView photonView; // 로컬 권한 판정용 PhotonView
     private AmmoManager ammoManager; // 탄약 상태 관리 컴포넌트
 
@@ -66,7 +71,10 @@ public class WeaponController : MonoBehaviour
         // Camera.main 대신 자식 카메라 직접 참조 (Supporter Camera 태그 충돌 방지)
         playerCamera = GetComponentInChildren<Camera>();
         if (playerCamera != null)
+        {
             normalFOV = playerCamera.fieldOfView;
+            visibilityFogController = playerCamera.GetComponent<ShooterVisibilityFogController>();
+        }
 
         shooterWeaponNet = GetComponent<ShooterWeaponNet>();
         shooterAmmoNet = ShooterAmmoNet.Instance;
@@ -135,6 +143,13 @@ public class WeaponController : MonoBehaviour
         }
     }
 
+    private void OnValidate()
+    {
+        minEffectiveShootDistance = Mathf.Max(0f, minEffectiveShootDistance);
+        raycastDistance = Mathf.Max(minEffectiveShootDistance, raycastDistance);
+        unpurifiedMinRangeDamageMultiplier = Mathf.Clamp01(unpurifiedMinRangeDamageMultiplier);
+    }
+
     /// <summary>
     /// 우클릭 조준 상태와 카메라 FOV 보간 처리
     /// </summary>
@@ -185,7 +200,7 @@ public class WeaponController : MonoBehaviour
         shootSoundSource?.Play();
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); // 화면 중앙 조준 Ray
-        if (!Physics.Raycast(ray, out RaycastHit hit, range))
+        if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
             return;
 
         if (TryRequestEnemyHit(hit))
@@ -206,7 +221,10 @@ public class WeaponController : MonoBehaviour
         if (enemyPhotonView == null)
             return true;
 
-        shooterWeaponNet.RequestHitEnemy(enemyPhotonView.ViewID, damage + bonusDamage);
+        if (!TryGetDamageAtHit(hit, out float finalDamage))
+            return true;
+
+        shooterWeaponNet.RequestHitEnemy(enemyPhotonView.ViewID, finalDamage);
         return true;
     }
 
@@ -219,7 +237,55 @@ public class WeaponController : MonoBehaviour
         if (structurePhotonView == null)
             return;
 
-        shooterWeaponNet.RequestHitStructure(structurePhotonView.ViewID, damage + bonusDamage);
+        if (!TryGetDamageAtHit(hit, out float finalDamage))
+            return;
+
+        shooterWeaponNet.RequestHitStructure(structurePhotonView.ViewID, finalDamage);
+    }
+
+    /// <summary>
+    /// 피격 거리와 현재 가시 영역 기준 최종 피해 계산
+    /// </summary>
+    private bool TryGetDamageAtHit(RaycastHit hit, out float finalDamage)
+    {
+        finalDamage = damage + bonusDamage;
+        float distance = Vector3.Distance(GetShootOriginPosition(), hit.point); // 피격 거리
+        bool isVisibleToShooter = IsVisibleToShooter(hit.point); // 현재 시야 포함 여부
+
+        if (distance <= minEffectiveShootDistance)
+        {
+            if (!isVisibleToShooter)
+                finalDamage *= unpurifiedMinRangeDamageMultiplier;
+
+            return finalDamage > 0f;
+        }
+
+        return isVisibleToShooter && finalDamage > 0f;
+    }
+
+    /// <summary>
+    /// 현재 Shooter가 피격 위치를 볼 수 있는지 확인
+    /// </summary>
+    private bool IsVisibleToShooter(Vector3 worldPosition)
+    {
+        if (visibilityFogController == null && playerCamera != null)
+            visibilityFogController = playerCamera.GetComponent<ShooterVisibilityFogController>();
+
+        if (visibilityFogController == null)
+            return true;
+
+        return visibilityFogController.ContainsVisiblePosition(worldPosition);
+    }
+
+    /// <summary>
+    /// 사격 거리 계산 기준 위치 반환
+    /// </summary>
+    private Vector3 GetShootOriginPosition()
+    {
+        if (playerCamera != null)
+            return playerCamera.transform.position;
+
+        return transform.position;
     }
 
     /// <summary>

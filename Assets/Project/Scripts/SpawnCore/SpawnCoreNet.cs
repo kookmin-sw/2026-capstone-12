@@ -18,20 +18,20 @@ public class SpawnCoreNet : MonoBehaviourPun
     }
 
     /// <summary>
-    /// Core 파괴 상태를 모든 클라이언트에 전파
+    /// Core 파괴 상태와 정화 구역 생성 위치를 모든 클라이언트에 전파
     /// </summary>
-    public void NotifyCoreDestroyed(int coreOrder, int destroyedCount, int coreId)
+    public void NotifyCoreDestroyed(int coreOrder, int destroyedCount, int coreId, Vector3 corePosition)
     {
-        photonView.RPC(nameof(RPC_NotifyCoreDestroyed), RpcTarget.All, coreOrder, destroyedCount, coreId);
+        photonView.RPC(nameof(RPC_NotifyCoreDestroyed), RpcTarget.All, coreOrder, destroyedCount, coreId, corePosition);
     }
 
     /// <summary>
-    /// Core 파괴 상태 동기화 결과 적용
+    /// Core 파괴 동기화 결과와 로컬 영구 정화 구역 생성을 적용
     /// </summary>
     [PunRPC]
-    private void RPC_NotifyCoreDestroyed(int coreOrder, int destroyedCount, int coreId)
+    private void RPC_NotifyCoreDestroyed(int coreOrder, int destroyedCount, int coreId, Vector3 corePosition)
     {
-        SpawnCoreManager.Instance?.ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId);
+        SpawnCoreManager.Instance?.ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId, corePosition);
         AudioManager.Instance?.PlayEnemyBuff();
     }
 }

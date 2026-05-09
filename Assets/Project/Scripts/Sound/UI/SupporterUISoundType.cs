@@ -4,5 +4,6 @@ public enum SupporterUISoundType
     Click,
     ResourceLack,
     Repair,
-    Sell
+    Sell,
+    CooldownDenied
 }

@@ -6,20 +6,24 @@ using UnityEngine.UI;
 
 public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public Button button; // 클릭 입력 대상 버튼
-    public TextMeshProUGUI costText; // 소모 골드 표시 텍스트
-    public TextMeshProUGUI nameText; // 아이템 이름 표시 텍스트
-    public TextMeshProUGUI descriptionText; // 슬롯 내부 설명 표시 텍스트
-    public Image iconImage; // 아이템 아이콘 표시 이미지
+    public Button button;
+    public TextMeshProUGUI costText;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI descriptionText;
+    public Image iconImage;
+    public GameObject cooldownObject;
+    public TextMeshProUGUI cooldownText;
 
-    public SupporterItemSO item; // 슬롯에 연결된 Support 아이템 데이터
-    public SupportPlacementSystem placementSystem; // 클릭 후 배치 모드 진입 대상 시스템
+    public SupporterItemSO item;
+    public SupportPlacementSystem placementSystem;
 
-    public event Action<SupportSlotUI> Clicked; // 설명 선택 상태 갱신용 클릭 이벤트
-    public event Action<SupportSlotUI> Hovered; // 설명 표시용 호버 이벤트
-    public event Action<SupportSlotUI> HoverExited; // 설명 숨김용 호버 종료 이벤트
+    public event Action<SupportSlotUI> Clicked;
+    public event Action<SupportSlotUI> Hovered;
+    public event Action<SupportSlotUI> HoverExited;
 
-    // 슬롯 참조 자동 연결
+    private float cooldownEndTime;
+    private bool subscribedToPlacementEvents;
+
     private void Awake()
     {
         if (button == null)
@@ -37,10 +41,17 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         if (iconImage == null)
             iconImage = FindImage("SupportIcon");
 
+        SubscribePlacementEvents();
+        BindCooldownObject();
         BindButton();
     }
 
-    // 골드 변경 감지 시작
+    private void OnEnable()
+    {
+        SubscribePlacementEvents();
+        UpdateCooldownVisual();
+    }
+
     private void Start()
     {
         Refresh();
@@ -48,29 +59,33 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             ResourceManager.Instance.OnMoneyChanged += HandleGoldChanged;
     }
 
-    // 골드 변경 감지 해제
+    private void Update()
+    {
+        UpdateCooldownVisual();
+    }
+
     private void OnDestroy()
     {
+        UnsubscribePlacementEvents();
+
         if (ResourceManager.Instance != null)
             ResourceManager.Instance.OnMoneyChanged -= HandleGoldChanged;
     }
 
-    // 골드 변경 후 버튼 상태 갱신
     private void HandleGoldChanged(int _)
     {
         Refresh();
     }
 
-    // Support 아이템 데이터 주입
     public void Configure(SupportPlacementSystem targetPlacementSystem, SupporterItemSO targetItem)
     {
         placementSystem = targetPlacementSystem;
         item = targetItem;
+        BindCooldownObject();
         BindButton();
         Refresh();
     }
 
-    // 버튼 컴포넌트 부재 시 클릭 입력 처리
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left)
@@ -80,23 +95,26 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             OnClick();
     }
 
-    // 설명 표시 요청
     public void OnPointerEnter(PointerEventData eventData)
     {
         Hovered?.Invoke(this);
     }
 
-    // 설명 숨김 요청
     public void OnPointerExit(PointerEventData eventData)
     {
         HoverExited?.Invoke(this);
     }
 
-    // Support 배치 모드 선택
     private void OnClick()
     {
         if (item == null || placementSystem == null)
             return;
+
+        if (IsCooldownActive())
+        {
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.CooldownDenied);
+            return;
+        }
 
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
         {
@@ -108,7 +126,6 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         Clicked?.Invoke(this);
     }
 
-    // 슬롯 텍스트와 구매 가능 상태 갱신
     private void Refresh()
     {
         if (item == null)
@@ -118,6 +135,7 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             if (descriptionText != null) descriptionText.text = "";
             if (iconImage != null) iconImage.sprite = null;
             if (button != null) button.interactable = false;
+            SetCooldownVisible(false);
             return;
         }
 
@@ -126,11 +144,12 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
         if (descriptionText != null) descriptionText.text = item.description;
         if (iconImage != null) iconImage.sprite = item.icon;
 
-        bool canAfford = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(item.cost); // 골드 기반 클릭 가능 여부
-        if (button != null) button.interactable = canAfford;
+        bool canAfford = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(item.cost);
+        if (button != null) button.interactable = canAfford && !IsCooldownActive();
+
+        UpdateCooldownVisual();
     }
 
-    // 버튼 클릭 이벤트 중복 방지 연결
     private void BindButton()
     {
         if (button == null)
@@ -143,14 +162,100 @@ public class SupportSlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterH
             button.targetGraphic = GetComponent<Graphic>();
     }
 
-    // 직접 자식 텍스트 조회
+    private void HandleSupportSpawned(SupporterItemSO spawnedItem)
+    {
+        if (item == null || spawnedItem == null || item.cooldown <= 0f)
+            return;
+
+        if (item == spawnedItem || item.typeId == spawnedItem.typeId || item.kind == spawnedItem.kind)
+            StartCooldown(item.cooldown);
+    }
+
+    private void SubscribePlacementEvents()
+    {
+        if (subscribedToPlacementEvents)
+            return;
+
+        BuildNetManager.SupportSpawned += HandleSupportSpawned;
+        SupportPlacementSystem.LocalSupportPlaced += HandleSupportSpawned;
+        subscribedToPlacementEvents = true;
+    }
+
+    private void UnsubscribePlacementEvents()
+    {
+        if (!subscribedToPlacementEvents)
+            return;
+
+        BuildNetManager.SupportSpawned -= HandleSupportSpawned;
+        SupportPlacementSystem.LocalSupportPlaced -= HandleSupportSpawned;
+        subscribedToPlacementEvents = false;
+    }
+
+    private void StartCooldown(float duration)
+    {
+        cooldownEndTime = Time.time + Mathf.Max(0f, duration);
+        UpdateCooldownVisual();
+        Refresh();
+    }
+
+    private bool IsCooldownActive()
+    {
+        return cooldownEndTime > Time.time;
+    }
+
+    private void UpdateCooldownVisual()
+    {
+        bool active = IsCooldownActive();
+        SetCooldownVisible(active);
+
+        if (active && cooldownText != null)
+            cooldownText.text = Mathf.CeilToInt(cooldownEndTime - Time.time).ToString();
+
+        if (button != null && item != null)
+        {
+            bool canAfford = ResourceManager.Instance == null || ResourceManager.Instance.CanAfford(item.cost);
+            button.interactable = canAfford && !active;
+        }
+    }
+
+    private void SetCooldownVisible(bool visible)
+    {
+        if (cooldownObject != null && cooldownObject.activeSelf != visible)
+            cooldownObject.SetActive(visible);
+    }
+
+    private void BindCooldownObject()
+    {
+        if (cooldownObject == null)
+        {
+            Transform existing = transform.Find("ItemCooldown");
+            if (existing != null)
+                cooldownObject = existing.gameObject;
+        }
+
+        if (cooldownText == null && cooldownObject != null)
+            cooldownText = cooldownObject.GetComponentInChildren<TextMeshProUGUI>(true);
+
+        if (cooldownObject == null)
+            return;
+
+        // Cooldown UI는 Support 슬롯 프리팹에 배치된 오브젝트만 사용한다.
+        DisableCooldownRaycasts(cooldownObject);
+        SetCooldownVisible(false);
+    }
+
+    private void DisableCooldownRaycasts(GameObject target)
+    {
+        foreach (Graphic graphic in target.GetComponentsInChildren<Graphic>(true))
+            graphic.raycastTarget = false;
+    }
+
     private TextMeshProUGUI FindText(string childName)
     {
         Transform child = transform.Find(childName);
         return child != null ? child.GetComponent<TextMeshProUGUI>() : null;
     }
 
-    // 직접 자식 이미지 조회
     private Image FindImage(string childName)
     {
         Transform child = transform.Find(childName);
