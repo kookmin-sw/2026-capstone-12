@@ -11910,7 +11910,6 @@ GameObject:
   - component: {fileID: 848375090}
   - component: {fileID: 848375092}
   - component: {fileID: 848375093}
-  - component: {fileID: 848375094}
   m_Layer: 5
   m_Name: PlayerStatus
   m_TagString: Untagged
@@ -12007,20 +12006,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammoText: {fileID: 585075424}
   shooterWeaponController: {fileID: 3797320134046962192}
---- !u!114 &848375094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848375088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16fb746593384a2f898cf347e248be8a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  respawnCooldown: {fileID: 0}
-  cooldownText: {fileID: 0}
 --- !u!1 &855142108
 GameObject:
   m_ObjectHideFlags: 0

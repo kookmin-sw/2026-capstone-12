@@ -4,6 +4,7 @@ using UnityEngine;
 public class ShooterHealthNet : MonoBehaviourPunCallbacks
 {
     public static ShooterHealthNet Instance { get; private set; }
+    public static event System.Action OnShooterHit;
 
     [Header("Player HP")]
     [SerializeField] private float shooterMaxHp = 100;
@@ -113,6 +114,7 @@ public class ShooterHealthNet : MonoBehaviourPunCallbacks
     private void RpcShooterHit()
     {
         AudioManager.Instance?.PlayShooterHit();
+        OnShooterHit?.Invoke();
     }
 
     /// <summary>
