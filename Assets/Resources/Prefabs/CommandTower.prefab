@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 534819264781392602}
   - component: {fileID: 534819264781392603}
   - component: {fileID: 534819264781392604}
-  - component: {fileID: 6846900975192842109}
   - component: {fileID: 6846900975192842110}
   - component: {fileID: 534819264781392605}
   m_Layer: 8
@@ -112,10 +111,8 @@ MonoBehaviour:
   commandTowerHitWarningClip: {fileID: 8300000, guid: e77d3002cb1d5274fae84a729f2c22a9, type: 3}
   commandTowerHitWarningCooldown: 5
   commandTowerHitWarningVolume: 1
---- !u!114 &6846900975192842109
+--- !u!114 &534819264781392605
 MonoBehaviour:
---- !u!208 &534819264781392605
-NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
