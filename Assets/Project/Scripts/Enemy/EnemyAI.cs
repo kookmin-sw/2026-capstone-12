@@ -150,18 +150,18 @@ public class EnemyAI : MonoBehaviour
         Transform target = GetCurrentTarget(primaryTarget);
 
         Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
-        float distance = Vector3.Distance(origin, target.position);
+        float distance = GetDistanceToTarget(origin, target);
 
         if (distance > attackRange)
         {
             animationNet?.SetMoveState(true, currentMoveSpeed);
             MoveTowards(target);
-            // 애니메이션 동기화
         }
         else
         {
             animationNet?.SetMoveState(false, 0);
             StopMovement();
+            FaceTarget(target);
             TryAttack(target);
         }
     }
@@ -276,19 +276,21 @@ public class EnemyAI : MonoBehaviour
     private void ConfigureMovementAuthority()
     {
         bool masterControlled = PhotonNetwork.IsMasterClient;
-        bool canUseAgent = masterControlled && useNavMeshMovement && agent != null && agent.isOnNavMesh;
 
         if (agent != null)
         {
             agent.enabled = masterControlled && useNavMeshMovement;
             agent.speed = currentMoveSpeed;
-            agent.stoppingDistance = attackRange * 0.9f;
+            agent.stoppingDistance = 0f;
             agent.updateRotation = false;
             agent.autoBraking = false;
         }
 
         if (rb != null)
-            rb.isKinematic = !masterControlled || canUseAgent;
+        {
+            bool usingAgent = agent != null && agent.enabled;
+            rb.isKinematic = !masterControlled || usingAgent;
+        }
     }
 
     // ============================================================
@@ -427,7 +429,7 @@ public class EnemyAI : MonoBehaviour
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 5f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * GetRotationSpeed());
         }
     }
 
@@ -442,12 +444,7 @@ public class EnemyAI : MonoBehaviour
         if (Time.time >= nextPathRefreshTime)
         {
             nextPathRefreshTime = Time.time + pathRefreshInterval;
-
-            Vector3 destination = target.position;
-            if (NavMesh.SamplePosition(target.position, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
-                destination = hit.position;
-
-            agent.SetDestination(destination);
+            agent.SetDestination(GetNavDestination(target));
         }
 
         Vector3 velocity = agent.desiredVelocity;
@@ -456,7 +453,7 @@ public class EnemyAI : MonoBehaviour
         if (velocity.sqrMagnitude > 0.0001f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * 5f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * GetRotationSpeed());
         }
 
         return true;
@@ -466,6 +463,48 @@ public class EnemyAI : MonoBehaviour
     {
         if (agent != null && agent.enabled && agent.isOnNavMesh)
             agent.ResetPath();
+    }
+
+    private void FaceTarget(Transform target)
+    {
+        Vector3 dir = target.position - transform.position;
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.0001f) return;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.fixedDeltaTime * GetRotationSpeed());
+    }
+
+    // 이동속도에 비례한 회전 속도 (빠른 적일수록 회전도 빠르게)
+    private float GetRotationSpeed() => 5f * Mathf.Max(1f, currentMoveSpeed / baseMoveSpeed);
+
+    // 건물은 표면까지, 플레이어는 중심까지 거리 측정
+    private float GetDistanceToTarget(Vector3 from, Transform target)
+    {
+        Collider targetCol = target.GetComponent<Collider>() ?? target.GetComponentInChildren<Collider>();
+        if (targetCol != null)
+            return Vector3.Distance(from, targetCol.ClosestPoint(from));
+        return Vector3.Distance(from, target.position);
+    }
+
+    // 건물 표면 바깥쪽 NavMesh 지점을 목적지로 설정해 건물 내부로 경로가 잡히지 않게 함
+    private Vector3 GetNavDestination(Transform target)
+    {
+        Collider targetCol = target.GetComponent<Collider>() ?? target.GetComponentInChildren<Collider>();
+        if (targetCol != null)
+        {
+            Vector3 surface = targetCol.ClosestPoint(transform.position);
+            Vector3 toEnemy = transform.position - surface;
+            toEnemy.y = 0f;
+            if (toEnemy.sqrMagnitude < 0.0001f)
+                toEnemy = transform.position - target.position;
+            Vector3 approachPoint = surface + toEnemy.normalized * 0.1f;
+            if (NavMesh.SamplePosition(approachPoint, out NavMeshHit hit, navMeshSampleDistance * 2f, NavMesh.AllAreas))
+                return hit.position;
+        }
+
+        if (NavMesh.SamplePosition(target.position, out NavMeshHit fallback, navMeshSampleDistance, NavMesh.AllAreas))
+            return fallback.position;
+
+        return target.position;
     }
 
     // ============================================================

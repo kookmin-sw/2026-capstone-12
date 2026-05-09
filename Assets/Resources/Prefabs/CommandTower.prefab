@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 534819264781392602}
   - component: {fileID: 534819264781392603}
   - component: {fileID: 534819264781392604}
+  - component: {fileID: 534819264781392605}
   m_Layer: 8
   m_Name: CommandTower
   m_TagString: Untagged
@@ -108,6 +109,21 @@ MonoBehaviour:
   commandTowerHitWarningClip: {fileID: 8300000, guid: e77d3002cb1d5274fae84a729f2c22a9, type: 3}
   commandTowerHitWarningCooldown: 5
   commandTowerHitWarningVolume: 1
+--- !u!208 &534819264781392605
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7189919056927592795}
+  m_Enabled: 1
+  m_Shape: 1
+  m_Center: {x: 0, y: 3, z: 0}
+  m_Size: {x: 3, y: 6, z: 3}
+  m_Carve: 1
+  m_MoveThreshold: 0.1
+  m_TimeToStationary: 0.5
+  m_CarveOnlyStationary: 1
 --- !u!1 &7796523399585228205
 GameObject:
   m_ObjectHideFlags: 0
