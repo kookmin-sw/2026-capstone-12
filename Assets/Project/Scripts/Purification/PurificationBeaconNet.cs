@@ -16,7 +16,6 @@ public class PurificationBeaconNet : MonoBehaviour
     private void Awake()
     {
         lightSource = GetComponent<PurificationLightSource>();
-        EnsureLight();
     }
 
     private void OnEnable()
@@ -61,21 +60,6 @@ public class PurificationBeaconNet : MonoBehaviour
             beaconLight.intensity = 2.2f;
             beaconLight.enabled = radius > 0f;
         }
-    }
-
-    private void EnsureLight()
-    {
-        if (beaconLight != null)
-            return;
-
-        GameObject lightObject = new GameObject("PurificationBeaconLight");
-        lightObject.transform.SetParent(transform, false);
-        lightObject.transform.localPosition = Vector3.up * 1.2f;
-
-        beaconLight = lightObject.AddComponent<Light>();
-        beaconLight.type = LightType.Point;
-        beaconLight.color = new Color(1f, 0.93f, 0.6f, 1f);
-        beaconLight.shadows = LightShadows.None;
     }
 
     private void DestroyBeacon()

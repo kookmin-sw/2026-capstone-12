@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: LightPylon
   description: A purification structure that creates a safe forward zone
-  icon: {fileID: 21300000, guid: 7a8100dc19f784c4f9815e26b285fdc6, type: 3}
+  icon: {fileID: 21300000, guid: 915818f3c5bdae943b454a12db64913f, type: 3}
   prefab: {fileID: 4729105100198204401, guid: 6d31465fc06693d49bd5318bf0c77a0e, type: 3}
   typeId: 4
   photonPrefabPath: Prefabs/Buildings/Support/LightPylon_Root

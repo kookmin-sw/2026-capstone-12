@@ -199,7 +199,10 @@ public class SupportPlacementSystem : MonoBehaviour
 
                     PurificationBeaconNet beacon = supportObject.GetComponent<PurificationBeaconNet>();
                     if (beacon == null)
-                        beacon = supportObject.AddComponent<PurificationBeaconNet>();
+                    {
+                        Destroy(supportObject);
+                        return;
+                    }
 
                     beacon.Configure(beaconEffect.radius, beaconEffect.activeDuration);
                 }
@@ -269,6 +272,9 @@ public class SupportPlacementSystem : MonoBehaviour
 
         foreach (PurificationLightSource lightSource in go.GetComponentsInChildren<PurificationLightSource>(true))
             lightSource.enabled = false;
+
+        foreach (Light light in go.GetComponentsInChildren<Light>(true))
+            light.enabled = false;
 
         if (ghostMaterial == null)
             return;

@@ -2239,7 +2239,7 @@ MonoBehaviour:
   buildingListPanel: {fileID: 5176604268768693844}
   supportListPanel: {fileID: 1818914644050822275}
   descriptionPanel: {fileID: 7355180529111532091}
-  descriptionNameText: {fileID: 1501471352002077585}
+  descriptionNameText: {fileID: 6184886677210102116}
   descriptionGoldCostText: {fileID: 975246424272375885}
   descriptionText: {fileID: 1501471352002077585}
   activeResourcePanel: {fileID: 8085211396202561004}

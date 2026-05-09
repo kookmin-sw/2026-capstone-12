@@ -15,11 +15,11 @@ MonoBehaviour:
   kind: 2
   displayName: Purification Beacon
   description: Creates a temporary purified area near the shooter.
-  icon: {fileID: 21300000, guid: 3efa7a0b0d4a9f84f98d3e8db9833d74, type: 3}
+  icon: {fileID: 21300000, guid: c73d3b141927b69438842bda8ab1d5e8, type: 3}
   typeId: 2
   cost: 35
-  prefab: {fileID: 414991334970881068, guid: 4796f084f4b66c948bfb72cdc8483ae4, type: 3}
-  prefabResourcePath: Prefabs/Support/AmmoPack
+  prefab: {fileID: 6611693942618603605, guid: 557fce4731712d7429aca49ceaa98c07, type: 3}
+  prefabResourcePath: Prefabs/Support/PurificationBeacon
   cooldown: 12
   maxActiveCount: 1
   effect: {fileID: 11400000, guid: 92e168f6fa7c44dbb9269b032d934afb, type: 2}

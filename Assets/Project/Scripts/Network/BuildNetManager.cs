@@ -122,7 +122,10 @@ public class BuildNetManager : MonoBehaviourPun
 
             PurificationBeaconNet beacon = supportObject.GetComponent<PurificationBeaconNet>();
             if (beacon == null)
-                beacon = supportObject.AddComponent<PurificationBeaconNet>();
+            {
+                Destroy(supportObject);
+                return;
+            }
 
             beacon.Configure(beaconEffect.radius, beaconEffect.activeDuration);
             SupportSpawned?.Invoke(item);
