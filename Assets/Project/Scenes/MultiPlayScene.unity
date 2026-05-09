@@ -19487,6 +19487,11 @@ PrefabInstance:
       propertyPath: gridManager
       value: 
       objectReference: {fileID: 894042877}
+    - target: {fileID: 402848252818428232, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: buildingTypes.Array.data[4]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 535898045325687819, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}
       propertyPath: m_AnchorMax.y

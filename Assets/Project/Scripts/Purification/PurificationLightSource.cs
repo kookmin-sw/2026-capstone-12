@@ -5,7 +5,8 @@ public enum PurificationLightSourceType
     Sanctuary,
     ShooterField,
     Beacon,
-    PermanentPurifiedZone
+    PermanentPurifiedZone,
+    LightPylon // LightPylon 정화 광원
 }
 
 [DisallowMultipleComponent]

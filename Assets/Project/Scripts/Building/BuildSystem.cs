@@ -208,6 +208,15 @@ public class BuildSystem : MonoBehaviour
         foreach (var ps in go.GetComponentsInChildren<ParticleSystem>(true))
             ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 
+        foreach (var source in go.GetComponentsInChildren<PurificationLightSource>(true)) // 고스트 정화 등록 방지
+            source.enabled = false;
+
+        foreach (var pylonZone in go.GetComponentsInChildren<LightPylonPurificationZone>(true)) // 고스트 정화 설정 방지
+            pylonZone.enabled = false;
+
+        foreach (var light in go.GetComponentsInChildren<Light>(true)) // 고스트 조명 표시 방지
+            light.enabled = false;
+
         // 고스트 재질 적용
         if (ghostMaterial != null)
         {
