@@ -130,6 +130,12 @@ public class SoundNet : MonoBehaviourPun
     {
         return soundType switch
         {
+            GameSoundType.TurretAttack => SoundPlaybackMode.Network3D,
+            GameSoundType.BuildingDestroyed => SoundPlaybackMode.Network3D,
+            GameSoundType.SpawnCoreDestroyed => SoundPlaybackMode.Network3D,
+            GameSoundType.SlowTowerActivated => SoundPlaybackMode.Network3D,
+            GameSoundType.LightPylonActivated => SoundPlaybackMode.Network3D,
+            GameSoundType.PurificationBeaconActivated => SoundPlaybackMode.Network3D,
             GameSoundType.BuildStructure => SoundPlaybackMode.Network3D,
             GameSoundType.SupplyItem => SoundPlaybackMode.Network3D,
             GameSoundType.GetItem => SoundPlaybackMode.Local3D,

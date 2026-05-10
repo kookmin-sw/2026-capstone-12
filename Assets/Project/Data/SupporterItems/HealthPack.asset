@@ -20,6 +20,8 @@ MonoBehaviour:
   cost: 25
   prefab: {fileID: 1707627497400051785, guid: c6f258c24629335438055604fdeb0859, type: 3}
   prefabResourcePath: Prefabs/Support/HealthPack
+  playActivatedSound: 0
+  activatedSoundType: -1
   cooldown: 0
   maxActiveCount: 0
   effect: {fileID: 11400000, guid: b1b3358c8c944fc19dca2c455e849911, type: 2}

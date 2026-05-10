@@ -50,7 +50,7 @@ public class BuildNetManager : MonoBehaviourPun
         Quaternion rot = Quaternion.Euler(0f, rotY, 0f);
         object[] instData = { typeId, anchorX, anchorZ, rotY };
         PhotonNetwork.Instantiate(type.photonPrefabPath, pos, rot, 0, instData);
-        SoundNet.Instance?.RequestPlayAt(GameSoundType.BuildStructure, pos);
+        PlayBuildingPlacementSounds(type, pos);
     }
 
     public void RequestPlaceSupport(int supportTypeIndex, Vector3 position)
@@ -78,6 +78,7 @@ public class BuildNetManager : MonoBehaviourPun
             RegisterPurificationBeaconPlacement(item);
             photonView.RPC(nameof(RpcSpawnSupport), RpcTarget.All, supportTypeIndex, position, -1);
             SoundNet.Instance?.RequestPlayAt(GameSoundType.SupplyItem, position);
+            PlaySupportPlacementSound(item, position);
             return;
         }
 
@@ -283,5 +284,21 @@ public class BuildNetManager : MonoBehaviourPun
     private PurificationBeaconSupportEffectSO GetPurificationBeaconEffect(SupporterItemSO item)
     {
         return item != null ? item.effect as PurificationBeaconSupportEffectSO : null;
+    }
+
+    // 건물 설치 확정 사운드 재생 분기
+    private void PlayBuildingPlacementSounds(BuildingTypeSO type, Vector3 position)
+    {
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.BuildStructure, position);
+
+        if (type != null && type.playActivatedSound && type.activatedSoundType != GameSoundType.None)
+            SoundNet.Instance?.RequestPlayAt(type.activatedSoundType, position);
+    }
+
+    // 지원 아이템 설치 확정 사운드 재생 분기
+    private void PlaySupportPlacementSound(SupporterItemSO item, Vector3 position)
+    {
+        if (item != null && item.playActivatedSound && item.activatedSoundType != GameSoundType.None)
+            SoundNet.Instance?.RequestPlayAt(item.activatedSoundType, position);
     }
 }

@@ -19,6 +19,8 @@ public class BuildingTypeSO : ScriptableObject
     public float maxHp = 0;
     public bool canRepair = true;
     public bool canSell = true;
+    public bool playActivatedSound; // 활성화 사운드 사용 여부
+    public GameSoundType activatedSoundType = GameSoundType.None; // 설치 활성화 사운드 타입
 
     public int repairCost => (int)(cost * 0.1);
     public float repairAmount => (int)(maxHp * 0.5);

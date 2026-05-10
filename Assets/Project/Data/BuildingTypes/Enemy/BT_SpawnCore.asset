@@ -24,3 +24,5 @@ MonoBehaviour:
   maxHp: 100
   canRepair: 0
   canSell: 0
+  playActivatedSound: 0
+  activatedSoundType: -1

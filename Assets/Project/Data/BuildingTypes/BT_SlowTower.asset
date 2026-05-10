@@ -22,3 +22,7 @@ MonoBehaviour:
   allowRotate: 1
   cost: 50
   maxHp: 100
+  canRepair: 1
+  canSell: 1
+  playActivatedSound: 1
+  activatedSoundType: 16

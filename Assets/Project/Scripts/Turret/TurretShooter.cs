@@ -46,12 +46,14 @@ public class TurretShooter : GhostDisabledBehaviour
 
         fireTimer = 1f / Mathf.Max(0.01f, fireRate);
 
-        net?.BroadcastShotFx();
-
-        FireOnce(target);
+        if (FireOnce(target))
+        {
+            net?.BroadcastShotFx();
+            SoundNet.Instance?.RequestPlayAt(GameSoundType.TurretAttack, muzzle.position);
+        }
     }
 
-    private void FireOnce(Transform target)
+    private bool FireOnce(Transform target)
     {
         Vector3 origin = muzzle.position;
         Vector3 dir = (target.position - origin).normalized;
@@ -61,11 +63,16 @@ public class TurretShooter : GhostDisabledBehaviour
             // 맞은 적 오브젝트의 PhotonView를 찾기
             PhotonView enemyPv = hit.collider.GetComponentInParent<PhotonView>();
             if (enemyPv == null)
-                return;
+                return false;
 
             // 마스터 권위로 데미지 적용
             if (EnemyHealthNet.Instance != null)
+            {
                 EnemyHealthNet.Instance.MasterApplyDamage(enemyPv.ViewID, damage);
+                return true;
+            }
         }
+
+        return false;
     }
 }

@@ -18993,6 +18993,36 @@ PrefabInstance:
       propertyPath: ObservedComponents.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: turretAttackClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 4eecd1c273ecf2f43a08a5d483fc02df, type: 3}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: buildingDestroyedClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 82026cf79652efa45bad3a24b103eaec, type: 3}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: slowTowerActivatedClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 82a2d669e13d535469bce54ade51d5b4, type: 3}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: spawnCoreDestroyedClip
+      value: 
+      objectReference: {fileID: 8300000, guid: bf6258a8203168c4293defdb10dfe332, type: 3}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: lightPylonActivatedClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e0e6b2c167e04e44c9c8d1d565ef2054, type: 3}
+    - target: {fileID: 8120000000000001006, guid: ec14ed5a1a70c0c4e9dc72523af07196,
+        type: 3}
+      propertyPath: purificationBeaconActivatedClip
+      value: 
+      objectReference: {fileID: 8300000, guid: e0e6b2c167e04e44c9c8d1d565ef2054, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

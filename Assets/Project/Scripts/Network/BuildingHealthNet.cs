@@ -69,6 +69,10 @@ public class BuildingHealthNet : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
+        Vector3 destroyedPosition = transform.position;
+        if (GetComponent<SpawnCore>() == null && GetComponent<CommandTower>() == null)
+            SoundNet.Instance?.RequestPlayAt(GameSoundType.BuildingDestroyed, destroyedPosition);
+
         NotifyDestroyedByMaster();
         PhotonNetwork.Destroy(gameObject);
     }
