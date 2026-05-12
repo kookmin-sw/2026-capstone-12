@@ -25,6 +25,8 @@ public class TopDownCameraController : MonoBehaviour
     [Header("Settings Panel")]
     [SerializeField] private GameObject settingsPanel;
 
+    public Camera Cam => cam;
+
     private Vector3 lastMousePos;
     private bool isRotating;
     private float yaw;
