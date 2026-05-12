@@ -2588,7 +2588,7 @@ MonoBehaviour:
   useNavMeshMovement: 1
   pathRefreshInterval: 0.2
   navMeshSampleDistance: 2
-  attackDamage: 3
+  attackDamage: 10
   structureMask:
     serializedVersion: 2
     m_Bits: 256
@@ -2608,10 +2608,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b61e931a084d94b9ae521acffce99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 30
+  maxHp: 50
   currentHp: 0
   scoreReward: 150
-  moneyReward: 15
+  moneyReward: 5
   xpReward: 40
   damageReduction: 0
 --- !u!114 &-167439925760390618

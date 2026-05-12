@@ -61,7 +61,8 @@ public class GameManager : MonoBehaviour
     // public으로 변경 ← 수정!
     public void InitializeGame()
     {
-        ResourceNet.Instance.InitResource();
+        if (ResourceNet.Instance != null)
+            ResourceNet.Instance.InitResource();
         currentState = GameState.Playing;
 
         Debug.Log("Game Initialized!");

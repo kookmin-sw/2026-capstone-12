@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 public class WeaponController : MonoBehaviour
 {
     [Header("Weapon Stats")]
-    [SerializeField] private float damage = 25f; // 발사 1회당 적용할 데미지
+    [SerializeField] private float damage = 10f; // 발사 1회당 적용할 데미지
     private float bonusDamage = 0f;
     [FormerlySerializedAs("maxShootDistance")]
     [SerializeField] private float minEffectiveShootDistance = 25f; // 최소 유효 사거리
