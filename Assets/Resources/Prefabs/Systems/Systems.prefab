@@ -764,6 +764,7 @@ MonoBehaviour:
   helpPingClip: {fileID: 8300000, guid: 82e32d8264459ab4a9dc6b9a6ef83051, type: 3}
   buildStructureClip: {fileID: 8300000, guid: bb3096abfe26b4f4a87e3e3a14a3d44a, type: 3}
   supplyItemClip: {fileID: 8300000, guid: b46289372b2b51f4584e942e4381f401, type: 3}
+  spawnCoreOrbBreakClip: {fileID: 8300000, guid: a161f0ed6d501e3499f09c40cab2270e, type: 3}
   shooterDeathClip: {fileID: 8300000, guid: c12c494b1b449e74aa8a39c367104c47, type: 3}
   shooterRespawnClip: {fileID: 8300000, guid: 2e86f14ad31f4ea99f5ac164bb501f3a, type: 3}
   getItemClip: {fileID: 8300000, guid: 6e53eac8982a4744d96baa88db0ca717, type: 3}
@@ -775,6 +776,7 @@ MonoBehaviour:
   helpPingVolume: 1
   buildStructureVolume: 1
   supplyItemVolume: 1
+  spawnCoreOrbBreakVolume: 0.8
   shooterDeathVolume: 1
   shooterRespawnVolume: 1
   getItemVolume: 1

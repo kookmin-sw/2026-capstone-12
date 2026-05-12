@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &3534193397617612285
 GameObject:
@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3064009535393065728}
   - component: {fileID: 3392698574635001436}
   - component: {fileID: 3333333333333333333}
+  - component: {fileID: 8116647330063507578}
   m_Layer: 11
   m_Name: SpawnCoreLast
   m_TagString: Untagged
@@ -47,8 +48,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
@@ -69,8 +70,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59faa794ec6eeaa4ea16ac13c832f69e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   maxHp: 0
   currentHp: 0
 --- !u!114 &3064009535393065728
@@ -83,8 +84,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1a925cd886449f47b9c941e995f0845, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   coreOrder: 0
   requiredDestroyedCoreCountToUnlock: 2
   destroyedRemainsPrefabPath: Prefabs/SpawnCore/Remains/SpawnCoreLast
@@ -98,8 +99,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0d21ed774018e84da13201d8479e0bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   type: {fileID: 11400000, guid: fcfcc0d0c17356f4a8e4dee515a846ef, type: 2}
   health: {fileID: 0}
   grid: {fileID: 0}
@@ -116,11 +117,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08dd793db0ad39549a1f56e48d4248fa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   iconType: 2
   iconColor: {r: 0.8, g: 0, b: 1, a: 1}
   iconSize: 5
+--- !u!114 &8116647330063507578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3534193397617612285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b6eddf9bc624e47bd5f8c0b05b19ab8, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  orbs: []
+  soundOrigin: {fileID: 0}
+  rotateTowardCamera: 1
+  orbVisualRoot: {fileID: 0}
+  rotateLerpSpeed: 8
 --- !u!1 &8911064111753242765
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ public enum GameSoundType
     SlowTowerActivated = 16, // SlowTower 설치 활성화 사운드
     LightPylonActivated = 17, // LightPylon 설치 활성화 사운드
     PurificationBeaconActivated = 18, // Purification Beacon 설치 활성화 사운드
+    SpawnCoreOrbBreak = 19,
 
     // 전역 알림 사운드
     ShooterDeath = 20,

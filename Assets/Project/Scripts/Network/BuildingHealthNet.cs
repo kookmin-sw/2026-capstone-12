@@ -17,6 +17,7 @@ public class BuildingHealthNet : MonoBehaviourPun
     {
         this.maxHp = maxHp;
         currentHp = maxHp;
+        NotifyHpChanged();
     }
 
     public void MasterTakeDamage(float damage)
@@ -81,6 +82,7 @@ public class BuildingHealthNet : MonoBehaviourPun
     private void RpcSetHp(float hp)
     {
         currentHp = Mathf.Clamp(hp, 0f, maxHp);
+        NotifyHpChanged();
     }
 
     private bool CanTakeDamage(float damage)
@@ -126,6 +128,18 @@ public class BuildingHealthNet : MonoBehaviourPun
             listener.OnBuildingDamagedByMaster(this, damage);
         }
     }
+
+    private void NotifyHpChanged()
+    {
+        foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
+        {
+            IBuildingHpChangedListener listener = behaviour as IBuildingHpChangedListener;
+            if (listener == null)
+                continue;
+
+            listener.OnBuildingHpChanged(this, currentHp, maxHp);
+        }
+    }
 }
 
 public interface IBuildingDamageGate
@@ -143,4 +157,9 @@ public interface IBuildingDestroyedListener
 public interface IBuildingDamagedListener
 {
     void OnBuildingDamagedByMaster(BuildingHealthNet buildingHealth, float damage);
+}
+
+public interface IBuildingHpChangedListener
+{
+    void OnBuildingHpChanged(BuildingHealthNet buildingHealth, float currentHp, float maxHp);
 }

@@ -17,6 +17,7 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip slowTowerActivatedClip;
     [SerializeField] private AudioClip lightPylonActivatedClip;
     [SerializeField] private AudioClip purificationBeaconActivatedClip;
+    [SerializeField] private AudioClip spawnCoreOrbBreakClip;
     [SerializeField] private AudioClip shooterDeathClip;
     [SerializeField] private AudioClip shooterRespawnClip;
     [SerializeField] private AudioClip getItemClip;
@@ -36,6 +37,7 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float slowTowerActivatedVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float lightPylonActivatedVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float purificationBeaconActivatedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float spawnCoreOrbBreakVolume = 0.8f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterRespawnVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
@@ -189,6 +191,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.SlowTowerActivated => slowTowerActivatedClip,
             GameSoundType.LightPylonActivated => lightPylonActivatedClip,
             GameSoundType.PurificationBeaconActivated => purificationBeaconActivatedClip,
+            GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakClip,
             GameSoundType.ShooterDeath => shooterDeathClip,
             GameSoundType.ShooterRespawn => shooterRespawnClip,
             GameSoundType.GetItem => getItemClip,
@@ -214,6 +217,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.SlowTowerActivated => slowTowerActivatedVolume,
             GameSoundType.LightPylonActivated => lightPylonActivatedVolume,
             GameSoundType.PurificationBeaconActivated => purificationBeaconActivatedVolume,
+            GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakVolume,
             GameSoundType.ShooterDeath => shooterDeathVolume,
             GameSoundType.ShooterRespawn => shooterRespawnVolume,
             GameSoundType.GetItem => getItemVolume,
