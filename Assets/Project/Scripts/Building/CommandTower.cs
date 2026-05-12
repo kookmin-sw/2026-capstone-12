@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -22,6 +23,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     private float nextCommandTowerHitWarningTime;
 
     public static CommandTower ActiveTower { get; private set; }
+    public static event Action<CommandTower> ActiveTowerChanged;
     // Enemy가 씬 전체 탐색 없이 CommandTower를 주 목표로 참조하기 위한 캐시
     public static Transform ActiveTarget => ActiveTower != null ? ActiveTower.transform : null;
     public static Vector3 ActiveTargetPosition { get; private set; }
@@ -44,6 +46,7 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     private void OnEnable()
     {
         RegisterActiveTower();
+        ActiveTowerChanged?.Invoke(ActiveTower);
     }
 
     private void Start()
@@ -55,7 +58,10 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     private void OnDisable()
     {
         if (ActiveTower == this)
+        {
             ActiveTower = null;
+            ActiveTowerChanged?.Invoke(null);
+        }
     }
 
     private void OnDestroy()

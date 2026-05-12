@@ -1985,6 +1985,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 164318902}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &168124909 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 534819264781392604, guid: 4acda1e2349aa8443b2a6f075ac12b48,
+    type: 3}
+  m_PrefabInstance: {fileID: 5195230708486223542}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a6b5c879b34f7aa0cbe649312ad807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &191984356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18841,7 +18853,7 @@ PrefabInstance:
     - target: {fileID: 3081905404850909575, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
       propertyPath: editorDirectPlayRole
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4382728737386737185, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
@@ -19224,6 +19236,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1465506333653966305, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: commandTower
+      value: 
+      objectReference: {fileID: 168124909}
     - target: {fileID: 2797269626166664165, guid: 99b17c7b5e7fa1642be84b10c708f56a,
         type: 3}
       propertyPath: sceneViewId
@@ -19259,6 +19276,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7001000000000000001, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: m_Name
+      value: CommandTowerStatusPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001000000000000002, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001000000000000002, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001000000000000002, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7001000000000000008, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: commandTower
+      value: 
+      objectReference: {fileID: 168124909}
     - target: {fileID: 8612326168950316132, guid: 99b17c7b5e7fa1642be84b10c708f56a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -19308,6 +19350,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8794106072344909175, guid: 99b17c7b5e7fa1642be84b10c708f56a,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19470,6 +19517,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1034310224883657910, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: commandTower
+      value: 
+      objectReference: {fileID: 168124909}
     - target: {fileID: 1840239483555950997, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}
       propertyPath: shooterWeaponController
@@ -19499,6 +19551,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Supporter
+      objectReference: {fileID: 0}
+    - target: {fileID: 3528752477780565783, guid: 559533cf94704f44aa28043d37d9064c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3544908942433935620, guid: 559533cf94704f44aa28043d37d9064c,
         type: 3}

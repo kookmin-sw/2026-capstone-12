@@ -1,6 +1,7 @@
 using Photon.Pun;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
 public class BuildingHealthNet : MonoBehaviourPun
@@ -8,6 +9,8 @@ public class BuildingHealthNet : MonoBehaviourPun
     [Header("HP")]
     [SerializeField] private float maxHp;
     [SerializeField] private float currentHp;
+
+    public event Action<BuildingHealthNet, float, float> OnHpChanged;
 
     public float MaxHp => maxHp;
     public float CurrentHp => currentHp;
@@ -100,7 +103,7 @@ public class BuildingHealthNet : MonoBehaviourPun
     private void NotifyDestroyedByMaster()
     {
         // 동일 대상 중복 호출 방지 집합
-        HashSet<Object> notifiedTargets = new HashSet<Object>();
+        HashSet<UnityEngine.Object> notifiedTargets = new HashSet<UnityEngine.Object>();
 
         // 동일 오브젝트 내 파괴 알림 수신 컴포넌트 호출
         foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
@@ -109,7 +112,7 @@ public class BuildingHealthNet : MonoBehaviourPun
             if (listener == null)
                 continue;
 
-            Object target = behaviour as Object;
+            UnityEngine.Object target = behaviour as UnityEngine.Object;
             if (target == null || !notifiedTargets.Add(target))
                 continue;
 
@@ -131,14 +134,7 @@ public class BuildingHealthNet : MonoBehaviourPun
 
     private void NotifyHpChanged()
     {
-        foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
-        {
-            IBuildingHpChangedListener listener = behaviour as IBuildingHpChangedListener;
-            if (listener == null)
-                continue;
-
-            listener.OnBuildingHpChanged(this, currentHp, maxHp);
-        }
+        OnHpChanged?.Invoke(this, currentHp, maxHp);
     }
 }
 
@@ -157,9 +153,4 @@ public interface IBuildingDestroyedListener
 public interface IBuildingDamagedListener
 {
     void OnBuildingDamagedByMaster(BuildingHealthNet buildingHealth, float damage);
-}
-
-public interface IBuildingHpChangedListener
-{
-    void OnBuildingHpChanged(BuildingHealthNet buildingHealth, float currentHp, float maxHp);
 }

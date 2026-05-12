@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SpawnCoreOrbGroup : MonoBehaviour, IBuildingHpChangedListener
+public class SpawnCoreOrbGroup : MonoBehaviour
 {
     [Header("Orbs")]
     [SerializeField] private SpawnCoreOrb[] orbs;
@@ -14,6 +14,7 @@ public class SpawnCoreOrbGroup : MonoBehaviour, IBuildingHpChangedListener
     [SerializeField] private float rotateLerpSpeed = 8f;
 
     private int currentBrokenCount;
+    private BuildingHealthNet buildingHealth;
 
     private void Awake()
     {
@@ -23,11 +24,20 @@ public class SpawnCoreOrbGroup : MonoBehaviour, IBuildingHpChangedListener
 
     private void Start()
     {
-        BuildingHealthNet health = GetComponent<BuildingHealthNet>();
-        if (health != null)
-            UpdateByHp(health.CurrentHp, health.MaxHp, false);
+        buildingHealth = GetComponent<BuildingHealthNet>();
+        if (buildingHealth != null)
+        {
+            buildingHealth.OnHpChanged += HandleHpChanged;
+            UpdateByHp(buildingHealth.CurrentHp, buildingHealth.MaxHp, false);
+        }
         else
             SetBrokenCount(0, false);
+    }
+
+    private void OnDestroy()
+    {
+        if (buildingHealth != null)
+            buildingHealth.OnHpChanged -= HandleHpChanged;
     }
 
     private void LateUpdate()
@@ -78,8 +88,11 @@ public class SpawnCoreOrbGroup : MonoBehaviour, IBuildingHpChangedListener
         currentBrokenCount = brokenCount;
     }
 
-    public void OnBuildingHpChanged(BuildingHealthNet buildingHealth, float currentHp, float maxHp)
+    private void HandleHpChanged(BuildingHealthNet source, float currentHp, float maxHp)
     {
+        if (source != buildingHealth)
+            return;
+
         UpdateByHp(currentHp, maxHp, true);
     }
 
