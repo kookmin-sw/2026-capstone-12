@@ -155,7 +155,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             if (controllers[i] == null || !controllers[i].isActiveAndEnabled)
                 continue;
 
-            Camera controllerCamera = controllers[i].cam != null ? controllers[i].cam : controllers[i].GetComponent<Camera>();
+            Camera controllerCamera = controllers[i].Cam != null ? controllers[i].Cam : controllers[i].GetComponent<Camera>();
             if (controllerCamera != null && controllerCamera.isActiveAndEnabled)
                 return controllerCamera;
         }
