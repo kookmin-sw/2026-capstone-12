@@ -20,6 +20,8 @@ MonoBehaviour:
   cost: 35
   prefab: {fileID: 6611693942618603605, guid: 557fce4731712d7429aca49ceaa98c07, type: 3}
   prefabResourcePath: Prefabs/Support/PurificationBeacon
+  playActivatedSound: 1
+  activatedSoundType: 18
   cooldown: 12
   maxActiveCount: 1
   effect: {fileID: 11400000, guid: 92e168f6fa7c44dbb9269b032d934afb, type: 2}

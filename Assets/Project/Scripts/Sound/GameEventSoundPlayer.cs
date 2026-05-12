@@ -11,6 +11,13 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip helpPingClip;
     [SerializeField] private AudioClip buildStructureClip;
     [SerializeField] private AudioClip supplyItemClip;
+    [SerializeField] private AudioClip turretAttackClip;
+    [SerializeField] private AudioClip buildingDestroyedClip;
+    [SerializeField] private AudioClip spawnCoreDestroyedClip;
+    [SerializeField] private AudioClip slowTowerActivatedClip;
+    [SerializeField] private AudioClip lightPylonActivatedClip;
+    [SerializeField] private AudioClip purificationBeaconActivatedClip;
+    [SerializeField] private AudioClip spawnCoreOrbBreakClip;
     [SerializeField] private AudioClip shooterDeathClip;
     [SerializeField] private AudioClip shooterRespawnClip;
     [SerializeField] private AudioClip getItemClip;
@@ -24,6 +31,13 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float helpPingVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float buildStructureVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float supplyItemVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float turretAttackVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float buildingDestroyedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float spawnCoreDestroyedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float slowTowerActivatedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float lightPylonActivatedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float purificationBeaconActivatedVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float spawnCoreOrbBreakVolume = 0.8f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterRespawnVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
@@ -141,7 +155,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             if (controllers[i] == null || !controllers[i].isActiveAndEnabled)
                 continue;
 
-            Camera controllerCamera = controllers[i].cam != null ? controllers[i].cam : controllers[i].GetComponent<Camera>();
+            Camera controllerCamera = controllers[i].Cam != null ? controllers[i].Cam : controllers[i].GetComponent<Camera>();
             if (controllerCamera != null && controllerCamera.isActiveAndEnabled)
                 return controllerCamera;
         }
@@ -171,6 +185,13 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.PingHelp => helpPingClip,
             GameSoundType.BuildStructure => buildStructureClip,
             GameSoundType.SupplyItem => supplyItemClip,
+            GameSoundType.TurretAttack => turretAttackClip,
+            GameSoundType.BuildingDestroyed => buildingDestroyedClip,
+            GameSoundType.SpawnCoreDestroyed => spawnCoreDestroyedClip,
+            GameSoundType.SlowTowerActivated => slowTowerActivatedClip,
+            GameSoundType.LightPylonActivated => lightPylonActivatedClip,
+            GameSoundType.PurificationBeaconActivated => purificationBeaconActivatedClip,
+            GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakClip,
             GameSoundType.ShooterDeath => shooterDeathClip,
             GameSoundType.ShooterRespawn => shooterRespawnClip,
             GameSoundType.GetItem => getItemClip,
@@ -190,6 +211,13 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.PingHelp => helpPingVolume,
             GameSoundType.BuildStructure => buildStructureVolume,
             GameSoundType.SupplyItem => supplyItemVolume,
+            GameSoundType.TurretAttack => turretAttackVolume,
+            GameSoundType.BuildingDestroyed => buildingDestroyedVolume,
+            GameSoundType.SpawnCoreDestroyed => spawnCoreDestroyedVolume,
+            GameSoundType.SlowTowerActivated => slowTowerActivatedVolume,
+            GameSoundType.LightPylonActivated => lightPylonActivatedVolume,
+            GameSoundType.PurificationBeaconActivated => purificationBeaconActivatedVolume,
+            GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakVolume,
             GameSoundType.ShooterDeath => shooterDeathVolume,
             GameSoundType.ShooterRespawn => shooterRespawnVolume,
             GameSoundType.GetItem => getItemVolume,

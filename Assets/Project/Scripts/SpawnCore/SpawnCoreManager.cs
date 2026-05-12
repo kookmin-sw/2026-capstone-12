@@ -62,10 +62,13 @@ public class SpawnCoreManager : MonoBehaviour
         if (!destroyedCoreIds.Add(coreId))
             return;
 
+        Vector3 corePosition = core.transform.position;
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.SpawnCoreDestroyed, corePosition);
+
         if (!PhotonNetwork.IsConnected)
         {
             // 오프라인 테스트에서도 Core 위치 기반 영구 정화 구역을 생성
-            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
+            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, corePosition);
             return;
         }
 
@@ -73,12 +76,12 @@ public class SpawnCoreManager : MonoBehaviour
         {
             Debug.LogWarning($"{nameof(SpawnCoreManager)}: SpawnCoreNet is missing. Core destruction will not be synchronized.", this);
             // 중계자가 없어도 Master 로컬 상태에는 Core 위치 기반 영구 정화 구역을 반영
-            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
+            ApplyCoreDestroyedNotification(core.CoreOrder, DestroyedCoreCount, coreId, corePosition);
             return;
         }
 
         // 영구 정화 구역은 각 클라이언트에서 로컬 생성하므로 Core 위치를 함께 전파
-        SpawnCoreNet.Instance.NotifyCoreDestroyed(core.CoreOrder, DestroyedCoreCount, coreId, core.transform.position);
+        SpawnCoreNet.Instance.NotifyCoreDestroyed(core.CoreOrder, DestroyedCoreCount, coreId, corePosition);
     }
 
     /// <summary>

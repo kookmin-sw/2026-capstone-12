@@ -22,3 +22,5 @@ MonoBehaviour:
   allowRotate: 1
   cost: 50
   maxHp: 100
+  playActivatedSound: 0
+  activatedSoundType: -1

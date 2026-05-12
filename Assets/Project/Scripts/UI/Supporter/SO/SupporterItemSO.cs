@@ -18,6 +18,8 @@ public class SupporterItemSO : ScriptableObject
     public int cost;
     public GameObject prefab;
     public string prefabResourcePath;
+    public bool playActivatedSound; // 활성화 사운드 사용 여부
+    public GameSoundType activatedSoundType = GameSoundType.None; // 설치 활성화 사운드 타입
 
     [Header("Support Policy")]
     public float cooldown;
