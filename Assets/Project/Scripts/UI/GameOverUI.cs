@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using System.Collections;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -30,9 +31,13 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private AudioClip loseClip;
     [SerializeField] [Range(0f, 1f)] private float loseVolume = 1f;
 
+    [Header("Timing")]
+    [SerializeField] private float resultDelay = 3.5f;
+
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "TestScene";
     [SerializeField] private string mainMenuSceneName = "MainMenu";
+
 
     private AudioSource audioSource;
 
@@ -60,16 +65,24 @@ public class GameOverUI : MonoBehaviour
     void ShowGameOver()
     {
         PlayLoseSound();
-        ShowResult("GAME OVER");
-
+        DisablePlayerControls();
+        EndgameCameraFocus.Get().FocusOn(GameManager.EndgameExplosionPosition, resultDelay);
+        StartCoroutine(ShowResultDelayed("GAME OVER"));
         Debug.Log("Game Over UI Shown");
     }
 
     void ShowVictory()
     {
-        ShowResult("VICTORY");
-
+        DisablePlayerControls();
+        EndgameCameraFocus.Get().FocusOn(GameManager.EndgameExplosionPosition, resultDelay);
+        StartCoroutine(ShowResultDelayed("VICTORY"));
         Debug.Log("Victory UI Shown");
+    }
+
+    IEnumerator ShowResultDelayed(string title)
+    {
+        yield return new WaitForSecondsRealtime(resultDelay);
+        ShowResult(title);
     }
 
     void ShowResult(string title)
@@ -87,8 +100,6 @@ public class GameOverUI : MonoBehaviour
         // 마우스 커서 표시
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        DisablePlayerControls();
 
         // 시간 멈추기
         Time.timeScale = 0f;

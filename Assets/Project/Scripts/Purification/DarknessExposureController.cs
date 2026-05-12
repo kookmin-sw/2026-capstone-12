@@ -74,6 +74,13 @@ public class DarknessExposureController : MonoBehaviour
         if (PhotonNetwork.InRoom && !PhotonNetwork.IsMasterClient)
             return;
 
+        if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameManager.GameState.Playing)
+        {
+            pendingDamage = 0f;
+            damageApplyTimer = 0f;
+            return;
+        }
+
         if (wasPurified || currentExposure <= damageThreshold)
         {
             pendingDamage = 0f;

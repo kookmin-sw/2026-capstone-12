@@ -31,10 +31,22 @@ public class SettingsUI : MonoBehaviour
     private int tempResolutionIndex;
     private bool tempFullscreen;
 
+    private bool initialized = false;
+
     // ============================================================
     // 해상도 목록
     // ============================================================
-    private Resolution[] resolutions;
+    private System.Collections.Generic.List<Resolution> filteredResolutions = new System.Collections.Generic.List<Resolution>();
+
+    private static readonly (int w, int h)[] CommonResolutions = new[]
+    {
+        (1280, 720),
+        (1366, 768),
+        (1600, 900),
+        (1920, 1080),
+        (2560, 1440),
+        (3840, 2160),
+    };
 
     // ============================================================
     // Unity 생명주기
@@ -58,6 +70,15 @@ public class SettingsUI : MonoBehaviour
             voiceVolumeSlider.onValueChanged.AddListener(OnVoiceVolumeChanged);
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
+
+        initialized = true;
+    }
+
+    void OnEnable()
+    {
+        // 패널이 열릴 때마다 현재 설정값으로 새로고침 (Start 이후부터만)
+        if (initialized)
+            LoadCurrentSettings();
     }
 
     // ============================================================
@@ -65,24 +86,48 @@ public class SettingsUI : MonoBehaviour
     // ============================================================
     void InitializeResolutions()
     {
-        resolutions = Screen.resolutions;
+        filteredResolutions.Clear();
         resolutionDropdown.ClearOptions();
 
-        System.Collections.Generic.List<string> options = new System.Collections.Generic.List<string>();
-        int currentResolutionIndex = 0;
+        var supported = new System.Collections.Generic.HashSet<(int, int)>();
+        foreach (var r in Screen.resolutions)
+            supported.Add((r.width, r.height));
 
-        for (int i = 0; i < resolutions.Length; i++)
+        foreach (var (w, h) in CommonResolutions)
         {
-            string option = resolutions[i].width + " x " + resolutions[i].height;
-            options.Add(option);
+            if (!supported.Contains((w, h))) continue;
+            var res = new Resolution();
+            res.width = w;
+            res.height = h;
+            filteredResolutions.Add(res);
+        }
 
-            // 현재 해상도 찾기
-            if (resolutions[i].width == Screen.currentResolution.width &&
-                resolutions[i].height == Screen.currentResolution.height)
+        // 현재 해상도가 목록에 없으면 추가
+        int cur_w = Screen.currentResolution.width;
+        int cur_h = Screen.currentResolution.height;
+        bool hasCurrent = false;
+        int currentResolutionIndex = 0;
+        for (int i = 0; i < filteredResolutions.Count; i++)
+        {
+            if (filteredResolutions[i].width == cur_w && filteredResolutions[i].height == cur_h)
             {
+                hasCurrent = true;
                 currentResolutionIndex = i;
+                break;
             }
         }
+        if (!hasCurrent)
+        {
+            var res = new Resolution();
+            res.width = cur_w;
+            res.height = cur_h;
+            filteredResolutions.Add(res);
+            currentResolutionIndex = filteredResolutions.Count - 1;
+        }
+
+        var options = new System.Collections.Generic.List<string>();
+        foreach (var r in filteredResolutions)
+            options.Add(r.width + " x " + r.height);
 
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionIndex;
@@ -104,8 +149,20 @@ public class SettingsUI : MonoBehaviour
         tempSensitivity = SettingsManager.Instance.mouseSensitivity;
         tempVolume = SettingsManager.Instance.masterVolume;
         tempVoiceVolume = SettingsManager.Instance.voiceVolume;
-        tempResolutionIndex = SettingsManager.Instance.resolutionIndex;
         tempFullscreen = SettingsManager.Instance.isFullscreen;
+
+        // 저장된 해상도와 일치하는 드롭다운 인덱스 찾기
+        int savedW = SettingsManager.Instance.resolutionWidth;
+        int savedH = SettingsManager.Instance.resolutionHeight;
+        tempResolutionIndex = 0;
+        for (int i = 0; i < filteredResolutions.Count; i++)
+        {
+            if (filteredResolutions[i].width == savedW && filteredResolutions[i].height == savedH)
+            {
+                tempResolutionIndex = i;
+                break;
+            }
+        }
 
         // UI에 반영
         sensitivitySlider.value = tempSensitivity;
@@ -156,7 +213,8 @@ public class SettingsUI : MonoBehaviour
         SettingsManager.Instance.mouseSensitivity = tempSensitivity;
         SettingsManager.Instance.masterVolume = tempVolume;
         SettingsManager.Instance.voiceVolume = tempVoiceVolume;
-        SettingsManager.Instance.resolutionIndex = tempResolutionIndex;
+        SettingsManager.Instance.resolutionWidth = filteredResolutions[tempResolutionIndex].width;
+        SettingsManager.Instance.resolutionHeight = filteredResolutions[tempResolutionIndex].height;
         SettingsManager.Instance.isFullscreen = tempFullscreen;
 
         // 설정 적용 및 저장

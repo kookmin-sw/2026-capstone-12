@@ -20,6 +20,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // 변수
     // ============================================================
     [Header("UI Panels")]
+    [SerializeField] private GameObject loadingPanel;
     [SerializeField] private GameObject lobbyPanel;
     [SerializeField] private GameObject joinRoomPanel;
 
@@ -45,16 +46,24 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         // Photon 서버 연결
         if (!PhotonNetwork.IsConnected)
         {
+            ShowLoadingPanel();
             PhotonNetwork.ConnectUsingSettings();
             Debug.Log("Connecting to Photon...");
         }
         else if (PhotonNetwork.InRoom)
         {
-            // 방에 있으면 나가기
+            ShowLoadingPanel();
             PhotonNetwork.LeaveRoom();
         }
-        // 초기 패널 설정
-        ShowLobbyPanel();
+        else if (PhotonNetwork.IsConnectedAndReady)
+        {
+            ShowLobbyPanel();
+        }
+        else
+        {
+            // 연결 중인 상태
+            ShowLoadingPanel();
+        }
     }
 
     // ============================================================
@@ -63,12 +72,21 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Master Server!");
+        ShowLobbyPanel();
+    }
 
-        // 이미 방에 있으면 나가기
-        if (PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LeaveRoom();
-        }
+    public override void OnLeftRoom()
+    {
+        ShowLobbyPanel();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        // 씬 전환으로 이미 destroy된 경우 무시
+        if (this == null) return;
+        Debug.LogWarning($"Disconnected: {cause}");
+        ShowLoadingPanel();
+        PhotonNetwork.ConnectUsingSettings();
     }
 
     public override void OnJoinedRoom()
@@ -92,16 +110,25 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // ============================================================
     // 패널 관리
     // ============================================================
+    void ShowLoadingPanel()
+    {
+        if (loadingPanel != null) loadingPanel.SetActive(true);
+        if (lobbyPanel != null) lobbyPanel.SetActive(false);
+        if (joinRoomPanel != null) joinRoomPanel.SetActive(false);
+    }
+
     void ShowLobbyPanel()
     {
-        lobbyPanel.SetActive(true);
-        joinRoomPanel.SetActive(false);
+        if (loadingPanel != null) loadingPanel.SetActive(false);
+        if (lobbyPanel != null) lobbyPanel.SetActive(true);
+        if (joinRoomPanel != null) joinRoomPanel.SetActive(false);
     }
 
     void ShowJoinRoomPanel()
     {
-        lobbyPanel.SetActive(false);
-        joinRoomPanel.SetActive(true);
+        if (loadingPanel != null) loadingPanel.SetActive(false);
+        if (lobbyPanel != null) lobbyPanel.SetActive(false);
+        if (joinRoomPanel != null) joinRoomPanel.SetActive(true);
     }
 
     // ============================================================

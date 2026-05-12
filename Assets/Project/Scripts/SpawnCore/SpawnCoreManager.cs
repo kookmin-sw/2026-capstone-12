@@ -10,6 +10,9 @@ public class SpawnCoreManager : MonoBehaviour
     public UnityEventInt OnSpawnCoreDestroyed = new UnityEventInt(); // Core 파괴 알림 이벤트
     public UnityEventInt OnSpawnCoreDifficultyChanged = new UnityEventInt(); // 난이도 변경 알림 이벤트
 
+    [Header("VFX")]
+    [SerializeField] private GameObject lastCoreExplosionPrefab;
+
     private readonly HashSet<int> destroyedCoreIds = new HashSet<int>(); // 파괴 완료 Core ID 기록
     private int totalCoreCount = 0; // 씬의 전체 Core 수
 
@@ -117,6 +120,11 @@ public class SpawnCoreManager : MonoBehaviour
         EnemyManager.Instance?.ApplySpawnCoreDifficulty(destroyedCount);
 
         if (AreAllCoresDestroyed)
+        {
+            GameManager.EndgameExplosionPosition = corePosition;
+            if (lastCoreExplosionPrefab != null && corePosition != Vector3.zero)
+                Instantiate(lastCoreExplosionPrefab, corePosition, Quaternion.identity);
             GameManager.Instance?.TriggerVictory();
+        }
     }
 }

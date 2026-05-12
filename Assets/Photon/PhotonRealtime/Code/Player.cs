@@ -445,9 +445,11 @@ namespace Photon.Realtime
         {
             if (this.RoomReference != null && !this.RoomReference.IsOffline)
             {
+                var client = this.RoomReference.LoadBalancingClient;
+                if (!client.IsConnectedAndReady) return false;
                 Hashtable properties = new Hashtable();
                 properties[ActorProperties.PlayerName] = this.nickName;
-                return this.RoomReference.LoadBalancingClient.OpSetPropertiesOfActor(this.ActorNumber, properties);
+                return client.OpSetPropertiesOfActor(this.ActorNumber, properties);
             }
 
             return false;

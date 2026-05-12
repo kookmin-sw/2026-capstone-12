@@ -17,12 +17,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravity = -9.81f;
 
     [Header("Ground Check")]
-    [SerializeField] private float groundCheckDistance = 0.3f;
-    [SerializeField] private LayerMask groundMask = ~0; // 모든 레이어
+    [SerializeField] private float groundCheckDistance = 0.08f;
+    [SerializeField] private LayerMask groundMask = ~0; // 인스펙터에서 Ground 레이어만 지정 권장
 
     [Header("Look Settings")]
     [SerializeField] private float mouseSensitivity = 2f;
     [SerializeField] private float maxLookAngle = 90f;
+
+    [Header("Settings Panel")]
+    [SerializeField] private GameObject settingsPanel;
 
     // Components
     private CharacterController controller;
@@ -38,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
     // 사망 중 이동 차단, 마우스 룩만 허용
     private bool lookOnlyMode = false;
+
+    private bool wasSettingsOpen = false;
 
     void Start()
     {
@@ -62,22 +67,53 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
     {
-        if (!movementLocked)
+        bool settingsOpen = settingsPanel != null && settingsPanel.activeSelf;
+
+        // ESC: 설정창 토글
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (settingsPanel != null)
+            {
+                if (!settingsOpen)
+                {
+                    settingsPanel.SetActive(true);
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    InputLock.Lock();
+                }
+                else
+                {
+                    settingsPanel.SetActive(false);
+                }
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
+        // 설정창이 닫힌 순간 커서 다시 잠금 + 입력 잠금 해제
+        if (wasSettingsOpen && !settingsOpen)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            InputLock.Unlock();
+        }
+        wasSettingsOpen = settingsOpen;
+
+        if (!movementLocked && !settingsOpen)
         {
             HandleMovement();
         }
 
-        HandleLook();
-
-        // ESC로 커서 해제
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!settingsOpen)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            HandleLook();
         }
 
-        // 화면 클릭 시 커서 다시 잠금
-        if (Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
+        // 설정창 닫혀있을 때만 클릭으로 커서 재잠금
+        if (!settingsOpen && Cursor.lockState == CursorLockMode.None && Input.GetMouseButtonDown(0))
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -112,12 +148,13 @@ public class PlayerController : MonoBehaviour
         // 이동 적용
         controller.Move(move * currentSpeed * Time.deltaTime);
 
-        // 바닥 체크 (CharacterController 하단에서 Raycast)
-        float checkOriginY = controller.skinWidth + 0.01f;
+        // 바닥 체크 (CharacterController 실제 하단 위치 기준 Raycast)
+        Vector3 bottomCenter = transform.position + controller.center
+                               + Vector3.down * (controller.height * 0.5f);
         isGrounded = controller.isGrounded || Physics.Raycast(
-            transform.position + Vector3.up * checkOriginY,
+            bottomCenter + Vector3.up * controller.skinWidth,
             Vector3.down,
-            groundCheckDistance + checkOriginY,
+            groundCheckDistance + controller.skinWidth,
             groundMask,
             QueryTriggerInteraction.Ignore
         );

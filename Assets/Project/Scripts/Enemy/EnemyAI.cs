@@ -281,9 +281,9 @@ public class EnemyAI : MonoBehaviour
         {
             agent.enabled = masterControlled && useNavMeshMovement;
             agent.speed = currentMoveSpeed;
-            agent.stoppingDistance = 0f;
+            agent.stoppingDistance = Mathf.Max(0f, attackRange - 0.5f);
             agent.updateRotation = false;
-            agent.autoBraking = false;
+            agent.autoBraking = true;
         }
 
         if (rb != null)
@@ -462,7 +462,10 @@ public class EnemyAI : MonoBehaviour
     private void StopMovement()
     {
         if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
             agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
     }
 
     private void FaceTarget(Transform target)

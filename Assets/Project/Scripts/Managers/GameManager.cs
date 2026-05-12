@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     public UnityEvent OnVictory = new UnityEvent();
 
     public GameState CurrentState => currentState;
+    public static Vector3 EndgameExplosionPosition { get; set; }
 
     void Awake()
     {

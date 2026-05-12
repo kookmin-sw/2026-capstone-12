@@ -21,7 +21,8 @@ public class SettingsManager : MonoBehaviour
     public float voiceVolume = 1f;
 
     [Header("Graphics")]
-    public int resolutionIndex = 0;
+    public int resolutionWidth = 1920;
+    public int resolutionHeight = 1080;
     public bool isFullscreen = true;
 
     // ============================================================
@@ -30,7 +31,8 @@ public class SettingsManager : MonoBehaviour
     private const string MOUSE_SENSITIVITY_KEY = "MouseSensitivity";
     private const string MASTER_VOLUME_KEY = "MasterVolume";
     private const string VOICE_VOLUME_KEY = "VoiceVolume";
-    private const string RESOLUTION_INDEX_KEY = "ResolutionIndex";
+    private const string RESOLUTION_WIDTH_KEY = "ResolutionWidth";
+    private const string RESOLUTION_HEIGHT_KEY = "ResolutionHeight";
     private const string FULLSCREEN_KEY = "Fullscreen";
 
     // ============================================================
@@ -59,7 +61,8 @@ public class SettingsManager : MonoBehaviour
         mouseSensitivity = PlayerPrefs.GetFloat(MOUSE_SENSITIVITY_KEY, 2f);
         masterVolume = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 1f);
         voiceVolume = PlayerPrefs.GetFloat(VOICE_VOLUME_KEY, 1f);
-        resolutionIndex = PlayerPrefs.GetInt(RESOLUTION_INDEX_KEY, 0);
+        resolutionWidth = PlayerPrefs.GetInt(RESOLUTION_WIDTH_KEY, 1920);
+        resolutionHeight = PlayerPrefs.GetInt(RESOLUTION_HEIGHT_KEY, 1080);
         isFullscreen = PlayerPrefs.GetInt(FULLSCREEN_KEY, 1) == 1;
 
         Debug.Log("Settings loaded");
@@ -70,7 +73,8 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetFloat(MOUSE_SENSITIVITY_KEY, mouseSensitivity);
         PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, masterVolume);
         PlayerPrefs.SetFloat(VOICE_VOLUME_KEY, voiceVolume);
-        PlayerPrefs.SetInt(RESOLUTION_INDEX_KEY, resolutionIndex);
+        PlayerPrefs.SetInt(RESOLUTION_WIDTH_KEY, resolutionWidth);
+        PlayerPrefs.SetInt(RESOLUTION_HEIGHT_KEY, resolutionHeight);
         PlayerPrefs.SetInt(FULLSCREEN_KEY, isFullscreen ? 1 : 0);
         PlayerPrefs.Save();
 
@@ -92,12 +96,7 @@ public class SettingsManager : MonoBehaviour
         }
 
         // 해상도 적용
-        Resolution[] resolutions = Screen.resolutions;
-        if (resolutionIndex >= 0 && resolutionIndex < resolutions.Length)
-        {
-            Resolution res = resolutions[resolutionIndex];
-            Screen.SetResolution(res.width, res.height, isFullscreen);
-        }
+        Screen.SetResolution(resolutionWidth, resolutionHeight, isFullscreen);
 
         // 마우스 감도는 PlayerController에서 직접 읽어감
 

@@ -14,6 +14,9 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     [SerializeField] private float commandTowerHitWarningCooldown = 5f;
     [SerializeField] [Range(0f, 1f)] private float commandTowerHitWarningVolume = 1f;
 
+    [Header("Destruction VFX")]
+    [SerializeField] private GameObject destructionExplosionPrefab;
+
     private BuildingHealthNet health;
     private StructureSelectable selectable;
     private AudioSource audioSource;
@@ -70,13 +73,16 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
 
         destructionHandled = true;
 
+        Vector3 explosionPos = transform.position;
+
         // 목표 건물 파괴는 모든 클라이언트에서 동일하게 게임오버 처리
         if (PhotonNetwork.InRoom && photonView != null)
         {
-            photonView.RPC(nameof(RpcTriggerGameOver), RpcTarget.All);
+            photonView.RPC(nameof(RpcTriggerGameOver), RpcTarget.All, explosionPos);
             return;
         }
 
+        SpawnDestructionExplosion(explosionPos);
         TriggerGameOverLocal();
     }
 
@@ -111,8 +117,9 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     }
 
     [PunRPC]
-    private void RpcTriggerGameOver()
+    private void RpcTriggerGameOver(Vector3 explosionPos)
     {
+        SpawnDestructionExplosion(explosionPos);
         TriggerGameOverLocal();
     }
 
@@ -120,6 +127,13 @@ public class CommandTower : MonoBehaviourPun, IBuildingDestroyedListener, IBuild
     {
         GameManager.Instance?.TriggerGameOver();
         InputLock.Lock();
+    }
+
+    private void SpawnDestructionExplosion(Vector3 pos)
+    {
+        GameManager.EndgameExplosionPosition = pos;
+        if (destructionExplosionPrefab != null)
+            Instantiate(destructionExplosionPrefab, pos, Quaternion.identity);
     }
 
     private void RegisterActiveTower()

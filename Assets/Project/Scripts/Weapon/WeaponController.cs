@@ -118,6 +118,9 @@ public class WeaponController : MonoBehaviour
         if (!HasLocalAuthority())
             return;
 
+        if (InputLock.IsLocked)
+            return;
+
         if (isReloading)
             return;
 

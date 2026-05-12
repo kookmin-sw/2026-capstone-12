@@ -23,10 +23,14 @@ public class TopDownCameraController : MonoBehaviour
     public bool fallbackToGroundPlane = true;
     public float groundPlaneY = 0f;
 
+    [Header("Settings Panel")]
+    [SerializeField] private GameObject settingsPanel;
+
     private Vector3 lastMousePos;
     private bool isRotating;
     private float yaw;
     private float pitch;
+    private bool wasSettingsOpen = false;
 
     private void Reset()
     {
@@ -50,14 +54,45 @@ public class TopDownCameraController : MonoBehaviour
 
     private void Update()
     {
+        if (cam == null) return;
+
+        bool settingsOpen = settingsPanel != null && settingsPanel.activeSelf;
+
+        // ESC: 설정창 토글
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (settingsPanel != null)
+            {
+                if (!settingsOpen) { settingsPanel.SetActive(true); InputLock.Lock(); }
+                else               { settingsPanel.SetActive(false); InputLock.Unlock(); }
+            }
+        }
+
+        // Apply/Cancel 버튼으로 닫힌 경우 InputLock 해제
+        if (wasSettingsOpen && !settingsOpen)
+            InputLock.Unlock();
+        wasSettingsOpen = settingsOpen;
+
         if (InputLock.IsLocked) return;
-        
-        if (cam == null)
-            return;
 
         HandlePan();
         HandleZoom();
         HandleRotate();
+    }
+
+    // 월드 타겟을 화면 중앙에 맞추기 위한 카메라 목적지 위치 계산
+    public bool TryGetCenteredPositionFor(Vector3 worldTarget, out Vector3 destCamPos)
+    {
+        destCamPos = transform.position;
+        if (cam == null) return false;
+
+        Vector3 screenCenter = new Vector3(cam.pixelWidth * 0.5f, cam.pixelHeight * 0.5f, 0f);
+        if (!TryGetMouseWorldOnGround(screenCenter, out Vector3 centerWorld))
+            return false;
+
+        Vector3 planarOffset = Vector3.ProjectOnPlane(worldTarget - centerWorld, Vector3.up);
+        destCamPos = transform.position + planarOffset;
+        return true;
     }
 
     // 게임 시작 시 로컬 플레이어 화면 중앙 정렬 목적
