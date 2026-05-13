@@ -22,6 +22,11 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     public bool IsDestroyed => destructionHandled; // EnemyNest 생존 판정용 파괴 상태
     public bool IsUnlocked => SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.IsCoreUnlocked(this);
 
+    public void SetUnlockRequirement(int requiredCount)
+    {
+        requiredDestroyedCoreCountToUnlock = requiredCount;
+    }
+
     private void Awake()
     {
         selectable = GetComponent<StructureSelectable>();
@@ -51,7 +56,11 @@ public class SpawnCore : MonoBehaviourPun, IBuildingDamageGate, IBuildingDestroy
     /// </summary>
     public bool CanTakeDamage(BuildingHealthNet buildingHealth, float incomingDamage)
     {
-        return SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.CanDamageCore(this);
+        if (SpawnCoreManager.Instance == null || SpawnCoreManager.Instance.CanDamageCore(this))
+            return true;
+
+        SpawnCoreManager.Instance.NotifyLockedAttackAttempt();
+        return false;
     }
 
     /// <summary>

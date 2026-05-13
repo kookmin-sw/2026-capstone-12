@@ -2608,7 +2608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7b61e931a084d94b9ae521acffce99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHp: 50
+  maxHp: 35
   currentHp: 0
   scoreReward: 150
   moneyReward: 5

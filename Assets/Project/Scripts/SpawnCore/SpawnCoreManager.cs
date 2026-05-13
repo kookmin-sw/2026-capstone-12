@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SpawnCoreManager : MonoBehaviour
 {
@@ -9,12 +10,16 @@ public class SpawnCoreManager : MonoBehaviour
     [Header("Events")]
     public UnityEventInt OnSpawnCoreDestroyed = new UnityEventInt(); // Core 파괴 알림 이벤트
     public UnityEventInt OnSpawnCoreDifficultyChanged = new UnityEventInt(); // 난이도 변경 알림 이벤트
+    public UnityEvent OnLockedCoreAttackAttempted = new UnityEvent(); // 잠긴 Core 공격 시도 알림
 
     [Header("VFX")]
     [SerializeField] private GameObject lastCoreExplosionPrefab;
 
     private readonly HashSet<int> destroyedCoreIds = new HashSet<int>(); // 파괴 완료 Core ID 기록
     private int totalCoreCount = 0; // 씬의 전체 Core 수
+
+    private float lastLockedNotifyTime = -10f;
+    private const float LockedNotifyCooldown = 2f;
 
     public int DestroyedCoreCount => destroyedCoreIds.Count;
     public bool AreAllCoresDestroyed => totalCoreCount > 0 && DestroyedCoreCount >= totalCoreCount;
@@ -29,6 +34,72 @@ public class SpawnCoreManager : MonoBehaviour
 
         Instance = this;
         totalCoreCount = FindObjectsOfType<SpawnCore>().Length;
+    }
+
+    private void Start()
+    {
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.IsMasterClient)
+            AssignRandomCoreOrder();
+    }
+
+    private void AssignRandomCoreOrder()
+    {
+        SpawnCore[] cores = FindObjectsOfType<SpawnCore>();
+        // Fisher-Yates 셔플
+        for (int i = cores.Length - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (cores[i], cores[j]) = (cores[j], cores[i]);
+        }
+
+        if (PhotonNetwork.IsConnected && SpawnCoreNet.Instance != null)
+        {
+            int[] viewIds = new int[cores.Length];
+            int[] requiredCounts = new int[cores.Length];
+            for (int i = 0; i < cores.Length; i++)
+            {
+                PhotonView pv = cores[i].GetComponent<PhotonView>();
+                viewIds[i] = (pv != null && pv.ViewID != 0) ? pv.ViewID : cores[i].GetInstanceID();
+                requiredCounts[i] = i;
+            }
+            SpawnCoreNet.Instance.SyncRandomOrder(viewIds, requiredCounts);
+        }
+        else
+        {
+            for (int i = 0; i < cores.Length; i++)
+                cores[i].SetUnlockRequirement(i);
+        }
+    }
+
+    public void ApplyRandomOrderByViewIds(int[] viewIds, int[] requiredCounts)
+    {
+        SpawnCore[] cores = FindObjectsOfType<SpawnCore>();
+        for (int i = 0; i < viewIds.Length; i++)
+        {
+            foreach (SpawnCore core in cores)
+            {
+                PhotonView pv = core.GetComponent<PhotonView>();
+                int id = (pv != null && pv.ViewID != 0) ? pv.ViewID : core.GetInstanceID();
+                if (id == viewIds[i])
+                {
+                    core.SetUnlockRequirement(requiredCounts[i]);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void NotifyLockedAttackAttempt()
+    {
+        if (Time.time - lastLockedNotifyTime < LockedNotifyCooldown)
+            return;
+
+        lastLockedNotifyTime = Time.time;
+
+        if (PhotonNetwork.IsConnected && SpawnCoreNet.Instance != null)
+            SpawnCoreNet.Instance.BroadcastLockedAttack();
+        else
+            OnLockedCoreAttackAttempted.Invoke();
     }
 
     /// <summary>
@@ -118,7 +189,6 @@ public class SpawnCoreManager : MonoBehaviour
             PermanentPurifiedZoneNet.SpawnOrUpdate(coreId, corePosition);
 
         OnSpawnCoreDestroyed.Invoke(coreOrder);
-        OnSpawnCoreDifficultyChanged.Invoke(destroyedCount);
 
         EnemyManager.Instance?.ApplySpawnCoreDifficulty(destroyedCount);
 
@@ -128,6 +198,10 @@ public class SpawnCoreManager : MonoBehaviour
             if (lastCoreExplosionPrefab != null && corePosition != Vector3.zero)
                 Instantiate(lastCoreExplosionPrefab, corePosition, Quaternion.identity);
             GameManager.Instance?.TriggerVictory();
+        }
+        else
+        {
+            OnSpawnCoreDifficultyChanged.Invoke(destroyedCount);
         }
     }
 }

@@ -14,7 +14,8 @@ public class SettingsUI : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private Slider volumeSlider;
-    [SerializeField] private Slider voiceVolumeSlider;
+    [SerializeField] private Slider myVoiceVolumeSlider;        // 내 음성 볼륨
+    [SerializeField] private Slider remoteSpeakerVolumeSlider;  // 상대방 음성 볼륨
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Toggle fullscreenToggle;
 
@@ -27,7 +28,8 @@ public class SettingsUI : MonoBehaviour
     // ============================================================
     private float tempSensitivity;
     private float tempVolume;
-    private float tempVoiceVolume;
+    private float tempMyVoiceVolume;
+    private float tempRemoteSpeakerVolume;
     private int tempResolutionIndex;
     private bool tempFullscreen;
 
@@ -66,8 +68,10 @@ public class SettingsUI : MonoBehaviour
         // 슬라이더/드롭다운 이벤트 연결
         sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
         volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
-        if (voiceVolumeSlider != null)
-            voiceVolumeSlider.onValueChanged.AddListener(OnVoiceVolumeChanged);
+        if (myVoiceVolumeSlider != null)
+            myVoiceVolumeSlider.onValueChanged.AddListener(OnMyVoiceVolumeChanged);
+        if (remoteSpeakerVolumeSlider != null)
+            remoteSpeakerVolumeSlider.onValueChanged.AddListener(OnRemoteSpeakerVolumeChanged);
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
 
@@ -148,7 +152,8 @@ public class SettingsUI : MonoBehaviour
         // SettingsManager에서 현재 설정 가져오기
         tempSensitivity = SettingsManager.Instance.mouseSensitivity;
         tempVolume = SettingsManager.Instance.masterVolume;
-        tempVoiceVolume = SettingsManager.Instance.voiceVolume;
+        tempMyVoiceVolume = SettingsManager.Instance.voiceVolume;
+        tempRemoteSpeakerVolume = SettingsManager.Instance.remoteSpeakerVolume;
         tempFullscreen = SettingsManager.Instance.isFullscreen;
 
         // 저장된 해상도와 일치하는 드롭다운 인덱스 찾기
@@ -167,8 +172,10 @@ public class SettingsUI : MonoBehaviour
         // UI에 반영
         sensitivitySlider.value = tempSensitivity;
         volumeSlider.value = tempVolume;
-        if (voiceVolumeSlider != null)
-            voiceVolumeSlider.value = tempVoiceVolume;
+        if (myVoiceVolumeSlider != null)
+            myVoiceVolumeSlider.value = tempMyVoiceVolume;
+        if (remoteSpeakerVolumeSlider != null)
+            remoteSpeakerVolumeSlider.value = tempRemoteSpeakerVolume;
         resolutionDropdown.value = tempResolutionIndex;
         fullscreenToggle.isOn = tempFullscreen;
     }
@@ -186,9 +193,14 @@ public class SettingsUI : MonoBehaviour
         tempVolume = value;
     }
 
-    void OnVoiceVolumeChanged(float value)
+    void OnMyVoiceVolumeChanged(float value)
     {
-        tempVoiceVolume = value;
+        tempMyVoiceVolume = value;
+    }
+
+    void OnRemoteSpeakerVolumeChanged(float value)
+    {
+        tempRemoteSpeakerVolume = value;
     }
 
     void OnResolutionChanged(int index)
@@ -212,7 +224,8 @@ public class SettingsUI : MonoBehaviour
         // SettingsManager에 설정 저장
         SettingsManager.Instance.mouseSensitivity = tempSensitivity;
         SettingsManager.Instance.masterVolume = tempVolume;
-        SettingsManager.Instance.voiceVolume = tempVoiceVolume;
+        SettingsManager.Instance.voiceVolume = tempMyVoiceVolume;
+        SettingsManager.Instance.remoteSpeakerVolume = tempRemoteSpeakerVolume;
         SettingsManager.Instance.resolutionWidth = filteredResolutions[tempResolutionIndex].width;
         SettingsManager.Instance.resolutionHeight = filteredResolutions[tempResolutionIndex].height;
         SettingsManager.Instance.isFullscreen = tempFullscreen;

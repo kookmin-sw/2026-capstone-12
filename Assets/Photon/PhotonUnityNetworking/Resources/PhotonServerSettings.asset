@@ -82,6 +82,8 @@ MonoBehaviour:
   - RpcPlayAt
   - RpcShooterHit
   - RpcSetPurificationGauge
+  - RPC_BroadcastLockedAttack
+  - RPC_SyncRandomOrder
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

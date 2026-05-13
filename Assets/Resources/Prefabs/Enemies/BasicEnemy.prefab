@@ -166,7 +166,7 @@ MonoBehaviour:
   maxHp: 20
   currentHp: 0
   scoreReward: 100
-  moneyReward: 1
+  moneyReward: 3
   xpReward: 30
   damageReduction: 0
 --- !u!114 &3083367531661020238

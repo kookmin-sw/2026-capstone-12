@@ -34,4 +34,32 @@ public class SpawnCoreNet : MonoBehaviourPun
         SpawnCoreManager.Instance?.ApplyCoreDestroyedNotification(coreOrder, destroyedCount, coreId, corePosition);
         AudioManager.Instance?.PlayEnemyBuff();
     }
+
+    /// <summary>
+    /// 게임 시작 시 랜덤 결정된 Core 공략 순서를 모든 클라이언트에 동기화
+    /// </summary>
+    public void SyncRandomOrder(int[] viewIds, int[] requiredCounts)
+    {
+        photonView.RPC(nameof(RPC_SyncRandomOrder), RpcTarget.All, viewIds, requiredCounts);
+    }
+
+    [PunRPC]
+    private void RPC_SyncRandomOrder(int[] viewIds, int[] requiredCounts)
+    {
+        SpawnCoreManager.Instance?.ApplyRandomOrderByViewIds(viewIds, requiredCounts);
+    }
+
+    /// <summary>
+    /// 잠긴 Core 공격 시도 메시지를 모든 클라이언트에 전파
+    /// </summary>
+    public void BroadcastLockedAttack()
+    {
+        photonView.RPC(nameof(RPC_BroadcastLockedAttack), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_BroadcastLockedAttack()
+    {
+        SpawnCoreManager.Instance?.OnLockedCoreAttackAttempted.Invoke();
+    }
 }

@@ -19,6 +19,7 @@ public class SettingsManager : MonoBehaviour
     [Header("Audio")]
     public float masterVolume = 1f;
     public float voiceVolume = 1f;
+    public float remoteSpeakerVolume = 0.35f;
 
     [Header("Graphics")]
     public int resolutionWidth = 1920;
@@ -31,6 +32,7 @@ public class SettingsManager : MonoBehaviour
     private const string MOUSE_SENSITIVITY_KEY = "MouseSensitivity";
     private const string MASTER_VOLUME_KEY = "MasterVolume";
     private const string VOICE_VOLUME_KEY = "VoiceVolume";
+    private const string REMOTE_SPEAKER_VOL_KEY = "RemoteSpeakerVol";
     private const string RESOLUTION_WIDTH_KEY = "ResolutionWidth";
     private const string RESOLUTION_HEIGHT_KEY = "ResolutionHeight";
     private const string FULLSCREEN_KEY = "Fullscreen";
@@ -61,6 +63,7 @@ public class SettingsManager : MonoBehaviour
         mouseSensitivity = PlayerPrefs.GetFloat(MOUSE_SENSITIVITY_KEY, 2f);
         masterVolume = PlayerPrefs.GetFloat(MASTER_VOLUME_KEY, 1f);
         voiceVolume = PlayerPrefs.GetFloat(VOICE_VOLUME_KEY, 1f);
+        remoteSpeakerVolume = PlayerPrefs.GetFloat(REMOTE_SPEAKER_VOL_KEY, 1f);
         resolutionWidth = PlayerPrefs.GetInt(RESOLUTION_WIDTH_KEY, 1920);
         resolutionHeight = PlayerPrefs.GetInt(RESOLUTION_HEIGHT_KEY, 1080);
         isFullscreen = PlayerPrefs.GetInt(FULLSCREEN_KEY, 1) == 1;
@@ -73,6 +76,7 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetFloat(MOUSE_SENSITIVITY_KEY, mouseSensitivity);
         PlayerPrefs.SetFloat(MASTER_VOLUME_KEY, masterVolume);
         PlayerPrefs.SetFloat(VOICE_VOLUME_KEY, voiceVolume);
+        PlayerPrefs.SetFloat(REMOTE_SPEAKER_VOL_KEY, remoteSpeakerVolume);
         PlayerPrefs.SetInt(RESOLUTION_WIDTH_KEY, resolutionWidth);
         PlayerPrefs.SetInt(RESOLUTION_HEIGHT_KEY, resolutionHeight);
         PlayerPrefs.SetInt(FULLSCREEN_KEY, isFullscreen ? 1 : 0);
@@ -93,6 +97,7 @@ public class SettingsManager : MonoBehaviour
         if (VoiceChatManager.Instance != null)
         {
             VoiceChatManager.Instance.SetVoiceVolume(voiceVolume);
+            VoiceChatManager.Instance.SetRemoteSpeakerVolume(remoteSpeakerVolume);
         }
 
         // 해상도 적용

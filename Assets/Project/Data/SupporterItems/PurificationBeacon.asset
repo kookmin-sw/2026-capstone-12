@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Creates a temporary purified area near the shooter.
   icon: {fileID: 21300000, guid: c73d3b141927b69438842bda8ab1d5e8, type: 3}
   typeId: 2
-  cost: 35
+  cost: 5
   prefab: {fileID: 6611693942618603605, guid: 557fce4731712d7429aca49ceaa98c07, type: 3}
   prefabResourcePath: Prefabs/Support/PurificationBeacon
   playActivatedSound: 1

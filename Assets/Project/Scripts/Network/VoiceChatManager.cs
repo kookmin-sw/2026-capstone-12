@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using Photon.Pun;
 using Photon.Voice.Unity;
 using Photon.Voice.PUN;
@@ -32,10 +33,16 @@ public class VoiceChatManager : MonoBehaviour, IInRoomCallbacks
     [Header("Voice Settings")]
     [SerializeField] private bool muteOnStart = false;
     [SerializeField] [Range(0f, 1f)] private float micVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float remoteSpeakerVolume = 0.35f;
+
+    [Header("Audio Mixer")]
+    [SerializeField] private AudioMixer voiceMixer;          // VoiceMixer.mixer
+    private const string VOICE_BOOST_PARAM = "VoiceBoost";  // 노출된 파라미터 이름
 
     private bool isMuted = false;
 
     private const string MIC_VOL_KEY = "MicVol";
+    private const string REMOTE_SPEAKER_VOL_KEY = "RemoteSpeakerVol";
 
     // ============================================================
     // 프로퍼티
@@ -67,9 +74,11 @@ public class VoiceChatManager : MonoBehaviour, IInRoomCallbacks
             SetMute(true);
         }
 
-        // 저장된 볼륨 설정 로드 및 Custom Properties에 반영
+        // 저장된 볼륨 설정 로드 및 적용
         micVolume = PlayerPrefs.GetFloat("VoiceVolume", 1f);
+        remoteSpeakerVolume = PlayerPrefs.GetFloat(REMOTE_SPEAKER_VOL_KEY, 0.35f);
         SyncMicVolumeToNetwork();
+        ApplyRemoteSpeakerMixer();
     }
 
     void OnEnable()
@@ -205,57 +214,108 @@ public class VoiceChatManager : MonoBehaviour, IInRoomCallbacks
     }
 
     /// <summary>
-    /// 내 마이크 볼륨 설정 (0~1 슬라이더 값)
-    /// Custom Properties를 통해 상대방에게 전달 → 상대방이 Speaker 볼륨 조절
+    /// 내 마이크 볼륨 설정 (0~1) — 상대방 Speaker에 반영
     /// </summary>
     public void SetVoiceVolume(float sliderValue)
     {
         micVolume = Mathf.Clamp01(sliderValue);
         PlayerPrefs.SetFloat("VoiceVolume", micVolume);
         SyncMicVolumeToNetwork();
-        Debug.Log($"[VoiceChat] My mic volume: {micVolume} (actual: {SliderToActualVolume(micVolume)})");
     }
 
-    public float GetVoiceVolume()
-    {
-        return micVolume;
-    }
+    public float GetVoiceVolume() => micVolume;
 
     /// <summary>
-    /// 내 마이크 볼륨을 Photon Custom Properties로 동기화
+    /// 상대방 음성 볼륨 설정 (0~1)
+    /// 슬라이더 0 = 묵음, 0.8 = 0dB(정상), 1.0 = +20dB(최대 부스트)
+    /// </summary>
+    public void SetRemoteSpeakerVolume(float sliderValue)
+    {
+        remoteSpeakerVolume = Mathf.Clamp01(sliderValue);
+        PlayerPrefs.SetFloat(REMOTE_SPEAKER_VOL_KEY, remoteSpeakerVolume);
+        ApplyRemoteSpeakerMixer();
+    }
+
+    public float GetRemoteSpeakerVolume() => remoteSpeakerVolume;
+
+    /// <summary>
+    /// 내 마이크 볼륨을 Photon Custom Properties로 동기화 (선형 전달)
     /// </summary>
     void SyncMicVolumeToNetwork()
     {
         if (PhotonNetwork.InRoom)
         {
-            float actualVolume = SliderToActualVolume(micVolume);
-            Hashtable props = new Hashtable { { MIC_VOL_KEY, actualVolume } };
+            Hashtable props = new Hashtable { { MIC_VOL_KEY, micVolume } };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
     }
 
     /// <summary>
-    /// 슬라이더 값(0~1)을 체감 볼륨으로 변환 (지수 커브)
+    /// 슬라이더 → dB 변환
+    /// 0 → -80dB, 0.8 → 0dB, 1.0 → +20dB
     /// </summary>
-    float SliderToActualVolume(float sliderValue)
+    float SliderToDB(float sliderValue)
     {
-        return sliderValue * sliderValue * sliderValue;
+        if (sliderValue <= 0f) return -80f;
+        // 0~0.35 구간: -80dB ~ 0dB (정상 볼륨)
+        // 0.35~1.0 구간: 0dB ~ +20dB (부스트)
+        if (sliderValue <= 0.35f)
+            return Mathf.Lerp(-80f, 0f, sliderValue / 0.35f);
+        else
+            return Mathf.Lerp(0f, 20f, (sliderValue - 0.35f) / 0.65f);
     }
 
     /// <summary>
-    /// 상대방의 MicVol Custom Property를 읽어 Speaker 볼륨에 반영
+    /// 상대방 음성 볼륨을 AudioMixer로 적용 (볼륨 부스트 지원)
+    /// </summary>
+    void ApplyRemoteSpeakerMixer()
+    {
+        if (voiceMixer != null)
+        {
+            float dB = SliderToDB(remoteSpeakerVolume);
+            voiceMixer.SetFloat(VOICE_BOOST_PARAM, dB);
+
+            // Speaker AudioSource를 믹서 그룹에 연결
+            var mixerGroups = voiceMixer.FindMatchingGroups("Master");
+            if (mixerGroups.Length > 0)
+            {
+                Speaker[] speakers = FindObjectsOfType<Speaker>();
+                foreach (Speaker speaker in speakers)
+                {
+                    AudioSource audioSource = speaker.GetComponent<AudioSource>();
+                    if (audioSource != null)
+                    {
+                        audioSource.outputAudioMixerGroup = mixerGroups[0];
+                        audioSource.volume = 1f;
+                    }
+                }
+            }
+        }
+        else
+        {
+            // 믹서 없으면 기존 방식(AudioSource.volume 직접 제어)으로 폴백
+            float vol = remoteSpeakerVolume;
+            Speaker[] speakers = FindObjectsOfType<Speaker>();
+            foreach (Speaker speaker in speakers)
+            {
+                AudioSource audioSource = speaker.GetComponent<AudioSource>();
+                if (audioSource != null) audioSource.volume = vol;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 상대방 MicVol Custom Property 변경 시 AudioSource.volume 반영
     /// </summary>
     void ApplyRemoteMicVolumes()
     {
+        float remoteMicVol = GetRemotePlayerMicVolume();
         Speaker[] speakers = FindObjectsOfType<Speaker>();
         foreach (Speaker speaker in speakers)
         {
             AudioSource audioSource = speaker.GetComponent<AudioSource>();
-            if (audioSource == null) continue;
-
-            // 상대방이 설정한 마이크 볼륨 가져오기
-            float remoteVolume = GetRemotePlayerMicVolume();
-            audioSource.volume = remoteVolume;
+            if (audioSource != null)
+                audioSource.volume = remoteMicVol;
         }
     }
 

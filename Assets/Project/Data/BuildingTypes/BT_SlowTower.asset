@@ -21,7 +21,7 @@ MonoBehaviour:
   footprint: {x: 2, y: 2}
   allowRotate: 1
   cost: 50
-  maxHp: 100
+  maxHp: 500
   canRepair: 1
   canSell: 1
   playActivatedSound: 1

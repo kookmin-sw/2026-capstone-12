@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3141d9aacfa04c71ad6f1bfd751af9b7, type: 3}
   m_Name: AmmoPackEffect
   m_EditorClassIdentifier: 
-  ammoAmount: 30
+  ammoAmount: 60
   applyDuration: 2
