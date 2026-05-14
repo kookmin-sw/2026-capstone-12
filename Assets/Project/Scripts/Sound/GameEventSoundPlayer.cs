@@ -22,9 +22,14 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip shooterRespawnClip;
     [SerializeField] private AudioClip shooterFireClip; // Shooter 발사 클립
     [SerializeField] private AudioClip shooterReloadClip; // Shooter 재장전 클립
+    [SerializeField] private AudioClip shooterWalkClip; // Shooter 걷기 클립
+    [SerializeField] private AudioClip shooterRunClip; // Shooter 달리기 클립
     [SerializeField] private AudioClip getItemClip;
     [SerializeField] private AudioClip applyHealthPackClip;
     [SerializeField] private AudioClip applyAmmoPackClip;
+    [SerializeField] private AudioClip basicFastEnemyGrowlClip; // Basic/Fast Enemy 울음 클립
+    [SerializeField] private AudioClip tankEnemyGrowlClip; // Tank Enemy 울음 클립
+    [SerializeField] private AudioClip structureAttackedClip; // 구조물 피격 클립
 
     [Header("Playback")]
     [SerializeField] [Range(0f, 1f)] private float masterVolume = 1f;
@@ -44,13 +49,20 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float shooterRespawnVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterFireVolume = 1f; // Shooter 발사 볼륨
     [SerializeField] [Range(0f, 1f)] private float shooterReloadVolume = 1f; // Shooter 재장전 볼륨
+    [SerializeField] [Range(0f, 1f)] private float shooterWalkVolume = 1f; // Shooter 걷기 볼륨
+    [SerializeField] [Range(0f, 1f)] private float shooterRunVolume = 1f; // Shooter 달리기 볼륨
     [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyHealthPackVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyAmmoPackVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float basicFastEnemyGrowlVolume = 1f; // Basic/Fast Enemy 울음 볼륨
+    [SerializeField] [Range(0f, 1f)] private float tankEnemyGrowlVolume = 1f; // Tank Enemy 울음 볼륨
+    [SerializeField] [Range(0f, 1f)] private float structureAttackedVolume = 1f; // 구조물 피격 볼륨
     [SerializeField] private float spatialMinDistance = 2f; // 위치 기반 사운드가 줄어들기 시작하는 거리
     [SerializeField] private float spatialMaxDistance = 10f; // 위치 기반 사운드가 들리는 최대 거리
     [SerializeField] [Range(0f, 1f)] private float supporterViewportEdgeVolume = 0.4f; // Supporter 화면 가장자리 기준 볼륨
     [SerializeField] private float supporterViewportFalloffPower = 1.25f; // Supporter 화면 중심 거리 감쇠 곡선
+    [SerializeField] private Vector2 enemyGrowlPitchRange = new Vector2(0.5f, 1.5f); // 적 울음 피치 범위
+    [SerializeField] private Vector2 enemyGrowlVolumeRange = new Vector2(0.82f, 1.12f); // 적 울음 볼륨 범위
 
     private AudioSource audioSource;
 
@@ -90,8 +102,7 @@ public class GameEventSoundPlayer : MonoBehaviour
             if (supporterVolumeScale <= 0f)
                 return;
 
-            EnsureAudioSource();
-            audioSource.PlayOneShot(clip, masterVolume * GetVolume(soundType) * supporterVolumeScale);
+            PlayViewportOneShot(soundType, clip, supporterVolumeScale);
             return;
         }
 
@@ -100,7 +111,8 @@ public class GameEventSoundPlayer : MonoBehaviour
 
         AudioSource source = soundObject.AddComponent<AudioSource>();
         source.clip = clip;
-        source.volume = masterVolume * GetVolume(soundType);
+        source.volume = masterVolume * GetVolume(soundType) * GetVolumeVariation(soundType);
+        source.pitch = GetPitch(soundType);
         source.spatialBlend = 1f;
         source.rolloffMode = AudioRolloffMode.Logarithmic;
         source.minDistance = Mathf.Max(0.01f, spatialMinDistance);
@@ -110,6 +122,33 @@ public class GameEventSoundPlayer : MonoBehaviour
         source.Play();
 
         Destroy(soundObject, clip.length + 0.1f);
+    }
+
+    /// <summary>
+    /// Supporter 화면 기준 one-shot 사운드 재생
+    /// </summary>
+    private void PlayViewportOneShot(GameSoundType soundType, AudioClip clip, float volumeScale)
+    {
+        float pitch = GetPitch(soundType);
+        float volume = masterVolume * GetVolume(soundType) * GetVolumeVariation(soundType) * volumeScale;
+        if (Mathf.Approximately(pitch, 1f))
+        {
+            EnsureAudioSource();
+            audioSource.PlayOneShot(clip, volume);
+            return;
+        }
+
+        GameObject soundObject = new GameObject($"OneShot_{soundType}_Viewport");
+        AudioSource source = soundObject.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.volume = volume;
+        source.pitch = pitch;
+        source.spatialBlend = 0f;
+        source.playOnAwake = false;
+        source.loop = false;
+        source.Play();
+
+        Destroy(soundObject, (clip.length / Mathf.Max(0.01f, pitch)) + 0.1f);
     }
 
     // Supporter는 카메라 화면 기준으로 월드 사운드 청취량 계산
@@ -200,9 +239,14 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.ShooterRespawn => shooterRespawnClip,
             GameSoundType.ShooterFire => shooterFireClip,
             GameSoundType.ShooterReload => shooterReloadClip,
+            GameSoundType.ShooterWalk => shooterWalkClip,
+            GameSoundType.ShooterRun => shooterRunClip,
             GameSoundType.GetItem => getItemClip,
             GameSoundType.ApplyHealthPack => applyHealthPackClip,
             GameSoundType.ApplyAmmoPack => applyAmmoPackClip,
+            GameSoundType.BasicFastEnemyGrowl => basicFastEnemyGrowlClip,
+            GameSoundType.TankEnemyGrowl => tankEnemyGrowlClip,
+            GameSoundType.StructureAttacked => structureAttackedClip,
             _ => null
         };
     }
@@ -228,11 +272,46 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.ShooterRespawn => shooterRespawnVolume,
             GameSoundType.ShooterFire => shooterFireVolume,
             GameSoundType.ShooterReload => shooterReloadVolume,
+            GameSoundType.ShooterWalk => shooterWalkVolume,
+            GameSoundType.ShooterRun => shooterRunVolume,
             GameSoundType.GetItem => getItemVolume,
             GameSoundType.ApplyHealthPack => applyHealthPackVolume,
             GameSoundType.ApplyAmmoPack => applyAmmoPackVolume,
+            GameSoundType.BasicFastEnemyGrowl => basicFastEnemyGrowlVolume,
+            GameSoundType.TankEnemyGrowl => tankEnemyGrowlVolume,
+            GameSoundType.StructureAttacked => structureAttackedVolume,
             _ => 1f
         };
+    }
+
+    /// <summary>
+    /// 사운드 타입별 피치 조회
+    /// </summary>
+    private float GetPitch(GameSoundType soundType)
+    {
+        if (!IsEnemyGrowl(soundType))
+            return 1f;
+
+        return Random.Range(enemyGrowlPitchRange.x, enemyGrowlPitchRange.y);
+    }
+
+    /// <summary>
+    /// 사운드 타입별 볼륨 변조 조회
+    /// </summary>
+    private float GetVolumeVariation(GameSoundType soundType)
+    {
+        if (!IsEnemyGrowl(soundType))
+            return 1f;
+
+        return Random.Range(enemyGrowlVolumeRange.x, enemyGrowlVolumeRange.y);
+    }
+
+    /// <summary>
+    /// 적 울음 사운드 여부
+    /// </summary>
+    private bool IsEnemyGrowl(GameSoundType soundType)
+    {
+        return soundType == GameSoundType.BasicFastEnemyGrowl || soundType == GameSoundType.TankEnemyGrowl;
     }
 
     private void EnsureAudioSource()

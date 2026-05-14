@@ -63,6 +63,7 @@ public class BuildingHealthNet : MonoBehaviourPun
         currentHp = Mathf.Clamp(newHp, 0f, maxHp);
 
         photonView.RPC(nameof(RpcSetHp), RpcTarget.All, currentHp);
+        SoundNet.Instance?.RequestPlayAt(GameSoundType.StructureAttacked, transform.position);
         NotifyDamagedByMaster(damage);
 
         if (currentHp <= 0f)

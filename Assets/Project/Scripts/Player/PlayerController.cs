@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
 /// <summary>
 /// FPS 플레이어 컨트롤러
@@ -20,6 +21,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 0.08f;
     [SerializeField] private LayerMask groundMask = ~0; // 인스펙터에서 Ground 레이어만 지정 권장
 
+    [Header("Footstep Sound")]
+    [SerializeField] private float walkStepInterval = 0.45f; // 걷기 발소리 재생 간격
+    [SerializeField] private float runStepInterval = 0.28f; // 달리기 발소리 재생 간격
+
     [Header("Look Settings")]
     [SerializeField] private float mouseSensitivity = 2f;
     [SerializeField] private float maxLookAngle = 90f;
@@ -30,6 +35,7 @@ public class PlayerController : MonoBehaviour
     // Components
     private CharacterController controller;
     private Transform cameraTransform;
+    private PhotonView photonView; // 로컬 Shooter 판정용 PhotonView
 
     // Look
     private float verticalRotation = 0f;
@@ -43,11 +49,13 @@ public class PlayerController : MonoBehaviour
     private bool lookOnlyMode = false;
 
     private bool wasSettingsOpen = false;
+    private float nextFootstepTime; // 다음 발소리 재생 가능 시각
 
     void Start()
     {
         // 컴포넌트 참조 가져오기
         controller = GetComponent<CharacterController>();
+        photonView = GetComponent<PhotonView>();
         // Camera.main 대신 자식 카메라를 직접 참조 (Supporter Camera와 태그 충돌 방지)
         cameraTransform = GetComponentInChildren<Camera>().transform;
     }
@@ -165,6 +173,8 @@ public class PlayerController : MonoBehaviour
             velocity.y = -0.5f;
         }
 
+        TryPlayFootstep(horizontal, vertical, isSprinting);
+
         // 점프 (Space)
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -216,5 +226,34 @@ public class PlayerController : MonoBehaviour
     public void SetLookOnly(bool value)
     {
         lookOnlyMode = value;
+    }
+
+    /// <summary>
+    /// 이동 상태에 따른 발소리 재생 요청
+    /// </summary>
+    private void TryPlayFootstep(float horizontal, float vertical, bool isSprinting)
+    {
+        if (!CanRequestFootstepSound() || !isGrounded || Time.time < nextFootstepTime)
+            return;
+
+        Vector2 moveInput = new Vector2(horizontal, vertical);
+        if (moveInput.sqrMagnitude < 0.01f)
+            return;
+
+        GameSoundType soundType = isSprinting ? GameSoundType.ShooterRun : GameSoundType.ShooterWalk;
+        float interval = isSprinting ? runStepInterval : walkStepInterval;
+        nextFootstepTime = Time.time + Mathf.Max(0.05f, interval);
+        SoundNet.Instance.RequestPlayAt(soundType, transform.position);
+    }
+
+    /// <summary>
+    /// 로컬 Shooter 발소리 요청 가능 여부
+    /// </summary>
+    private bool CanRequestFootstepSound()
+    {
+        if (SoundNet.Instance == null)
+            return false;
+
+        return !PhotonNetwork.InRoom || photonView == null || photonView.IsMine;
     }
 }

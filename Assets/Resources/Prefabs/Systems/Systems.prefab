@@ -104,6 +104,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shooterOwnership: {fileID: 0}
+  applyRoleVisionSettings: 1
+  shooterAmbientSkyColor: {r: 0.018, g: 0.02, b: 0.028, a: 1}
+  shooterAmbientEquatorColor: {r: 0.012, g: 0.013, b: 0.018, a: 1}
+  shooterAmbientGroundColor: {r: 0.006, g: 0.006, b: 0.008, a: 1}
+  shooterAmbientIntensity: 0.25
+  shooterFogColor: {r: 0.01, g: 0.012, b: 0.018, a: 1}
+  shooterFogDensity: 0.035
+  supporterAmbientSkyColor: {r: 0.085, g: 0.09, b: 0.105, a: 1}
+  supporterAmbientEquatorColor: {r: 0.055, g: 0.06, b: 0.072, a: 1}
+  supporterAmbientGroundColor: {r: 0.03, g: 0.032, b: 0.04, a: 1}
+  supporterAmbientIntensity: 0.65
+  supporterFogColor: {r: 0.035, g: 0.04, b: 0.055, a: 1}
+  supporterFogDensity: 0.012
 --- !u!1 &2416478105709894786
 GameObject:
   m_ObjectHideFlags: 0
@@ -420,6 +433,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f4fadac1f5ade745be1d51142ee4b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnLockedCoreAttackAttempted:
+    m_PersistentCalls:
+      m_Calls: []
+  lastCoreExplosionPrefab: {fileID: 0}
 --- !u!114 &3493950605465128805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -781,16 +798,23 @@ MonoBehaviour:
   shooterRespawnClip: {fileID: 8300000, guid: 2e86f14ad31f4ea99f5ac164bb501f3a, type: 3}
   shooterFireClip: {fileID: 8300000, guid: 736a6ee94d8a94aef925851d18125a0c, type: 3}
   shooterReloadClip: {fileID: 8300000, guid: d85099fefd84d429788e09001413207b, type: 3}
+  shooterWalkClip: {fileID: 8300000, guid: c69e04ea56535b24d98fdef03991d1d8, type: 3}
+  shooterRunClip: {fileID: 8300000, guid: c69e04ea56535b24d98fdef03991d1d8, type: 3}
   getItemClip: {fileID: 8300000, guid: 6e53eac8982a4744d96baa88db0ca717, type: 3}
   applyHealthPackClip: {fileID: 8300000, guid: 3943348e30bdd0d4daa9c187ca1490a4, type: 3}
   applyAmmoPackClip: {fileID: 8300000, guid: 49571624df1db714bb469f74f2b8d895, type: 3}
+  basicFastEnemyGrowlClip: {fileID: 8300000, guid: 0cd68db2e88a80e43ae72beba3a1d33d,
+    type: 3}
+  tankEnemyGrowlClip: {fileID: 8300000, guid: ff1c5129adcd9f9449ec1fe2ab5a9bfe, type: 3}
+  structureAttackedClip: {fileID: 8300000, guid: 73c62247147be534590e814c3920db15,
+    type: 3}
   masterVolume: 1
   normalPingVolume: 1
   dangerPingVolume: 1
   helpPingVolume: 1
   buildStructureVolume: 1
   supplyItemVolume: 1
-  turretAttackVolume: 1
+  turretAttackVolume: 0.776
   buildingDestroyedVolume: 1
   spawnCoreDestroyedVolume: 1
   slowTowerActivatedVolume: 1
@@ -799,15 +823,22 @@ MonoBehaviour:
   spawnCoreOrbBreakVolume: 0.8
   shooterDeathVolume: 1
   shooterRespawnVolume: 1
-  shooterFireVolume: 1
-  shooterReloadVolume: 1
+  shooterFireVolume: 0.531
+  shooterReloadVolume: 0.538
+  shooterWalkVolume: 0.552
+  shooterRunVolume: 0.562
   getItemVolume: 1
   applyHealthPackVolume: 1
   applyAmmoPackVolume: 1
+  basicFastEnemyGrowlVolume: 0.238
+  tankEnemyGrowlVolume: 0.241
+  structureAttackedVolume: 0.503
   spatialMinDistance: 2
   spatialMaxDistance: 10
   supporterViewportEdgeVolume: 0.4
   supporterViewportFalloffPower: 1.25
+  enemyGrowlPitchRange: {x: 0.5, y: 1.5}
+  enemyGrowlVolumeRange: {x: 0.82, y: 1.12}
 --- !u!114 &7116930574088471005
 MonoBehaviour:
   m_ObjectHideFlags: 0
