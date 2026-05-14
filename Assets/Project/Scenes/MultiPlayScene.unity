@@ -19316,7 +19316,7 @@ PrefabInstance:
     - target: {fileID: 3081905404850909575, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
       propertyPath: editorDirectPlayRole
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4382728737386737185, guid: f08dcf2d981507347981440f606fe77d,
         type: 3}
