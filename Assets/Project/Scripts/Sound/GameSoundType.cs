@@ -22,6 +22,8 @@ public enum GameSoundType
     // 전역 알림 사운드
     ShooterDeath = 20,
     ShooterRespawn = 21,
+    ShooterFire = 22, // Shooter 발사 사운드
+    ShooterReload = 23, // Shooter 재장전 사운드
 
     // 로컬 효과 적용 사운드
     ApplyHealthPack = 30,

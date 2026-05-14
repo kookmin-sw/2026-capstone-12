@@ -20,6 +20,8 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip spawnCoreOrbBreakClip;
     [SerializeField] private AudioClip shooterDeathClip;
     [SerializeField] private AudioClip shooterRespawnClip;
+    [SerializeField] private AudioClip shooterFireClip; // Shooter 발사 클립
+    [SerializeField] private AudioClip shooterReloadClip; // Shooter 재장전 클립
     [SerializeField] private AudioClip getItemClip;
     [SerializeField] private AudioClip applyHealthPackClip;
     [SerializeField] private AudioClip applyAmmoPackClip;
@@ -40,6 +42,8 @@ public class GameEventSoundPlayer : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float spawnCoreOrbBreakVolume = 0.8f;
     [SerializeField] [Range(0f, 1f)] private float shooterDeathVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float shooterRespawnVolume = 1f;
+    [SerializeField] [Range(0f, 1f)] private float shooterFireVolume = 1f; // Shooter 발사 볼륨
+    [SerializeField] [Range(0f, 1f)] private float shooterReloadVolume = 1f; // Shooter 재장전 볼륨
     [SerializeField] [Range(0f, 1f)] private float getItemVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyHealthPackVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float applyAmmoPackVolume = 1f;
@@ -194,6 +198,8 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakClip,
             GameSoundType.ShooterDeath => shooterDeathClip,
             GameSoundType.ShooterRespawn => shooterRespawnClip,
+            GameSoundType.ShooterFire => shooterFireClip,
+            GameSoundType.ShooterReload => shooterReloadClip,
             GameSoundType.GetItem => getItemClip,
             GameSoundType.ApplyHealthPack => applyHealthPackClip,
             GameSoundType.ApplyAmmoPack => applyAmmoPackClip,
@@ -220,6 +226,8 @@ public class GameEventSoundPlayer : MonoBehaviour
             GameSoundType.SpawnCoreOrbBreak => spawnCoreOrbBreakVolume,
             GameSoundType.ShooterDeath => shooterDeathVolume,
             GameSoundType.ShooterRespawn => shooterRespawnVolume,
+            GameSoundType.ShooterFire => shooterFireVolume,
+            GameSoundType.ShooterReload => shooterReloadVolume,
             GameSoundType.GetItem => getItemVolume,
             GameSoundType.ApplyHealthPack => applyHealthPackVolume,
             GameSoundType.ApplyAmmoPack => applyAmmoPackVolume,

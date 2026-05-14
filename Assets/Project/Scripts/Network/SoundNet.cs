@@ -137,6 +137,8 @@ public class SoundNet : MonoBehaviourPun
             GameSoundType.LightPylonActivated => SoundPlaybackMode.Network3D,
             GameSoundType.PurificationBeaconActivated => SoundPlaybackMode.Network3D,
             GameSoundType.SpawnCoreOrbBreak => SoundPlaybackMode.Network3D,
+            GameSoundType.ShooterFire => SoundPlaybackMode.Network3D,
+            GameSoundType.ShooterReload => SoundPlaybackMode.Network3D,
             GameSoundType.BuildStructure => SoundPlaybackMode.Network3D,
             GameSoundType.SupplyItem => SoundPlaybackMode.Network3D,
             GameSoundType.GetItem => SoundPlaybackMode.Local3D,
