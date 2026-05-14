@@ -22,8 +22,17 @@ public enum GameSoundType
     // 전역 알림 사운드
     ShooterDeath = 20,
     ShooterRespawn = 21,
+    ShooterFire = 22, // Shooter 발사 사운드
+    ShooterReload = 23, // Shooter 재장전 사운드
+    ShooterWalk = 24, // Shooter 걷기 사운드
+    ShooterRun = 25, // Shooter 달리기 사운드
 
     // 로컬 효과 적용 사운드
     ApplyHealthPack = 30,
     ApplyAmmoPack = 31,
+
+    // 몬스터 및 구조물 위치 사운드
+    BasicFastEnemyGrowl = 40, // Basic/Fast Enemy 울음 사운드
+    TankEnemyGrowl = 41, // Tank Enemy 울음 사운드
+    StructureAttacked = 50, // 구조물 피격 사운드
 }

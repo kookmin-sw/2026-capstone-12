@@ -22,6 +22,21 @@ public class StructureSelectable : MonoBehaviour
             health = GetComponent<BuildingHealthNet>();
         if (type != null && health != null)
             health.Init(type.maxHp);
+
+        BindSupporterHealthBar();
+    }
+
+    /// <summary>
+    /// Supporter 구조물 체력바 연결
+    /// </summary>
+    private void BindSupporterHealthBar()
+    {
+        if (health == null)
+            return;
+
+        StructureHealthBar healthBar = GetComponent<StructureHealthBar>();
+        if (healthBar != null)
+            healthBar.Configure(health);
     }
 
     public void BindGrid(GridManager gridManager, Vector2Int anchor, Vector2Int footprint, int rotationY)

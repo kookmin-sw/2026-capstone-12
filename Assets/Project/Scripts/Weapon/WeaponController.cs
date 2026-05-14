@@ -34,10 +34,6 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private Transform muzzlePoint; // 머즐 플래시 생성 기준 위치
     [SerializeField] private float muzzleForwardOffset = 0.3f; // 총구 앞쪽으로 밀어낼 머즐 플래시 거리
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource shootSoundSource; // 발사 사운드 재생 소스
-    [SerializeField] private AudioSource reloadSoundSource; // 재장전 사운드 재생 소스
-
     [Header("Aiming")]
     [SerializeField] private float aimFOV = 40f; // 조준 시 목표 카메라 FOV
     private float normalFOV = 60f; // 비조준 상태 카메라 FOV
@@ -102,15 +98,6 @@ public class WeaponController : MonoBehaviour
                 muzzlePoint = foundMuzzlePoint;
         }
 
-        if (shootSoundSource == null || reloadSoundSource == null)
-        {
-            AudioSource[] audioSources = GetComponents<AudioSource>(); // Player에 붙은 사운드 소스 후보
-            if (audioSources.Length >= 1 && shootSoundSource == null)
-                shootSoundSource = audioSources[0];
-
-            if (audioSources.Length >= 2 && reloadSoundSource == null)
-                reloadSoundSource = audioSources[1];
-        }
     }
 
     private void Update()
@@ -200,7 +187,7 @@ public class WeaponController : MonoBehaviour
         BroadcastAmmoState();
 
         SpawnMuzzleFlash();
-        shootSoundSource?.Play();
+        PlayWeaponSound(GameSoundType.ShooterFire);
 
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); // 화면 중앙 조준 Ray
         if (!Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
@@ -341,9 +328,24 @@ public class WeaponController : MonoBehaviour
         isReloading = true;
 
         handsAnimator?.SetBool("reloading", true);
-        reloadSoundSource?.Play();
+        PlayWeaponSound(GameSoundType.ShooterReload);
 
         Invoke(nameof(FinishReload), reloadTime);
+    }
+
+    /// <summary>
+    /// 무기 사운드 위치 기반 재생 요청
+    /// </summary>
+    private void PlayWeaponSound(GameSoundType soundType)
+    {
+        Vector3 soundPosition = muzzlePoint != null ? muzzlePoint.position : transform.position; // 무기 사운드 기준 위치
+        if (SoundNet.Instance != null)
+        {
+            SoundNet.Instance.RequestPlayAt(soundType, soundPosition);
+            return;
+        }
+
+        GameEventSoundPlayer.Instance?.PlayAt(soundType, soundPosition);
     }
 
     /// <summary>

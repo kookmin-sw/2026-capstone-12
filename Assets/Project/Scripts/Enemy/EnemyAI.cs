@@ -30,6 +30,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("Combat")]
     [SerializeField] private float attackDamage = 5f;       // 공격 데미지
+    [SerializeField] private float growlCooldown = 5f; // 적 울음 타입별 재생 제한 시간
 
     [Header("Structure Attack")]
     [SerializeField] private LayerMask structureMask;   // 건물 레이어
@@ -59,6 +60,8 @@ public class EnemyAI : MonoBehaviour
     private float currentAttackCooldown;
     private float nextPathRefreshTime;
     private readonly Dictionary<int, SlowState> activeSlows = new Dictionary<int, SlowState>();
+    private static readonly List<EnemyAI> activeEnemies = new List<EnemyAI>(); // 활성 Enemy 목록
+    private static readonly Dictionary<GameSoundType, float> nextGrowlTimes = new Dictionary<GameSoundType, float>(); // 적 울음 타입별 다음 재생 가능 시각
 
     // 건물 공격 관련 변수
     private Transform structureTarget;
@@ -87,6 +90,12 @@ public class EnemyAI : MonoBehaviour
         ApplyDifficultyValues();
     }
 
+    private void OnEnable()
+    {
+        if (!activeEnemies.Contains(this))
+            activeEnemies.Add(this);
+    }
+
     void Start()
     {
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -102,6 +111,8 @@ public class EnemyAI : MonoBehaviour
 
     private void OnDestroy()
     {
+        activeEnemies.Remove(this);
+
         EnemyHealth health = GetComponent<EnemyHealth>();
         if (health != null)
             health.OnDied -= HandleDied;
@@ -148,6 +159,7 @@ public class EnemyAI : MonoBehaviour
 
         // 타겟 선택: 구조물 없으면 주 목표
         Transform target = GetCurrentTarget(primaryTarget);
+        TryPlayGrowlSound();
 
         Vector3 origin = (col != null) ? transform.TransformPoint(col.center) : transform.position + Vector3.up * 1.0f;
         float distance = GetDistanceToTarget(origin, target);
@@ -542,6 +554,55 @@ public class EnemyAI : MonoBehaviour
 
         BuildingHealthNet healthNet = target.GetComponentInParent<BuildingHealthNet>();
         healthNet?.MasterTakeDamage(attackDamage);
+    }
+
+    /// <summary>
+    /// 타입별 제한이 적용된 적 울음 사운드 요청
+    /// </summary>
+    private void TryPlayGrowlSound()
+    {
+        if (!IsClosestGrowlSourceToPlayer())
+            return;
+
+        GameSoundType growlType = GetGrowlSoundType();
+        if (nextGrowlTimes.TryGetValue(growlType, out float nextGrowlTime) && Time.time < nextGrowlTime)
+            return;
+
+        nextGrowlTimes[growlType] = Time.time + Mathf.Max(0f, growlCooldown);
+        SoundNet.Instance?.RequestPlayAt(growlType, transform.position);
+    }
+
+    /// <summary>
+    /// 적 종류별 울음 사운드 타입 조회
+    /// </summary>
+    private GameSoundType GetGrowlSoundType()
+    {
+        return gameObject.name.Contains("Tank") ? GameSoundType.TankEnemyGrowl : GameSoundType.BasicFastEnemyGrowl;
+    }
+
+    /// <summary>
+    /// Shooter에 가장 가까운 같은 타입 울음 소스 여부
+    /// </summary>
+    private bool IsClosestGrowlSourceToPlayer()
+    {
+        if (player == null)
+            return false;
+
+        GameSoundType growlType = GetGrowlSoundType();
+        float myDistanceSqr = (transform.position - player.position).sqrMagnitude;
+
+        for (int i = 0; i < activeEnemies.Count; i++)
+        {
+            EnemyAI enemy = activeEnemies[i];
+            if (enemy == null || enemy == this || enemy.player == null || enemy.GetGrowlSoundType() != growlType)
+                continue;
+
+            float otherDistanceSqr = (enemy.transform.position - player.position).sqrMagnitude;
+            if (otherDistanceSqr < myDistanceSqr)
+                return false;
+        }
+
+        return true;
     }
 
     // ============================================================

@@ -391,6 +391,7 @@ MonoBehaviour:
   maxDistance: 60
   fallbackToGroundPlane: 1
   groundPlaneY: 0
+  settingsPanel: {fileID: 0}
 --- !u!114 &8642250381108093279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6261,7 +6262,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ae01080bbac08cd4fb52cac55975c7d2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 73e1ef406bc5dd64880120d7ac09dc1f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
