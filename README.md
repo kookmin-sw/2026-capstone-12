@@ -78,7 +78,7 @@
 
 소스 코드 빌드 없이 바로 실행할 수 있는 Windows 빌드 파일을 제공합니다.
 
-[![Download](https://img.shields.io/badge/Download-Latest_Build-blue?style=for-the-badge&logo=github)](https://github.com/kookmin-sw/capstone-2026-12/releases/latest)
+[![Download](https://img.shields.io/badge/Download-Latest_Build-blue?style=for-the-badge&logo=github)](https://github.com/kookmin-sw/2026-capstone-12/releases/latest)
 
 1. 위 버튼에서 최신 빌드 zip 파일 다운로드
 2. 압축 해제 후 `KMU_CoopDefense.exe` 실행
