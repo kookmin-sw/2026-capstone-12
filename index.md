@@ -116,40 +116,7 @@ Supporter는 Grid 기반으로 구조물을 설치하며, 설치 가능 여부�
 본 프로젝트는 **Photon PUN 2** 기반의 2인 멀티플레이 구조를 사용합니다.  
 각 클라이언트는 행동 요청을 보내고, 핵심 게임 상태는 **MasterClient**가 검증한 뒤 RPC를 통해 두 플레이어에게 동기화합니다.
 
-```mermaid
-flowchart TD
-    Shooter[Shooter Client<br/>FPS 전투 / 사격 / 피격 / 핑]
-    Supporter[Supporter Client<br/>건설 / 수리 / 지원 / 미니맵 / 핑]
-
-    PhotonIn[Photon PUN 2 / Photon Voice 2<br/>요청 전달]
-    Master[MasterClient<br/>권위 클라이언트 / 호스트<br/>요청 수신 · 상태 검증 · RPC 동기화]
-
-    Resource[Resource & Score<br/>자원 / 점수 / 킬 수]
-    Building[Building System<br/>Grid / Turret / Barrier / LightPylon]
-    Enemy[Enemy AI & Spawn<br/>EnemyNest / SpawnCore / NavMesh]
-    Objective[Game Objective<br/>CommandTower 방어 / SpawnCore 파괴]
-
-    Sync[RPC / State Synchronization<br/>검증된 결과 동기화]
-    PhotonOut[Photon PUN 2 / Photon Voice 2<br/>양쪽 클라이언트에 브로드캐스트]
-
-    Shooter --> PhotonIn
-    Supporter --> PhotonIn
-    PhotonIn --> Master
-
-    Master --> Resource
-    Master --> Building
-    Master --> Enemy
-    Master --> Objective
-
-    Resource --> Sync
-    Building --> Sync
-    Enemy --> Sync
-    Objective --> Sync
-
-    Sync --> PhotonOut
-    PhotonOut --> Shooter
-    PhotonOut --> Supporter
-```
+<img src="./images/system_architecture.png" alt="System Architecture.png" style="display:block; width:100%; max-width:900px; height:auto; margin:14px auto 28px auto; border-radius:6px;">
 
 | 구분 | 역할 |
 |---|---|
@@ -177,10 +144,10 @@ flowchart TD
 
 ## 팀원 소개
 
-| 사진 | 이름 | 학번 | 담당 역할 | GitHub |
-|---|---|---|---|---|
-| <img src="./images/team/gujabin.png" width="120" alt="구자빈"> | 구자빈 | 20203028 | Shooter 플레이어, 게임 시스템, 적 AI, 오디오, 맵, 렌더링 | [@GitHubID](https://github.com/) |
-| <img src="./images/team/jeongyeongjin.png" width="120" alt="전경진"> | 전경진 | 20203129 | Supporter 플레이어, 건설 시스템, 정화 시스템, 네트워크 | [@Jeon-kj](https://github.com/Jeon-kj) |
+| 이름 | 학번 | 담당 역할 | GitHub |
+|---|---|---|---|
+| 구자빈 | 20203028 | Shooter 플레이어, 게임 시스템, 적 AI, 오디오, 맵, 렌더링 | [@GitHubID](https://github.com/koojabin) |
+| 전경진 | 20203129 | Supporter 플레이어, 건설 시스템, 정화 시스템, 네트워크 | [@Jeon-kj](https://github.com/Jeon-kj) |
 
 ---
 
