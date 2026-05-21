@@ -4,6 +4,8 @@
 
 > 국민대학교 2026 캡스톤디자인 12팀
 
+![Poster](docs/poster.png)
+
 슈터(FPS)와 서포터(RTS)가 협력하는 멀티플레이 타워 디펜스 게임입니다.
 
 ---
@@ -55,9 +57,9 @@
 
 ---
 
-## 2. 소개 영상
+## 2. 게임 시연 영상
 
-추후 추가 예정입니다.
+[![게임 시연 영상](https://img.youtube.com/vi/tHrTTPJ-C20/maxresdefault.jpg)](https://www.youtube.com/watch?v=tHrTTPJ-C20)
 
 ---
 
@@ -72,12 +74,28 @@
 
 ## 4. 사용법
 
-### 실행 환경
+### 빌드 다운로드 (권장)
+
+소스 코드 빌드 없이 바로 실행할 수 있는 Windows 빌드 파일을 제공합니다.
+
+[![Download](https://img.shields.io/badge/Download-Latest_Build-blue?style=for-the-badge&logo=github)](https://github.com/kookmin-sw/capstone-2026-12/releases/latest)
+
+1. 위 버튼에서 최신 빌드 zip 파일 다운로드
+2. 압축 해제 후 `KMU_CoopDefense.exe` 실행
+3. 방 생성 또는 참가 후 슈터 / 서포터 역할 선택
+
+> Windows 10 이상 환경에서 실행을 권장합니다.
+
+---
+
+### 소스 빌드 (개발자용)
+
+#### 실행 환경
 
 - Unity 2022.3.62f3
 - Photon PUN 2 (패키지 포함)
 
-### 에셋 설치
+#### 에셋 설치
 
 프로젝트에는 용량 문제로 일부 에셋이 포함되어 있지 않습니다.  
 아래 링크에서 다운로드 후 `Assets/` 경로에 배치하세요.
@@ -93,7 +111,7 @@ Z_Assets 폴더째로 Assets 아래에 넣을 것
 .meta 파일 포함
 ```
 
-### 실행 방법
+#### 실행 방법
 
 1. Unity Hub에서 프로젝트 열기
 2. `Assets/Z_Assets` 에셋 배치 확인
