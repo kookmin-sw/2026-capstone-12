@@ -4,9 +4,7 @@
 > 국민대학교 2026 캡스톤디자인 12팀  
 > FPS 전투와 탑다운 건설을 결합한 2인 비대칭 협동 디펜스 게임
 
-<p align="center">
-  <img src="./images/main_banner.png" width="900" alt="CoreLight Main Banner">
-</p>
+<img src="./images/main_banner.png" alt="CoreLight Main Banner" style="display:block; width:100%; max-width:900px; height:auto; margin:14px auto 28px auto; border-radius:6px;">
 
 ---
 
@@ -50,11 +48,11 @@ Shooter는 어둠 속에서 제한된 시야와 전투 압박을 견디며 목�
 | **어둠 극복** | 정화되지 않은 구역에서는 Shooter가 큰 위험을 감수해야 하므로 Supporter의 지원이 중요합니다. |
 | **역할 보완** | Shooter의 전투력과 Supporter의 전략 판단이 맞물릴 때 목표를 달성할 수 있습니다. |
 
-<p align="center">
-  <img src="./images/command_tower.png" width="32%" alt="CommandTower">
-  <img src="./images/spawn_core.png" width="32%" alt="SpawnCore">
-  <img src="./images/darkness_system.png" width="32%" alt="Darkness System">
-</p>
+<div style="display:flex; gap:8px; justify-content:flex-start; align-items:stretch; max-width:980px; margin:14px 0 32px 0;">
+  <img src="./images/command_tower.png" alt="CommandTower" style="width:calc((100% - 16px) / 3); height:180px; object-fit:cover; border-radius:6px;">
+  <img src="./images/spawn_core.png" alt="SpawnCore" style="width:calc((100% - 16px) / 3); height:180px; object-fit:cover; border-radius:6px;">
+  <img src="./images/darkness_system.png" alt="어둠 시스템" style="width:calc((100% - 16px) / 3); height:180px; object-fit:cover; border-radius:6px;">
+</div>
 
 ---
 
@@ -67,28 +65,22 @@ Shooter는 어둠 속에서 제한된 시야와 전투 압박을 견디며 목�
 | FPS 시점에서 직접 이동, 사격, 재장전, 목표 공격을 담당합니다. | 탑다운 시점에서 전장을 관리하고 건설, 수리, 보급, 핑을 담당합니다. |
 | 현장 전투와 SpawnCore 파괴를 주도합니다. | 방어선 구축과 Shooter 생존 지원을 담당합니다. |
 
-<p align="center">
-  <img src="./images/shooter_view.png" width="48%" alt="Shooter FPS View">
-  <img src="./images/supporter_view.png" width="48%" alt="Supporter Top-down View">
-</p>
+<div style="display:flex; gap:8px; justify-content:flex-start; max-width:980px; margin:14px 0 32px 0;">
+  <img src="./images/shooter_view.png" alt="Shooter 화면" style="width:calc((100% - 8px) / 2); height:auto; border-radius:6px;">
+  <img src="./images/supporter_view.png" alt="Supporter 화면" style="width:calc((100% - 8px) / 2); height:auto; border-radius:6px;">
+</div>
 
 ### 2. CommandTower 방어와 SpawnCore 파괴
 
 적은 **EnemyNest**에서 생성되어 **CommandTower**를 향해 진격합니다.  
 플레이어는 방어선을 구축해 CommandTower를 지키면서, Shooter가 적진으로 전진해 **SpawnCore**를 파괴할 수 있도록 협력해야 합니다.
 
-<p align="center">
-  <img src="./images/objective_flow.png" width="850" alt="CommandTower Defense and SpawnCore Objective">
-</p>
-
 ### 3. 어둠과 정화 시스템
 
 SpawnCore는 주변의 정화 에너지를 흡수해 전장을 어둠으로 뒤덮습니다.  
 Shooter는 정화 구역 밖에서 시야 제한과 전투 불리함을 겪기 때문에, Supporter가 **LightPylon**과 정화 지원을 통해 안전 구역을 확장해야 합니다.
 
-<p align="center">
-  <img src="./images/purification_system.png" width="850" alt="Purification and Darkness System">
-</p>
+<img src="./images/purification_system.png" alt="어둠과 정화 시스템" style="display:block; width:76%; max-width:780px; height:auto; margin:14px 0 32px 0; border-radius:6px;">
 
 ### 4. Grid 기반 건설 시스템
 
@@ -102,9 +94,7 @@ Supporter는 Grid 기반으로 구조물을 설치하며, 설치 가능 여부�
 | **Barrier** | 적의 이동 경로를 지연시키는 방어벽 |
 | **LightPylon** | 정화 구역을 제공해 Shooter의 활동 범위를 넓히는 지원 구조물 |
 
-<p align="center">
-  <img src="./images/build_system.png" width="850" alt="Grid Based Build System">
-</p>
+<img src="./images/build_system.png" alt="Grid 기반 건설 시스템" style="display:block; width:86%; max-width:920px; height:auto; margin:14px 0 32px 0; border-radius:6px;">
 
 ### 5. 협동 보조 시스템
 
@@ -117,9 +107,7 @@ Supporter는 Grid 기반으로 구조물을 설치하며, 설치 가능 여부�
 | **Shooter 상태 UI** | Supporter가 Shooter의 체력, 탄약, 부활 상태를 확인하고 지원 시점을 판단할 수 있습니다. |
 | **Photon Voice** | 음성 채팅으로 실시간 협동 전략을 주고받을 수 있습니다. |
 
-<p align="center">
-  <img src="./images/minimap_ping.png" width="850" alt="Minimap and Ping System">
-</p>
+<img src="./images/minimap_ping.png" alt="협동 보조 시스템과 미니맵" style="display:block; width:68%; max-width:700px; height:auto; margin:14px 0 32px 0; border-radius:6px;">
 
 ---
 
