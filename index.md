@@ -161,6 +161,7 @@ flowchart TD
     Sync --> PhotonOut
     PhotonOut --> Shooter
     PhotonOut --> Supporter
+```
 
 | 구분 | 역할 |
 |---|---|
