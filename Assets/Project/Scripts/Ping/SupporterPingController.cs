@@ -64,7 +64,7 @@ public class SupporterPingController : MonoBehaviour
         if (selectorInstance == null)
         {
             // 서포터는 먼저 핑 배치 대기 상태에 들어가고, 이후 클릭으로 정확한 위치를 고른다. // 롤 참고
-            if (Input.GetKeyDown(pingKey))
+            if (KeybindingManager.GetKeyDownStatic(KeyAction.Ping))
                 isPlacementArmed = true;
 
             if (isPlacementArmed && Input.GetMouseButtonDown(0))

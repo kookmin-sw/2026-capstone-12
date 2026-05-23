@@ -22,6 +22,10 @@ public class SettingsUI : MonoBehaviour
     [Header("Buttons")]
     [SerializeField] private Button applyButton;
     [SerializeField] private Button cancelButton;
+    [SerializeField] private Button keybindingButton;
+
+    [Header("Keybinding Panel")]
+    [SerializeField] private GameObject keybindingPanel;
 
     // ============================================================
     // 임시 설정값 (적용 전)
@@ -64,6 +68,8 @@ public class SettingsUI : MonoBehaviour
         // 버튼 이벤트 연결
         applyButton.onClick.AddListener(OnApplyButton);
         cancelButton.onClick.AddListener(OnCancelButton);
+        if (keybindingButton != null && keybindingPanel != null)
+            keybindingButton.onClick.AddListener(() => keybindingPanel.SetActive(true));
 
         // 슬라이더/드롭다운 이벤트 연결
         sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
@@ -83,6 +89,13 @@ public class SettingsUI : MonoBehaviour
         // 패널이 열릴 때마다 현재 설정값으로 새로고침 (Start 이후부터만)
         if (initialized)
             LoadCurrentSettings();
+    }
+
+    void OnDisable()
+    {
+        // 설정창 닫힐 때 키설정창도 같이 닫기 (ESC 포함)
+        if (keybindingPanel != null)
+            keybindingPanel.SetActive(false);
     }
 
     // ============================================================

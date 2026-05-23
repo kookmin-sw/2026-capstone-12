@@ -146,8 +146,8 @@ public class PlayerController : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal"); // A/D
         float vertical = Input.GetAxis("Vertical");     // W/S
 
-        // 달리기 체크 (Left Shift)
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        // 달리기 체크
+        bool isSprinting = KeybindingManager.GetKeyStatic(KeyAction.Sprint);
         float currentSpeed = (isSprinting ? sprintSpeed : moveSpeed) + bonusSpeed;
 
         // 이동 방향 계산 (플레이어 기준 로컬 좌표)
@@ -175,8 +175,8 @@ public class PlayerController : MonoBehaviour
 
         TryPlayFootstep(horizontal, vertical, isSprinting);
 
-        // 점프 (Space)
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // 점프
+        if (KeybindingManager.GetKeyDownStatic(KeyAction.Jump) && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }

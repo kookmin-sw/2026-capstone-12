@@ -72,7 +72,7 @@ public class ShooterPingController : MonoBehaviour
         if (selectorInstance == null)
         {
             // 슈터는 화면 중앙 조준점이 가리키는 월드 지점에서 바로 선택을 시작한다.
-            if (Input.GetKeyDown(pingKey))
+            if (KeybindingManager.GetKeyDownStatic(KeyAction.Ping))
                 BeginSelection();
 
             return;
@@ -82,7 +82,7 @@ public class ShooterPingController : MonoBehaviour
         selectorOffset = Mathf.Clamp(selectorOffset, -selectorClamp, selectorClamp);
         SetHighlight(GetCurrentPingType());
 
-        if (Input.GetKeyUp(pingKey))
+        if (KeybindingManager.GetKeyUpStatic(KeyAction.Ping))
             CommitSelection();
     }
 

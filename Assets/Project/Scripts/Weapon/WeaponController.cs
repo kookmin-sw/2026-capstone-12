@@ -114,7 +114,7 @@ public class WeaponController : MonoBehaviour
         HandleAiming();
         DriveHandsAnimator();
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (KeybindingManager.GetKeyDownStatic(KeyAction.Reload))
         {
             StartReload();
             return;
@@ -167,7 +167,7 @@ public class WeaponController : MonoBehaviour
             ? new Vector3(characterController.velocity.x, 0f, characterController.velocity.z).magnitude
             : 0f;
 
-        bool isSprinting = Input.GetKey(KeyCode.LeftShift); // 달리기 애니메이션 판정 상태
+        bool isSprinting = KeybindingManager.GetKeyStatic(KeyAction.Sprint);
         int maxSpeed = isSprinting ? 5 : 3; // Animator maxSpeed 파라미터 값
 
         handsAnimator.SetFloat("walkSpeed", horizontalSpeed);
