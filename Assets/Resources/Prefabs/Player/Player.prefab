@@ -1038,6 +1038,7 @@ GameObject:
   - component: {fileID: 2026050822}
   - component: {fileID: 2026050826}
   - component: {fileID: 2026050850}
+  - component: {fileID: 4878130502631583424}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1158,6 +1159,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  walkStepInterval: 0.45
+  runStepInterval: 0.28
   mouseSensitivity: 2
   maxLookAngle: 90
   settingsPanel: {fileID: 0}
@@ -1420,6 +1423,26 @@ MonoBehaviour:
   maxDamagePerSecond: 12
   warningDelay: 1
   damageApplyInterval: 0.25
+--- !u!114 &4878130502631583424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4237616672321747217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff82c5046591cb14eb2f3001a33a0a45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skinMaterials:
+  - {fileID: 2100000, guid: d5aafb5ec9da01242b0ee1cf8e1b5945, type: 2}
+  - {fileID: 2100000, guid: 1654ec2413acdbd4481c58b3371dbec3, type: 2}
+  - {fileID: 2100000, guid: 7655bd330033f864d8d47fade18486b9, type: 2}
+  - {fileID: 2100000, guid: 8312736b2b14588498d33a00a622c8d0, type: 2}
+  - {fileID: 2100000, guid: edc28d4cd35704248a4d6909e8092b34, type: 2}
+  - {fileID: 2100000, guid: 5bfae0fb4183d0946962f5ab68bdcf31, type: 2}
+  - {fileID: 2100000, guid: 664d3304bbcfc90499aae4313f7eb929, type: 2}
 --- !u!1 &4721636855047827009
 GameObject:
   m_ObjectHideFlags: 0

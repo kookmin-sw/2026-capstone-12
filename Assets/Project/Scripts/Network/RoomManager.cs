@@ -46,6 +46,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     // ============================================================
     private const string ROLE_KEY = "Role";
     private const string READY_KEY = "Ready";
+    private const string SKIN_KEY = "SkinIndex";
     private const string ROLE_SHOOTER = "Shooter";
     private const string ROLE_SUPPORTER = "Supporter";
 
@@ -83,7 +84,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
         Hashtable props = new Hashtable
         {
             { ROLE_KEY, null },
-            { READY_KEY, false }
+            { READY_KEY, false },
+            { SKIN_KEY, 0 }
         };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
