@@ -11,7 +11,7 @@ public class MissionBriefingUI : MonoBehaviour
 
     [Header("Content")]
     [SerializeField] private string title = "작전 목표";
-    [SerializeField] private string body  = "커맨드 타워를 사수하고,\n3개의 스폰 코어를 파괴하라.";
+    [SerializeField] private string body  = "SpawnCore가 정화 에너지를 흡수해서\n이 지역에 어둠이 찾아왔습니다.\nSpawnCore를 파괴하여 이 구역을 정화해주세요.";
 
     [Header("Timing")]
     [SerializeField] private float delayBeforeShow = 1.5f;
