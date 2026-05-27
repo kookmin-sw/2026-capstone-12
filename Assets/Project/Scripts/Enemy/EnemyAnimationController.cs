@@ -23,6 +23,9 @@ public class EnemyAnimationController : MonoBehaviour
     {
         if (animator == null)
             animator = GetComponentInChildren<Animator>();
+
+        // 화면 밖 적의 본 연산 생략 (화면 안 적만 스키닝 계산)
+        animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
     }
 
     public void SetMove(bool isMoving, float currentMoveSpeed)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 using Photon.Pun;
 using System.Collections.Generic;
 
@@ -86,6 +87,9 @@ public class EnemyAI : MonoBehaviour
             agent = gameObject.AddComponent<NavMeshAgent>();
 
         health = GetComponent<EnemyHealth>();
+
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+            r.shadowCastingMode = ShadowCastingMode.Off;
 
         baseMoveSpeed = moveSpeed;
         baseAttackCooldown = attackCooldown;
