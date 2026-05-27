@@ -48,6 +48,7 @@ public class EnemyAI : MonoBehaviour
     private CapsuleCollider col;
     private EnemyAnimationNet animationNet;
     private NavMeshAgent agent;
+    private EnemyHealth health;
 
     // State
     // 난이도 배율 반복 적용 시 누적 방지를 위한 프리팹 원본 스탯 보관
@@ -84,6 +85,8 @@ public class EnemyAI : MonoBehaviour
         if (agent == null && useNavMeshMovement)
             agent = gameObject.AddComponent<NavMeshAgent>();
 
+        health = GetComponent<EnemyHealth>();
+
         baseMoveSpeed = moveSpeed;
         baseAttackCooldown = attackCooldown;
         baseAttackDamage = attackDamage;
@@ -104,7 +107,6 @@ public class EnemyAI : MonoBehaviour
 
         ConfigureMovementAuthority();
 
-        EnemyHealth health = GetComponent<EnemyHealth>();
         if (health != null)
             health.OnDied += HandleDied;
     }
@@ -113,7 +115,6 @@ public class EnemyAI : MonoBehaviour
     {
         activeEnemies.Remove(this);
 
-        EnemyHealth health = GetComponent<EnemyHealth>();
         if (health != null)
             health.OnDied -= HandleDied;
     }
@@ -134,8 +135,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (!PhotonNetwork.IsMasterClient)
             return;
-        // 사망 시 이동/공격 중단
-        EnemyHealth health = GetComponent<EnemyHealth>();
+
         if (health != null && health.IsDead)
             return;
 
@@ -219,7 +219,6 @@ public class EnemyAI : MonoBehaviour
         difficultyMultiplier = Mathf.Max(0.01f, multiplier);
         ApplyDifficultyValues();
 
-        EnemyHealth health = GetComponent<EnemyHealth>();
         health?.ApplyDifficultyMultiplier(difficultyMultiplier);
     }
 

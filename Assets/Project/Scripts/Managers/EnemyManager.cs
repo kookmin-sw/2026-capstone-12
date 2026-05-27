@@ -74,7 +74,7 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     /// </summary>
     private void Start()
     {
-        RefreshEnemyNests();
+        DiscoverSceneNests();
 
         if (startAutomatically)
             BeginEnemySystem();
@@ -155,7 +155,7 @@ public class EnemyManager : MonoBehaviourPunCallbacks
 
             TickSpawnGroups();
 
-            yield return null;
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
@@ -445,7 +445,7 @@ public class EnemyManager : MonoBehaviourPunCallbacks
     }
 
     /// <summary>
-    /// 빈 Nest 참조 정리와 씬 Nest 재수집
+    /// 빈 Nest 참조 정리 (Nest는 OnEnable/OnDisable에서 자기 등록/해제)
     /// </summary>
     private void RefreshEnemyNests()
     {
@@ -454,8 +454,14 @@ public class EnemyManager : MonoBehaviourPunCallbacks
             if (enemyNests[i] == null)
                 enemyNests.RemoveAt(i);
         }
+    }
 
-        EnemyNest[] sceneNests = FindObjectsOfType<EnemyNest>(); // 씬에 존재하는 Nest 전체
+    /// <summary>
+    /// Start 시 씬에 이미 배치된 Nest 일괄 수집 (최초 1회만)
+    /// </summary>
+    private void DiscoverSceneNests()
+    {
+        EnemyNest[] sceneNests = FindObjectsOfType<EnemyNest>();
         for (int i = 0; i < sceneNests.Length; i++)
             RegisterSpawnNest(sceneNests[i]);
     }
