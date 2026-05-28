@@ -18,7 +18,7 @@ public class ShooterWeaponNet : MonoBehaviourPun
         if (!PhotonNetwork.IsMasterClient) return;
 
         if (EnemyHealthNet.Instance != null)
-            EnemyHealthNet.Instance.MasterApplyDamage(enemyViewId, damage);
+            EnemyHealthNet.Instance.MasterApplyDamage(enemyViewId, damage, isShooterKill: true);
     }
 
     public void RequestHitStructure(int structureViewId, float damage)

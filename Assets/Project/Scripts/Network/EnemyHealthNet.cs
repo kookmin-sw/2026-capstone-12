@@ -14,7 +14,7 @@ public class EnemyHealthNet : MonoBehaviourPun
     }
 
     // 터렛/슈터 등이 호출: 마스터에서만 실제 적용
-    public void MasterApplyDamage(int enemyViewId, float damage)
+    public void MasterApplyDamage(int enemyViewId, float damage, bool isShooterKill = false)
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
@@ -50,8 +50,8 @@ public class EnemyHealthNet : MonoBehaviourPun
             if (ShooterLevelNet.Instance != null)
                 ShooterLevelNet.Instance.MasterAddXp(eh.XpReward);
 
-            // 정화 게이지 지급
-            if (ShooterPurificationNet.Instance != null)
+            // 정화 게이지 지급 (슈터 처치 시에만)
+            if (isShooterKill && ShooterPurificationNet.Instance != null)
                 ShooterPurificationNet.Instance.MasterAddPurificationEnergyForEnemy(eh);
 
             // EnemyManager/CombatUIManager 연동도 마스터에서만
