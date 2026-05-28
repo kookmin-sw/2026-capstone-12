@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -7,8 +7,8 @@ public class ShooterPurification : MonoBehaviour
 {
     [Header("Gauge")]
     [SerializeField] private float maxGauge = 100f; // Purification Gauge 최대값
-    [SerializeField] private float graceDuration = 3f; // 게이지 획득 후 감소가 시작되기 전 유지 시간
-    [SerializeField] private float decayPerSecond = 12f; // graceDuration 이후 초당 게이지 감소량
+    [SerializeField] private float graceDuration = 1.5f; // 게이지 획득 후 감소가 시작되기 전 유지 시간
+    [SerializeField] private float decayPerSecond = 16f; // graceDuration 이후 초당 게이지 감소량
 
     [Header("Field")]
     [SerializeField] private float minFieldRadius = 4f; // 게이지가 0보다 클 때 Shooter Field 최소 반경
@@ -16,10 +16,10 @@ public class ShooterPurification : MonoBehaviour
     [SerializeField] private Light shooterFieldLight; // Shooter 주변 Purification Field 시각화용 Point Light
 
     [Header("Enemy Rewards")]
-    [SerializeField] private float basicEnemyGain = 3f; // BasicEnemy 처치 시 게이지 획득량
-    [SerializeField] private float fastEnemyGain = 5f; // FastEnemy 처치 시 게이지 획득량
-    [SerializeField] private float tankEnemyGain = 10f; // TankEnemy 처치 시 게이지 획득량
-    [SerializeField] private float sanctuaryKillGainMultiplier = 0.5f; // SanctuaryZone 내부 처치 보상 배율
+    [SerializeField] private float basicEnemyGain = 4f; // BasicEnemy 처치 시 게이지 획득량
+    [SerializeField] private float fastEnemyGain = 8f; // FastEnemy 처치 시 게이지 획득량
+    [SerializeField] private float tankEnemyGain = 14f; // TankEnemy 처치 시 게이지 획득량
+    [SerializeField] private float sanctuaryKillGainMultiplier = 1f; // SanctuaryZone 내부 처치 보상 배율
 
     public event Action<float, float> OnGaugeChanged; // UI 표시용 게이지 변경 이벤트
 

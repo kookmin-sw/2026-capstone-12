@@ -24,8 +24,29 @@ public class ShooterPurificationNet : MonoBehaviourPun
         if (!HasGaugeAuthority() || purification == null)
             return;
 
+        if (IsInExternalPurificationZone())
+            return;
+
         if (purification.TickGaugeDecay(Time.deltaTime))
             SyncGaugeState(false);
+    }
+
+    // ShooterField 제외한 외부 정화 구역 안에 있는지 확인
+    private bool IsInExternalPurificationZone()
+    {
+        PurificationZoneRegistry registry = PurificationZoneRegistry.Instance;
+        if (registry == null)
+            return false;
+
+        foreach (PurificationLightSource source in registry.Sources)
+        {
+            if (source == null) continue;
+            if (source.sourceType == PurificationLightSourceType.ShooterField) continue;
+            if (source.preventsDarknessExposure && source.Contains(transform.position))
+                return true;
+        }
+
+        return false;
     }
 
     // MasterClient 기준 적 처치 Purification Gauge 보상 동기화
