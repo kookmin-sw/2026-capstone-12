@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_EnemyNest
   m_EditorClassIdentifier: 
-  displayName: Source
-  description: Source
+  displayName: 적 둥지
+  description: 적이 출현하는 근원지입니다.
   icon: {fileID: 0}
   prefab: {fileID: 8805579323114019885, guid: 0cc2e7154d7893c449c675c97b8e86ff, type: 3}
   typeId: 12

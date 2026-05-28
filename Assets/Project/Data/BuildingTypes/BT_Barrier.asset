@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_Barrier
   m_EditorClassIdentifier: 
-  displayName: Barrier
-  description: A defensive wall that blocks enemy movement
+  displayName: "\uBC29\uBCBD"
+  description: "\uC801\uC758 \uC774\uB3D9\uC744 \uB9C9\uB294 \uBC29\uC5B4\uC6A9 \uBCBD"
   icon: {fileID: 21300000, guid: b42d2a4e5f3f2204cacb2c70ce883994, type: 3}
   prefab: {fileID: 7307361376702685315, guid: d4a437af5a66ca14195f30d43cb37271, type: 3}
   typeId: 3

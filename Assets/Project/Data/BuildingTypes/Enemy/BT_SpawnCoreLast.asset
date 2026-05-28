@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_SpawnCoreLast
   m_EditorClassIdentifier: 
-  displayName: SpawnCoreLast
-  description: SpanwCore
+  displayName: 최종 스폰 코어
+  description: 마지막으로 파괴해야 하는 적 생성 핵심 구조물입니다.
   icon: {fileID: 0}
   prefab: {fileID: 3534193397617612285, guid: b16c71833fd751b4c87af3a24b08b0c6, type: 3}
   typeId: 11

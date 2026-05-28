@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_CommandTower
   m_EditorClassIdentifier: 
-  displayName: CommandTower
-  description: Enemy primary objective
+  displayName: "\uC9C0\uD718 \uD0C0\uC6CC"
+  description: "\uC801\uC774 \uCD5C\uC6B0\uC120\uC73C\uB85C \uB178\uB9AC\uB294 \uD575\uC2EC
+    \uBAA9\uD45C"
   icon: {fileID: 0}
   prefab: {fileID: 7189919056927592795, guid: 4acda1e2349aa8443b2a6f075ac12b48, type: 3}
   typeId: 20

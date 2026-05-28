@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_SpawnCore
   m_EditorClassIdentifier: 
-  displayName: SpanwCore
-  description: SpanwCore
+  displayName: 스폰 코어
+  description: 적을 생성하는 핵심 구조물입니다.
   icon: {fileID: 0}
   prefab: {fileID: 8805579323114019885, guid: 703a23420fe3ee64fab057c4be7c382b, type: 3}
   typeId: 10
