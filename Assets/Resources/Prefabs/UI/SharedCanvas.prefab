@@ -500,7 +500,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 520, y: 600}
+  m_SizeDelta: {x: 520, y: 650}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7315286470603316161
 CanvasRenderer:
@@ -6695,7 +6695,7 @@ MonoBehaviour:
   remoteSpeakerVolumeSlider: {fileID: 3467375965541144025}
   resolutionDropdown: {fileID: 3082624697248770164}
   fullscreenToggle: {fileID: 4843149600506711323}
-  muteMicToggle: {fileID: 0}
+  muteMicToggle: {fileID: 6324145497414358735}
   applyButton: {fileID: 7168513597587191875}
   cancelButton: {fileID: 5329338273918626614}
   keybindingButton: {fileID: 1124075219047839595}
