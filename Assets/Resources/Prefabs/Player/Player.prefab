@@ -1382,15 +1382,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxGauge: 100
-  graceDuration: 5
-  decayPerSecond: 12
+  graceDuration: 1.5
+  decayPerSecond: 16
   minFieldRadius: 4
   maxFieldRadius: 16
   shooterFieldLight: {fileID: 2026050824}
-  basicEnemyGain: 7
-  fastEnemyGain: 9
-  tankEnemyGain: 18
-  sanctuaryKillGainMultiplier: 0.5
+  basicEnemyGain: 4
+  fastEnemyGain: 8
+  tankEnemyGain: 14
+  sanctuaryKillGainMultiplier: 1
 --- !u!114 &2026050826
 MonoBehaviour:
   m_ObjectHideFlags: 0
