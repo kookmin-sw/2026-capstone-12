@@ -12,7 +12,14 @@ public class CommandTowerDialogueUI : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private RectTransform panelRect;
     [SerializeField] private Text messageText;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip popupClip;
+    [SerializeField] [Range(0f, 1f)] private float popupVolume = 0.5f;
+    [SerializeField] private GameSoundType fallbackPopupSound = GameSoundType.PingHelp; // 임시로 핑 소리
 
     [Header("Thresholds")]
     [SerializeField] private float hpLowThreshold = 0.35f;
@@ -32,7 +39,6 @@ public class CommandTowerDialogueUI : MonoBehaviour
 
     // ── Runtime state ─────────────────────────────────────────────────────
     private RoleType localRole = RoleType.Shooter;
-    private bool roleResolved;
 
     private BuildingHealthNet towerHealthNet;
     private float previousTowerHp = float.MaxValue;
@@ -52,10 +58,13 @@ public class CommandTowerDialogueUI : MonoBehaviour
     private Coroutine showCoroutine;
     private string pendingMessage;
     private float messageStartTime;
+    private Vector2 initialAnchoredPosition;
+    private Vector3 initialScale = Vector3.one;
 
     // ── Unity lifecycle ───────────────────────────────────────────────────
     private void Start()
     {
+        ResolveUiReferences();
         if (canvasGroup != null) canvasGroup.alpha = 0f;
         ResolveRole();
         BindCommandTower();
@@ -80,7 +89,6 @@ public class CommandTowerDialogueUI : MonoBehaviour
         if (TryReadRole(out RoleType role))
         {
             localRole = role;
-            roleResolved = true;
         }
         else
         {
@@ -95,7 +103,6 @@ public class CommandTowerDialogueUI : MonoBehaviour
             if (TryReadRole(out RoleType role))
             {
                 localRole = role;
-                roleResolved = true;
                 yield break;
             }
             yield return new WaitForSeconds(0.5f);
@@ -273,6 +280,7 @@ public class CommandTowerDialogueUI : MonoBehaviour
         pendingMessage = null;
         messageText.text = message;
         messageStartTime = Time.time;
+        PlayPopupSound();
 
         if (showCoroutine != null) StopCoroutine(showCoroutine);
         showCoroutine = StartCoroutine(ShowRoutine());
@@ -280,15 +288,37 @@ public class CommandTowerDialogueUI : MonoBehaviour
 
     private IEnumerator ShowRoutine()
     {
-        // fade in
+        if (panelRect != null)
+        {
+            panelRect.anchoredPosition = initialAnchoredPosition;
+            panelRect.localScale = initialScale * 0.92f;
+        }
+
+        // fade in + pop
         float elapsed = 0f;
         while (elapsed < fadeInDuration)
         {
             elapsed += Time.deltaTime;
-            canvasGroup.alpha = Mathf.SmoothStep(0f, 1f, elapsed / fadeInDuration);
+            float t = fadeInDuration > 0f ? Mathf.Clamp01(elapsed / fadeInDuration) : 1f;
+            canvasGroup.alpha = Mathf.SmoothStep(0f, 1f, t);
+
+            if (panelRect != null)
+            {
+                float scale = EaseOutBack(t, 0.75f);
+                panelRect.localScale = initialScale * Mathf.LerpUnclamped(0.92f, 1f, scale);
+
+                float shake = Mathf.Sin(t * Mathf.PI * 5f) * (1f - t) * 10f;
+                panelRect.anchoredPosition = initialAnchoredPosition + new Vector2(shake, 0f);
+            }
+
             yield return null;
         }
         canvasGroup.alpha = 1f;
+        if (panelRect != null)
+        {
+            panelRect.localScale = initialScale;
+            panelRect.anchoredPosition = initialAnchoredPosition;
+        }
 
         // hold — 대기 중 pending 메시지가 있으면 최소 표시 시간 이후 즉시 교체
         float held = 0f;
@@ -312,10 +342,68 @@ public class CommandTowerDialogueUI : MonoBehaviour
         while (elapsed < fadeOutDuration)
         {
             elapsed += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / fadeOutDuration);
+            float t = fadeOutDuration > 0f ? Mathf.Clamp01(elapsed / fadeOutDuration) : 1f;
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
+
+            if (panelRect != null)
+                panelRect.localScale = initialScale * Mathf.Lerp(1f, 0.96f, t);
+
             yield return null;
         }
         canvasGroup.alpha = 0f;
+        if (panelRect != null)
+        {
+            panelRect.localScale = initialScale;
+            panelRect.anchoredPosition = initialAnchoredPosition;
+        }
         showCoroutine = null;
+    }
+
+    private void ResolveUiReferences()
+    {
+        if (canvasGroup == null)
+            canvasGroup = GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        if (panelRect == null)
+            panelRect = GetComponent<RectTransform>();
+
+        if (messageText == null)
+            messageText = GetComponentInChildren<Text>(true);
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+
+        if (panelRect != null)
+        {
+            initialAnchoredPosition = panelRect.anchoredPosition;
+            initialScale = panelRect.localScale;
+        }
+    }
+
+    private void PlayPopupSound()
+    {
+        if (popupClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(popupClip, popupVolume);
+            return;
+        }
+
+        if (fallbackPopupSound != GameSoundType.None)
+            GameEventSoundPlayer.Instance?.Play(fallbackPopupSound);
+    }
+
+    private float EaseOutBack(float t, float overshoot)
+    {
+        t -= 1f;
+        return 1f + t * t * ((overshoot + 1f) * t + overshoot);
     }
 }
