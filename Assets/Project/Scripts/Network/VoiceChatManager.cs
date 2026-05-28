@@ -31,7 +31,7 @@ public class VoiceChatManager : MonoBehaviour, IInRoomCallbacks
     // 상태
     // ============================================================
     [Header("Voice Settings")]
-    [SerializeField] private bool muteOnStart = false;
+    [SerializeField] private bool muteOnStart = true;
     [SerializeField] [Range(0f, 1f)] private float micVolume = 1f;
     [SerializeField] [Range(0f, 1f)] private float remoteSpeakerVolume = 0.35f;
 

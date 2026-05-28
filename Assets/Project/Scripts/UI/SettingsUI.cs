@@ -18,6 +18,7 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private Slider remoteSpeakerVolumeSlider;  // 상대방 음성 볼륨
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Toggle fullscreenToggle;
+    [SerializeField] private Toggle muteMicToggle;              // 마이크 음소거
 
     [Header("Buttons")]
     [SerializeField] private Button applyButton;
@@ -80,6 +81,8 @@ public class SettingsUI : MonoBehaviour
             remoteSpeakerVolumeSlider.onValueChanged.AddListener(OnRemoteSpeakerVolumeChanged);
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         fullscreenToggle.onValueChanged.AddListener(OnFullscreenChanged);
+        if (muteMicToggle != null)
+            muteMicToggle.onValueChanged.AddListener(OnMuteMicToggleChanged);
 
         initialized = true;
     }
@@ -191,6 +194,8 @@ public class SettingsUI : MonoBehaviour
             remoteSpeakerVolumeSlider.value = tempRemoteSpeakerVolume;
         resolutionDropdown.value = tempResolutionIndex;
         fullscreenToggle.isOn = tempFullscreen;
+        if (muteMicToggle != null && VoiceChatManager.Instance != null)
+            muteMicToggle.isOn = VoiceChatManager.Instance.IsMuted;
     }
 
     // ============================================================
@@ -224,6 +229,13 @@ public class SettingsUI : MonoBehaviour
     void OnFullscreenChanged(bool value)
     {
         tempFullscreen = value;
+    }
+
+    void OnMuteMicToggleChanged(bool value)
+    {
+        // 음소거는 즉시 반영 (Apply 버튼 불필요)
+        if (VoiceChatManager.Instance != null)
+            VoiceChatManager.Instance.SetMute(value);
     }
 
     // ============================================================

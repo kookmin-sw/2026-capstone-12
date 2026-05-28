@@ -53,6 +53,7 @@ public class SettingsManager : MonoBehaviour
 
         // 설정 로드
         LoadSettings();
+        ApplySettings();
     }
 
     // ============================================================
