@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Photon.Pun;
@@ -15,6 +16,7 @@ public class SupportPlacementSystem : MonoBehaviour
 
     private SupporterItemSO selectedItem; // 현재 배치 선택된 Support 아이템
     private GameObject ghostObj; // 마우스 위치 미리보기 오브젝트
+    private readonly Dictionary<int, float> cooldownEndTimes = new();
 
     private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor"); // URP 고스트 색상 변경용 셰이더 속성
 
@@ -24,6 +26,18 @@ public class SupportPlacementSystem : MonoBehaviour
     private void Awake()
     {
         ResolveReferences();
+    }
+
+    private void OnEnable()
+    {
+        BuildNetManager.SupportSpawned += HandleSupportPlaced;
+        LocalSupportPlaced += HandleSupportPlaced;
+    }
+
+    private void OnDisable()
+    {
+        BuildNetManager.SupportSpawned -= HandleSupportPlaced;
+        LocalSupportPlaced -= HandleSupportPlaced;
     }
 
     // 그리드 비의존 Support 배치 입력 처리
@@ -76,6 +90,12 @@ public class SupportPlacementSystem : MonoBehaviour
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(item.cost))
         {
             SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.ResourceLack);
+            return;
+        }
+
+        if (IsCooldownActive(item))
+        {
+            SupporterUISoundPlayer.Instance?.Play(SupporterUISoundType.CooldownDenied);
             return;
         }
 
@@ -148,6 +168,9 @@ public class SupportPlacementSystem : MonoBehaviour
         if (ResourceManager.Instance != null && !ResourceManager.Instance.CanAfford(selectedItem.cost))
             return false;
 
+        if (IsCooldownActive(selectedItem))
+            return false;
+
         if (selectedItem.kind != SupportItemKind.PurificationBeacon || ghostObj == null)
             return true;
 
@@ -173,26 +196,28 @@ public class SupportPlacementSystem : MonoBehaviour
         if (typeIndex < 0)
             return;
 
+        SupporterItemSO placedItem = selectedItem;
+
         if (BuildNetManager.Instance != null && PhotonNetwork.InRoom)
         {
             BuildNetManager.Instance.RequestPlaceSupport(typeIndex, position);
         }
         else
         {
-            GameObject prefab = selectedItem.prefab != null
-                ? selectedItem.prefab
-                : Resources.Load<GameObject>(selectedItem.prefabResourcePath);
+            GameObject prefab = placedItem.prefab != null
+                ? placedItem.prefab
+                : Resources.Load<GameObject>(placedItem.prefabResourcePath);
 
             if (prefab != null)
             {
-                PurificationBeaconSupportEffectSO beaconEffect = selectedItem.kind == SupportItemKind.PurificationBeacon
-                    ? GetPurificationBeaconEffect(selectedItem)
+                PurificationBeaconSupportEffectSO beaconEffect = placedItem.kind == SupportItemKind.PurificationBeacon
+                    ? GetPurificationBeaconEffect(placedItem)
                     : null;
-                if (selectedItem.kind == SupportItemKind.PurificationBeacon && beaconEffect == null)
+                if (placedItem.kind == SupportItemKind.PurificationBeacon && beaconEffect == null)
                     return;
 
                 GameObject supportObject = Instantiate(prefab, position, Quaternion.identity); // 오프라인 테스트용 로컬 생성 오브젝트
-                if (selectedItem.kind == SupportItemKind.PurificationBeacon)
+                if (placedItem.kind == SupportItemKind.PurificationBeacon)
                 {
                     foreach (SupportPickupItem supportPickupItem in supportObject.GetComponentsInChildren<SupportPickupItem>(true))
                         Destroy(supportPickupItem);
@@ -212,14 +237,12 @@ public class SupportPlacementSystem : MonoBehaviour
                     if (pickupItem == null)
                         pickupItem = supportObject.AddComponent<SupportPickupItem>();
 
-                    pickupItem.Configure(-1, selectedItem);
+                    pickupItem.Configure(-1, placedItem);
                 }
 
-                LocalSupportPlaced?.Invoke(selectedItem);
+                LocalSupportPlaced?.Invoke(placedItem);
             }
         }
-
-        CancelPlacement();
     }
 
     // Support 고스트 생성
@@ -334,5 +357,35 @@ public class SupportPlacementSystem : MonoBehaviour
     private PurificationBeaconSupportEffectSO GetPurificationBeaconEffect(SupporterItemSO item)
     {
         return item != null ? item.effect as PurificationBeaconSupportEffectSO : null;
+    }
+
+    private void HandleSupportPlaced(SupporterItemSO item)
+    {
+        if (item == null || item.cooldown <= 0f)
+            return;
+
+        if (!IsCooldownActive(item))
+            StartCooldown(item);
+    }
+
+    private void StartCooldown(SupporterItemSO item)
+    {
+        if (item == null || item.cooldown <= 0f)
+            return;
+
+        cooldownEndTimes[GetCooldownKey(item)] = Time.time + Mathf.Max(0f, item.cooldown);
+    }
+
+    private bool IsCooldownActive(SupporterItemSO item)
+    {
+        if (item == null)
+            return false;
+
+        return cooldownEndTimes.TryGetValue(GetCooldownKey(item), out float cooldownEndTime) && cooldownEndTime > Time.time;
+    }
+
+    private int GetCooldownKey(SupporterItemSO item)
+    {
+        return item.typeId != 0 ? item.typeId : (int)item.kind;
     }
 }

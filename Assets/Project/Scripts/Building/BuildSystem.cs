@@ -146,7 +146,7 @@ public class BuildSystem : MonoBehaviour
         return false;
     }
 
-    // 네트워크 매니저에 설치 요청을 보내고 빌드 모드를 종료
+    // 네트워크 매니저에 설치 요청을 보내고 현재 선택은 유지
     private void PlaceBuilding(Vector2Int anchor)
     {
         if (selectedType == null)
@@ -166,7 +166,6 @@ public class BuildSystem : MonoBehaviour
 
         // 로컬 생성/점유/차감은 하지 않고 "요청"만 보냄
         BuildNetManager.Instance.RequestPlace(selectedType.typeId, anchor.x, anchor.y, rotationY);
-        CancelBuildMode();
     }
 
     // 현재 빌드 모드를 종료하고 고스트를 정리
