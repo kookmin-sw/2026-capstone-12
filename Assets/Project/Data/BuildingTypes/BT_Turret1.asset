@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_Turret1
   m_EditorClassIdentifier: 
-  displayName: Turret
-  description: A turret that automatically attacks enemies
+  displayName: "\uD130\uB81B"
+  description: "\uC801\uC744 \uC790\uB3D9\uC73C\uB85C \uACF5\uACA9\uD558\uB294 \uAD6C\uC870\uBB3C"
   icon: {fileID: 21300000, guid: 1ab92fad9960c144b9107059fde9baf6, type: 3}
   prefab: {fileID: 3389874939188217537, guid: d05e22ba94aee3d4a8181ac8ee9aaaba, type: 3}
   typeId: 0
@@ -22,5 +22,7 @@ MonoBehaviour:
   allowRotate: 1
   cost: 50
   maxHp: 100
+  canRepair: 1
+  canSell: 1
   playActivatedSound: 0
   activatedSoundType: -1

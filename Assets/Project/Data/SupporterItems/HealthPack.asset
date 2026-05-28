@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: HealthPack
   m_EditorClassIdentifier: 
   kind: 1
-  displayName: Health Pack
-  description: Slowly restores shooter health.
+  displayName: "\uAD6C\uAE09\uD488"
+  description: "\uC288\uD130\uC758 \uCCB4\uB825\uC744 \uCC9C\uCC9C\uD788 \uD68C\uBCF5"
   icon: {fileID: 21300000, guid: 9d7affbc60e236541bef87f87b6a2691, type: 3}
   typeId: 1
   cost: 25

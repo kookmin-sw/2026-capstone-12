@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6357d58d277985748b35b30e1fc2caaa, type: 3}
   m_Name: BT_SlowTower
   m_EditorClassIdentifier: 
-  displayName: SlowTower
-  description: "A tower that reduces enemies\u2019 movement and attack speed"
+  displayName: "\uAC10\uC18D \uBC30\uB9AC\uC5B4"
+  description: "\uC801\uC758 \uC774\uB3D9 \uC18D\uB3C4\uC640 \uACF5\uACA9 \uC18D\uB3C4\uB97C
+    \uB0AE\uCD94\uB294 \uB2E8\uB2E8\uD55C \uBC29\uC5B4\uC6A9 \uBCBD"
   icon: {fileID: 21300000, guid: 7a8100dc19f784c4f9815e26b285fdc6, type: 3}
   prefab: {fileID: 2121033438344569908, guid: 337146785e7f2e048adfd0ed88d6f251, type: 3}
   typeId: 1

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: PurificationBeacon
   m_EditorClassIdentifier: 
   kind: 2
-  displayName: Purification Beacon
-  description: Creates a temporary purified area near the shooter.
+  displayName: "\uC815\uD654 \uC2E0\uD638\uAE30"
+  description: "\uC288\uD130 \uC8FC\uBCC0\uC5D0 \uC77C\uC2DC\uC801\uC778 \uC815\uD654
+    \uAD6C\uC5ED\uC744 \uC0DD\uC131"
   icon: {fileID: 21300000, guid: c73d3b141927b69438842bda8ab1d5e8, type: 3}
   typeId: 2
   cost: 5
