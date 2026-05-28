@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// 설정 UI 관리
@@ -24,6 +26,10 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private Button applyButton;
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button keybindingButton;
+    [SerializeField] private Button exitButton;
+
+    [Header("Scene Names")]
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     [Header("Keybinding Panel")]
     [SerializeField] private GameObject keybindingPanel;
@@ -71,6 +77,8 @@ public class SettingsUI : MonoBehaviour
         cancelButton.onClick.AddListener(OnCancelButton);
         if (keybindingButton != null && keybindingPanel != null)
             keybindingButton.onClick.AddListener(() => keybindingPanel.SetActive(true));
+        if (exitButton != null)
+            exitButton.onClick.AddListener(OnExitButton);
 
         // 슬라이더/드롭다운 이벤트 연결
         sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
@@ -270,5 +278,20 @@ public class SettingsUI : MonoBehaviour
         // 변경사항 취소하고 패널 닫기
         Debug.Log("Settings cancelled");
         gameObject.SetActive(false);
+    }
+
+    void OnExitButton()
+    {
+        Time.timeScale = 1f;
+
+        Debug.Log("Going to Main Menu from settings...");
+
+        if (VoiceChatManager.Instance != null)
+            VoiceChatManager.Instance.DisconnectVoice();
+
+        if (PhotonNetwork.IsConnected)
+            PhotonNetwork.Disconnect();
+
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 }
