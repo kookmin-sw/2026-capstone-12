@@ -50,6 +50,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
     private const string ROLE_SHOOTER = "Shooter";
     private const string ROLE_SUPPORTER = "Supporter";
 
+    public const string RoleShooter = ROLE_SHOOTER; // 역할 패널 UI에서 기존 Shooter 키를 안전하게 참조
+    public const string RoleSupporter = ROLE_SUPPORTER; // 역할 패널 UI에서 기존 Supporter 키를 안전하게 참조
+
+    public event System.Action RoleStateChanged; // Custom Property 변경 후 역할 패널 표시를 갱신할 때 사용
+
     // ============================================================
     // Unity 생명주기
     // ============================================================
@@ -67,8 +72,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
         ClearPlayerProperties();
 
         // 버튼 이벤트 연결
-        shooterButton.onClick.AddListener(OnShooterButton);
-        supporterButton.onClick.AddListener(OnSupporterButton);
+        if (shooterButton != null)
+            shooterButton.onClick.AddListener(OnShooterButton);
+        if (supporterButton != null)
+            supporterButton.onClick.AddListener(OnSupporterButton);
         readyButton.onClick.AddListener(OnReadyButton);
         leaveButton.onClick.AddListener(OnLeaveButton);
 
@@ -110,6 +117,87 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         UpdatePlayerList();
+    }
+
+    // 역할 패널이 로컬 플레이어의 현재 선택 역할을 표시할 수 있게 노출
+    public string LocalRole
+    {
+        get
+        {
+            if (PhotonNetwork.LocalPlayer == null ||
+                !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(ROLE_KEY))
+                return null;
+
+            return PhotonNetwork.LocalPlayer.CustomProperties[ROLE_KEY] as string;
+        }
+    }
+
+    // 역할 패널이 로컬 Ready 완료 여부를 버튼 강조에 반영할 수 있게 노출
+    public bool LocalReady
+    {
+        get
+        {
+            if (PhotonNetwork.LocalPlayer == null ||
+                !PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey(READY_KEY))
+                return false;
+
+            return PhotonNetwork.LocalPlayer.CustomProperties[READY_KEY] is bool ready && ready;
+        }
+    }
+
+    // 상대 플레이어가 이미 선택한 역할을 Locked 상태로 표시하기 위해 확인
+    public bool IsRoleTakenByOtherPlayer(string role)
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (player == PhotonNetwork.LocalPlayer)
+                continue;
+
+            if (player.CustomProperties.ContainsKey(ROLE_KEY) &&
+                player.CustomProperties[ROLE_KEY] as string == role)
+                return true;
+        }
+
+        return false;
+    }
+
+    // 상대 플레이어가 역할 선택 후 Ready까지 완료했을 때만 패널을 Locked로 표시
+    public bool IsRoleReadyByOtherPlayer(string role)
+    {
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            if (player == PhotonNetwork.LocalPlayer)
+                continue;
+
+            bool hasRole = player.CustomProperties.ContainsKey(ROLE_KEY) &&
+                           player.CustomProperties[ROLE_KEY] as string == role; // 상대의 해당 역할 선택 여부
+            bool isReady = player.CustomProperties.ContainsKey(READY_KEY) &&
+                           player.CustomProperties[READY_KEY] is bool ready &&
+                           ready; // 상대의 Ready 완료 여부
+
+            if (hasRole && isReady)
+                return true;
+        }
+
+        return false;
+    }
+
+    // 새 역할 패널의 Shooter 클릭을 기존 Shooter 버튼 로직으로 연결
+    public void RequestSelectShooterFromRolePanel()
+    {
+        if (IsRoleTakenByOtherPlayer(ROLE_SHOOTER))
+            return;
+
+        OnShooterButton();
+    }
+
+    // 새 역할 패널의 Supporter 클릭을 기존 Supporter 버튼 로직으로 연결
+    public void RequestSelectSupporterFromRolePanel()
+    {
+        if (IsRoleTakenByOtherPlayer(ROLE_SUPPORTER))
+            return;
+
+        OnSupporterButton();
     }
 
     // ============================================================
@@ -208,8 +296,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
         // 버튼 활성화/비활성화
         // 내가 선택한 역할은 활성화 (다시 클릭하면 취소)
         // 다른 사람이 선택한 역할은 비활성화
-        shooterButton.interactable = !shooterTaken || myRole == ROLE_SHOOTER;
-        supporterButton.interactable = !supporterTaken || myRole == ROLE_SUPPORTER;
+        if (shooterButton != null)
+            shooterButton.interactable = !shooterTaken || myRole == ROLE_SHOOTER;
+        if (supporterButton != null)
+            supporterButton.interactable = !supporterTaken || myRole == ROLE_SUPPORTER;
+
+        RoleStateChanged?.Invoke();
     }
 
     // ============================================================
